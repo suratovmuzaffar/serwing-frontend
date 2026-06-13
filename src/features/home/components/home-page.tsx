@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Bell, Search, TrendingUp } from "lucide-react";
 
-import { CardSkeleton } from "@/features/listings/components/card-skeleton";
-import { ListingCard } from "@/features/listings/components/listing-card";
-import { ListingFilter } from "@/features/listings/components/listing-filter";
+import { CardSkeleton } from "@/features/home/components/card-skeleton";
+import { ListingCard } from "@/features/home/components/listing-card";
+import { ListingFilter } from "@/features/home/components/listing-filter";
 import {
   sortListings,
   type ListingFilter as ListingFilterValue,

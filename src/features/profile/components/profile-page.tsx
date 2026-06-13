@@ -198,7 +198,7 @@ export function ProfilePage() {
         {myListings.map((listing) => (
           <Link
             key={listing.id}
-            href={`/${locale}/listing/${listing.id}`}
+            href={`/${locale}/donations/${listing.id}`}
             className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-primary/40"
           >
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">

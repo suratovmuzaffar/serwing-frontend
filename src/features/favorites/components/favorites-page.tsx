@@ -48,7 +48,7 @@ export function FavoritesPage() {
           {items.map((item, index) => (
             <Link
               key={item.id}
-              href={`/${locale}/listing/${item.id}`}
+              href={`/${locale}/donations/${item.id}`}
               className="group relative block animate-float-up overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
               style={{ animationDelay: `${index * 40}ms` }}
             >

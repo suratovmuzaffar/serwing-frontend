@@ -3,20 +3,36 @@ export type LoginPayload = {
   password: string;
 };
 
-export type AdminMe = {
-  id?: number | string;
-  username: string;
-  fullName?: string;
+export type AuthUser = {
+  id: number;
+  email: string | null;
+  emailVerified: boolean;
+  telegramId: string | null;
+  telegramUsername: string | null;
+  telegramName: string | null;
+  telegramPhotoUrl: string | null;
+  telegramVerified: boolean;
+  phone: string | null;
+  phoneVerified: boolean;
+  role: string;
+  status: string;
+  createdAt?: string;
+};
+
+export type AuthResponse = {
+  user: AuthUser;
+  token: string;
+  refreshToken: string;
 };
 
 export type AuthState = {
   isAuthenticated: boolean;
   accessToken: string | null;
   refreshToken: string | null;
-  admin: AdminMe | null;
+  user: AuthUser | null;
 
   loading: boolean;
   error: string | null;
 };
 
-export type MeResponse = { admin: AdminMe } | AdminMe;
+export type MeResponse = { user: AuthUser } | AuthUser;

@@ -1,5 +1,5 @@
 import React from 'react'
-import AddListingPage from '@/features/listings/components/add-listing-page'
+import AddPage from '@/features/add/components/add-page'
 
 export const metadata = {
   title: "E'lon qo'shish - Serwing"
@@ -8,7 +8,7 @@ export const metadata = {
 export default function Page() {
   return (
     <div>
-      <AddListingPage />
+      <AddPage />
     </div>
   )
 }

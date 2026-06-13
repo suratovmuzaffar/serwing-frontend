@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { AdminMe } from "@/features/auth/types";
+import type { AuthUser } from "@/features/auth/types";
 
 type AuthState = {
-  me: AdminMe | null;
+  me: AuthUser | null;
 };
 
 const initialState: AuthState = {
@@ -13,7 +13,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setMe(state, action: PayloadAction<AdminMe>) {
+    setMe(state, action: PayloadAction<AuthUser>) {
       state.me = action.payload;
     },
     clearMe(state) {

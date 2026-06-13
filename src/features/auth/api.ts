@@ -1,21 +1,30 @@
 // src/features/auth/api.ts
 
 import { http } from "@/services/http";
-import { AdminMe, LoginPayload, MeResponse } from "@/features/auth/types";
+import type {
+  AuthResponse,
+  AuthUser,
+  LoginPayload,
+  MeResponse,
+} from "@/features/auth/types";
 
 
 
 export async function loginApi(payload: LoginPayload) {
-  const { data } = await http.post("/admin/auth/login/", payload);
+  const { data } = await http.post("/auth/login", payload);
   return data;
 }
 
-
-export async function fetchMe(): Promise<AdminMe> {
-  const { data } = await http.get<MeResponse>("/admin/auth/me/");
-  return "admin" in data ? data.admin : data;
+export async function telegramLoginApi(initData: string): Promise<AuthResponse> {
+  const { data } = await http.post<AuthResponse>("/auth/telegram", { initData });
+  return data;
 }
-export async function logoutApi(): Promise<AdminMe> {
-  const { data } = await http.get<MeResponse>("/admin/auth/me/");
-  return "admin" in data ? data.admin : data;
+
+export async function fetchMe(): Promise<AuthUser> {
+  const { data } = await http.get<MeResponse>("/users/me");
+  return "user" in data ? data.user : data;
+}
+export async function logoutApi(): Promise<AuthUser> {
+  const { data } = await http.get<MeResponse>("/users/me");
+  return "user" in data ? data.user : data;
 }

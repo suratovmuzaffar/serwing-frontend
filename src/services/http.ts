@@ -28,7 +28,7 @@ const refreshHttp = axios.create({
 
 // ---------- helpers ----------
 function isRefreshUrl(url?: string) {
-  return Boolean(url && url.includes("/admin/auth/refresh/"));
+  return Boolean(url && url.includes("/auth/refresh"));
 }
 
 const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -96,13 +96,13 @@ http.interceptors.response.use(
       // ✅ agar refresh allaqachon ketayotgan bo‘lsa — o‘shani kutamiz
       if (!refreshPromise) {
         refreshPromise = (async () => {
-          const { data } = await refreshHttp.post<{ access?: string; refresh?: string }>(
-            "/admin/auth/refresh/",
-            { refresh }
+          const { data } = await refreshHttp.post<{ token?: string; refreshToken?: string }>(
+            "/auth/refresh",
+            { refreshToken: refresh }
           );
 
-          const newAccess = data?.access;
-          const newRefresh = data?.refresh;
+          const newAccess = data?.token;
+          const newRefresh = data?.refreshToken;
 
           if (!newAccess) throw new Error("No access token returned from refresh");
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Check, Coins, Upload } from "lucide-react";
 
 import { categories } from "@/lib/data";
@@ -31,8 +31,7 @@ function Field({
   );
 }
 
-export function AddListingPage() {
-  const router = useRouter();
+export function AddPage() {
   const pathname = usePathname();
   const locale = getLocale(pathname);
   const [done, setDone] = useState(false);
@@ -46,17 +45,17 @@ export function AddListingPage() {
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-success/20 text-success">
           <Check className="h-10 w-10" />
         </div>
-        <h1 className="mt-5 text-xl font-bold">E'lon yuborildi!</h1>
+        <h1 className="mt-5 text-xl font-bold">E&apos;lon yuborildi!</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {LISTING_POINT_COST} ball yechildi. Admin moderatsiyasidan
-          o'tgach, e'loningiz ko'rinadi.
+          o&apos;tgach, e&apos;loningiz ko&apos;rinadi.
         </p>
         <button
           type="button"
           onClick={() => setDone(false)}
           className="mt-6 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
         >
-          Yangi e'lon
+          Yangi e&apos;lon
         </button>
       </div>
     );
@@ -64,9 +63,9 @@ export function AddListingPage() {
 
   return (
     <div className="px-4 pt-6">
-      <h1 className="text-2xl font-bold">Yangi e'lon</h1>
+      <h1 className="text-2xl font-bold">Yangi e&apos;lon</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Akkauntingiz haqida ma'lumotlarni to'ldiring
+        Akkauntingiz haqida ma&apos;lumotlarni to&apos;ldiring
       </p>
 
       <div className="mt-5 rounded-2xl border border-border bg-card p-4">
@@ -76,11 +75,11 @@ export function AddListingPage() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold">
-              E'lon narxi: {LISTING_POINT_COST} ball
+              E&apos;lon narxi: {LISTING_POINT_COST} ball
             </p>
             <p className="text-xs text-muted-foreground">
               Sizda {points} ball bor. Ballni profil orqali referral bilan
-              to'plash mumkin.
+              to&apos;plash mumkin.
             </p>
           </div>
         </div>
@@ -183,7 +182,7 @@ export function AddListingPage() {
           type="submit"
           className="mt-2 w-full rounded-xl bg-gradient-primary py-4 text-sm font-bold text-primary-foreground transition-transform active:scale-[0.98]"
         >
-          E'lonni joylashtirish
+          E&apos;lonni joylashtirish
         </button>
 
         <Link
@@ -197,4 +196,4 @@ export function AddListingPage() {
   );
 }
 
-export default AddListingPage;
+export default AddPage;
