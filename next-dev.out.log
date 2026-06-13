@@ -1,45 +1,14 @@
 
 > hotel-crm-project@0.1.0 dev
-> next dev
+> next dev --webpack
 
-▲ Next.js 16.1.4 (Turbopack)
+▲ Next.js 16.1.4 (webpack)
 - Local:         http://localhost:3000
-- Network:       http://10.215.251.202:3000
+- Network:       http://10.11.229.208:3000
 - Environments: .env
 
 ✓ Starting...
-Creating turbopack project {
-  dir: 'C:\\Users\\user\\OneDrive\\Desktop\\SERWING\\frontend2',
-  testMode: true
-}
-✓ Ready in 953ms
- GET /uz/home 200 in 3.5s (compile: 3.2s, generate-params: 409ms, render: 258ms)
- GET /uz/home 200 in 79ms (compile: 10ms, generate-params: 6ms, render: 70ms)
- GET /uz/home 200 in 183ms (compile: 49ms, generate-params: 22ms, render: 134ms)
- GET /logo.png 500 in 1526ms (compile: 1393ms, generate-params: 400ms, render: 132ms)
-✓ Compiled in 190ms
- GET /uz/donations 200 in 1539ms (compile: 1426ms, render: 113ms)
- GET /logo.png 500 in 139ms (compile: 23ms, generate-params: 11ms, render: 116ms)
- GET /logo.png 500 in 441ms (compile: 23ms, generate-params: 11ms, render: 418ms)
- GET /logo.png 500 in 247ms (compile: 10ms, generate-params: 67µs, render: 237ms)
- GET /logo.png 500 in 111ms (compile: 7ms, generate-params: 45µs, render: 104ms)
- GET /uz/profile 200 in 1577ms (compile: 1519ms, generate-params: 443ms, render: 57ms)
- GET /logo.png 500 in 193ms (compile: 31ms, generate-params: 21ms, render: 162ms)
- GET /uz/favorites 200 in 1346ms (compile: 1287ms, generate-params: 453ms, render: 59ms)
- GET /logo.png 500 in 120ms (compile: 20ms, generate-params: 11ms, render: 100ms)
- GET /logo.png 500 in 386ms (compile: 19ms, generate-params: 12ms, render: 367ms)
- GET /logo.png 500 in 267ms (compile: 13ms, generate-params: 51µs, render: 255ms)
- GET /logo.png 500 in 142ms (compile: 6ms, generate-params: 29µs, render: 136ms)
- GET /uz/home 200 in 75ms (compile: 29ms, generate-params: 14ms, render: 46ms)
- GET /logo.png 500 in 145ms (compile: 24ms, generate-params: 12ms, render: 121ms)
- GET /uz/donations/1 200 in 1341ms (compile: 1281ms, render: 60ms)
- GET /logo.png 500 in 118ms (compile: 17ms, generate-params: 11ms, render: 101ms)
- GET /logo.png 500 in 520ms (compile: 33ms, generate-params: 24ms, render: 488ms)
- GET /logo.png 500 in 369ms (compile: 7ms, generate-params: 36µs, render: 362ms)
- GET /logo.png 500 in 137ms (compile: 13ms, generate-params: 43µs, render: 124ms)
- GET /uz/donations/3 200 in 223ms (compile: 98ms, render: 125ms)
- GET /logo.png 500 in 163ms (compile: 21ms, generate-params: 12ms, render: 142ms)
- GET /logo.png 500 in 453ms (compile: 43ms, generate-params: 27ms, render: 410ms)
- GET /logo.png 500 in 625ms (compile: 26ms, generate-params: 121µs, render: 599ms)
- GET /logo.png 500 in 474ms (compile: 6ms, generate-params: 45µs, render: 468ms)
- GET /uz/home 200 in 74ms (compile: 12ms, generate-params: 6ms, render: 62ms)
+✓ Ready in 2.5s
+○ Compiling /[locale]/profile ...
+ GET /uz/profile 200 in 7.0s (compile: 6.8s, generate-params: 474ms, render: 189ms)
+ GET /uz/profile 200 in 71ms (compile: 14ms, generate-params: 7ms, render: 56ms)

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
 import "@/styles/global.css";
 import AppProviders from "@/providers/AppProviders";
 import { locales, type Locale } from "@/shared/i18n/config";
@@ -97,12 +98,6 @@ export const metadata: Metadata = {
     images: [OG_IMAGE],
   },
 
-  // ✅ Icons (sizda bor edi — yaxshilab qoldirdim)
-  icons: {
-    icon: [{ url: "/logo.png" }],
-    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
-  },
-
   // ✅ Extra SEO
   applicationName: "Sefir Market",
   creator: "Sefir Market",
@@ -132,7 +127,7 @@ export default async function RootLayout({
   const localeParam = resolvedParams.locale;
 
   if (!isLocale(localeParam)) {
-    throw new Error(`Invalid locale: ${localeParam}`);
+    notFound();
   }
 
   const locale = localeParam;

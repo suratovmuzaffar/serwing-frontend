@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { locales, type Locale } from "@/shared/i18n/config";
 
 function isLocale(l: string): l is Locale {
@@ -16,7 +16,7 @@ export default async function Page({
   const localeParam = resolvedParams.locale;
 
   if (!isLocale(localeParam)) {
-    throw new Error(`Invalid locale: ${localeParam}`);
+    notFound();
   }
 
   redirect(`/${localeParam}/home`);
