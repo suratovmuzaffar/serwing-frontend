@@ -1,0 +1,669 @@
+{
+  "SearchInput": {
+    "placeholder": "Mahsulotlarni qidiring...",
+    "buttonLabel": "Qidirish",
+    "ariaClear": "Qidiruvni tozalash"
+  },
+  "ImageUpload": {
+    "previewAlt": "preview",
+    "removeAria": "O‘chirish",
+    "removeTitle": "O‘chirish",
+    "uploading": "Yuklanmoqda...",
+    "addAria": "Rasm qo‘shish",
+    "addTitle": "Rasm qo‘shish",
+    "addLabel": "Rasm qo‘shish",
+    "formats": "JPG/PNG",
+    "errors": {
+      "pathNotFound": "Path topilmadi",
+      "uploadError": "Yuklashda xatolik",
+      "generic": "Rasm yuklashda xatolik."
+    }
+  },
+  "AdminSidebar": {
+    "title": "Sefir Market Admin",
+    "loading": "Yuklanmoqda...",
+    "home": "Uyga qaytish",
+    "homeAria": "Uyga qaytish",
+    "date": "Sana",
+    "logout": "Chiqish",
+    "ariaOpenSidebar": "Sidebar ochish",
+    "ariaCloseSidebar": "Sidebar yopish",
+    "ariaCloseOverlay": "Overlay yopish",
+    "ariaExpandSidebar": "Sidebar kengaytirish",
+    "ariaCollapseSidebar": "Sidebar yig‘ish"
+  },  "ImageSlider": {
+    "swipeHint": "Surib ko‘ring",
+    "noImage": "Rasm yo‘q"
+  },
+  "AdminNav": {
+    "admins": "Adminlar",
+    "products": "Mahsulotlar",
+    "categories": "Kategoriyalar",
+    "orders": "Buyurtmalar",
+    "nasiyaOrders": "Nasiya buyurtmalar",
+    "banners": "Bannerlar"
+  },
+  "ProductCard": {
+    "unnamed": "Nomsiz",
+    "defaultCategory": "PARFUM",
+    "outOfStock": "Tugagan",
+    "currencyShort": "so‘m",
+    "monthShort": "oy",
+    "plan6": "6 oy",
+    "plan12": "12 oy",
+    "ariaToggleFav": "Sevimliga qo‘shish/o‘chirish",
+    "ariaAddToCart": "Savatga qo‘shish",
+    "ariaDec": "Miqdorni kamaytirish",
+    "ariaInc": "Miqdorni oshirish"
+  },
+  "Footer": {
+    "title": "Sizda savol bormi? Unda bizga murojaat qiling",
+    "infoTitle": "Ma'lumotlar",
+    "phone": "+998 (77) 501 11 27",
+    "phoneAria": "Qo'ng'iroq qilish",
+    "social": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "telegram": "Telegram",
+      "linkedin": "LinkedIn"
+    },
+    "links": {
+      "refund": "To'lovlarni qaytarish siyosati",
+      "offer": "Ommaviy oferta",
+      "privacy": "Maxfiylik siyosati",
+      "paymentSecurity": "To'lov xavfsizligi",
+      "openPickupPoint": "Topshirish punktini ochish"
+    },
+    "copyright": "© 2025 Market | 2025 Sefir Market. Barcha huquqlar himoyalangan.",
+    "madeBy": "Nextin Web Studio tomonidan ishlab chiqilgan"
+  },
+  "Common": {
+    "loading": "Yuklanmoqda..."
+  },
+  "AdminPageLayout": {
+    "filter": "Filter",
+    "filters": "Filterlar",
+    "refresh": "Yangilash",
+    "create": "Yaratish",
+    "new": "Yangi",
+    "close": "Yopish"
+  },
+  "Modal": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "close": "Yopish",
+    "active": "Active",
+    "inactive": "Inactive",
+    "requiredSuffix": "majburiy",
+    "genericError": "Xatolik yuz berdi. Qaytadan urinib ko‘ring.",
+    "selectPlaceholder": "Brantsiz",
+    "removeImage": "Rasmni o‘chirish",
+    "uploadNotConfigured": "Upload sozlanmagan"
+  },
+    "BackButton": {
+      "goBack": "Orqaga qaytish"
+    },
+    "ErrorPage": {
+      "retry": "Qayta urinish",
+      "title": "Xatolik yuz berdi",
+      "description": "Sahifa yuklanishida muammo bo‘ldi. Iltimos, qayta urinib ko‘ring."
+    },
+    "NotFoundPage": {
+      "goBack": "Orqaga qaytish",
+    "goHome": "Bosh sahifaga",
+    "title": "Sahifa topilmadi",
+    "description": "Siz izlayotgan sahifa o‘chirilgan bo‘lishi mumkin, nomi o‘zgargan yoki vaqtincha mavjud emas."
+    
+    },
+    "WishlistPage": {
+      "title": "Wishlist",
+      "empty": "Bo‘sh",
+      "clear": "Tozalash"
+    },
+    "CartPage": {
+      "title": "Savat",
+      "empty": "Savat bo‘sh.",
+      "clear": "Tozalash",
+      "noImage": "Rasm yo‘q",
+      "currency": "so‘m",
+      "orderSummary": "Buyurtma xulosasi",
+      "products": "Mahsulotlar",
+      "total": "Jami",
+      "pay": "To‘lash",
+      "unnamed": "Nomsiz",
+      "incQty": "Soni ko‘paytirish",
+      "decQty": "Soni kamaytirish",
+      "remove": "O‘chirish"
+    },
+    "Banners": {
+      "UpdateModal": {
+        "title": "Banner tahrirlash",
+        "description": "Banner ma’lumotlarini yangilang.",
+        "submit": "Saqlash",
+    
+        "fieldImage": "Banner rasm",
+        "fieldCategory": "Kategoriya",
+        "fieldActive": "Active (true/false)",
+    
+        "categoryPlaceholderLoading": "Kategoriyalar yuklanmoqda...",
+        "categoryPlaceholderError": "Kategoriyalar yuklanmadi",
+        "categoryPlaceholderDefault": "Kategoriya tanlang"
+      },
+      "DeleteModal": {
+        "title": "O‘chirish",
+        "description": "Haqiqatan ham \"{slug}\" bannerini o‘chirmoqchimisiz?",
+        "submit": "O‘chirish",
+        "cancel": "Bekor qilish"
+      },
+      "CreateModal": {
+        "title": "Banner yaratish",
+        "description": "Yangi banner qo‘shing.",
+        "submit": "Saqlash",
+    
+        "fieldImage": "Banner rasm",
+        "fieldCategory": "Kategoriya",
+        "fieldActive": "Active (true/false)",
+    
+        "categoryPlaceholderLoading": "Kategoriyalar yuklanmoqda...",
+        "categoryPlaceholderError": "Kategoriyalar yuklanmadi",
+        "categoryPlaceholderDefault": "Kategoriya tanlang"
+      },
+      "List": {
+        "colIndex": "#",
+        "colImage": "Rasm",
+        "colCategorySlug": "Category slug",
+        "colActive": "Active",
+        "colCreated": "Yaratilgan",
+        "colUpdated": "Yangilangan",
+        "colAction": "Action",
+    
+        "loading": "Yuklanmoqda...",
+        "empty": "Bannerlar topilmadi",
+    
+        "edit": "Tahrirlash",
+        "delete": "O‘chirish",
+    
+        "imageAlt": "banner",
+        "yesIcon": "✅",
+        "noIcon": "❌"
+      },
+      "Page": {
+        "title": "Bannerlar",
+        "description": "Bannerlarni boshqarish va yangi banner yaratish",
+        "badgeLoading": "...",
+        "badgeCount": "{count} ta"
+      }
+    },
+    "Categories": {
+      "CreateModal": {
+        "title": "Kategoriya yaratish",
+        "description": "Yangi kategoriya qo‘shing.",
+        "submit": "Saqlash",
+    
+        "nameUz": "Nomi (UZ)",
+        "nameRu": "Nomi (RU)",
+        "slug": "Slug",
+        "image": "Rasm"
+      },
+      "DeleteModal": {
+        "title": "O‘chirish",
+        "description": "Haqiqatan ham \"{name}\" kategoriyasini o‘chirmoqchimisiz?",
+        "submit": "O‘chirish",
+        "cancel": "Bekor qilish"
+      },
+      "UpdateModal": {
+        "title": "Kategoriyani tahrirlash",
+        "description": "Kategoriya ma’lumotlarini yangilang.",
+        "submit": "Saqlash",
+    
+        "nameUz": "Nomi (UZ)",
+        "nameRu": "Nomi (RU)",
+        "slug": "Slug",
+        "image": "Rasm"
+      },
+      "Page": {
+        "title": "Kategoriyalar",
+        "description": "Kategoriyalarni boshqarish va yangi kategoriya yaratish",
+        "badgeLoading": "...",
+        "badgeCount": "{count} ta"
+      },
+      "List": {
+        "colIndex": "#",
+        "colImage": "Image",
+        "colNameUz": "Name (UZ)",
+        "colNameRu": "Name (RU)",
+        "colSlug": "Slug",
+        "colCreated": "Yaratilgan",
+        "colUpdated": "Yangilangan",
+        "colAction": "Action",
+    
+        "loading": "Yuklanmoqda...",
+        "empty": "Kategoriyalar topilmadi",
+        "edit": "Edit",
+        "delete": "Delete",
+        "imageAlt": "category"
+      }
+    },
+    "FilteredProducts": {
+      "Pagination": {
+        "ariaLabel": "Sahifalash",
+        "prev": "Oldingi",
+        "next": "Keyingi"
+      },
+      "ProductsPage": {
+        "error": "Xatolik bo‘ldi",
+        "currency": "so'm"
+      },
+      "FiltersBar": {
+        "brandTitle": "Brand",
+        "reset": "Tozalash",
+        "apply": "Qo'llash",
+        "all": "Barchasi",
+        "priceTitle": "Narx",
+        "min": "Min",
+        "max": "Max",
+        "minPlaceholder": "0",
+        "maxPlaceholder": "3000000"
+      }
+    },
+    "Orders":{
+      "OrdersPage": {
+        "title": "Buyurtmalar",
+        "description": "Buyurtmalar ro‘yxati",
+        "countSuffix": "ta"
+      },
+      "OrdersList": {
+        "product": "Mahsulot",
+        "price": "Narx",
+        "customer": "Mijoz",
+        "phone": "Telefon",
+        "address": "Manzil",
+        "provider": "Provider",
+        "status": "Status",
+        "date": "Sana",
+        "empty": "Orderlar topilmadi",
+        "currency": "so'm",
+        "noImage": "Rasm yo‘q",
+        "statusPaid": "To‘langan",
+        "statusPending": "Kutilmoqda",
+        "statusFailed": "Bekor qilingan",
+        "statusUnknown": "-"
+      }
+    },
+    "ProductPage": {
+      "loadingError": "Xatolik bo‘ldi",
+      "noImage": "Rasm yo‘q",
+      "unnamed": "Nomsiz",
+      "outOfStock": "Mahsulot tugagan",
+      "buyInstallment":"Bolib tolashga olish",
+      "buyNow":"Sotib olish",
+      
+      "featuresTitle": "Mahsulot xususiyatlari",
+      "brandLabel": "Brend",
+      "categoryLabel": "Kategoriya",
+      "availableLabel": "Mavjud",
+      "yes": "Ha",
+      "no": "Yo‘q",
+      "descriptionLabel": "Tavsif",
+    
+      "installmentLabel": "Muddatli to‘lov:",
+      "priceLabel": "Mahsulot narxi:",
+      "payPlanTitle": "To‘lov usuli",
+      "plan6": "x6 oy",
+      "plan12": "x12 oy",
+      "planFull": "To‘liq to‘lov",
+      "fullPayText": "To‘lov to‘liq amalga oshiriladi",
+      "fullPayLine": "To‘liq to‘lov:",
+      "selected": "Tanlangan",
+      "termLabel": "To‘lov muddati:",
+      "monthlyLabel": "Oylik to‘lov:",
+    
+      "pay": "To‘lash",
+      "addToCart": "Savatga",
+    
+      "accStockTitle": "Mahsulot do‘konda mavjud!",
+      "accStockSubtitle": "Sifat va mavjudlik kafolati",
+      "accStockP1": "Bo‘lib to‘lash imkoniyatlari: Siz mahsulotni 6, 12 oy qilib xarid qilishingiz mumkin.",
+      "accStockP2a": "6 oy",
+      "accStockP2aText": "har oy to‘lov qulay.",
+      "accStockP2b": "12 oy",
+      "accStockP2bText": "oylik to‘lov yanada qulay.",
+    
+      "accWarrantyTitle": "Rasmiy kafolat",
+      "accWarrantySubtitle": "1 yil",
+      "accWarrantyP1": "Ushbu mahsulot rasmiy 1 yillik kafolat bilan ta’minlanadi.",
+      "accWarrantyP2": "Nuqson yuzaga kelsa, bepul servis yoki almashtirish imkoniyati mavjud.",
+    
+      "accDeliveryTitle": "Yetkazib berish xizmati",
+      "accDeliverySubtitle": "O‘zbekiston bo‘ylab bepul",
+      "accDeliveryP1a": "Bepul yetkazib berish:",
+      "accDeliveryP1b": "qo‘shimcha to‘lovsiz manzilingizga yetkazib beramiz.",
+      "accDeliveryP2a": "Tezkor:",
+      "accDeliveryP2b": "buyurtmani qisqa vaqtda yetkazamiz.",
+      "accDeliveryP3a": "Xavfsiz:",
+      "accDeliveryP3b": "mahsulotni zararsiz holatda yetkazib beramiz.",
+    
+      "ariaToggleFav": "Sevimlilarga qo‘shish/olib tashlash",
+      "ariaGoToImage": "Rasmga o‘tish"
+    },
+    "products": {
+      "page": {
+        "title": "Mahsulotlar",
+        "description": "Mahsulotlarni boshqarish",
+        "countSuffix": "ta",
+        "loading": "..."
+      },
+      "updateModal": {
+        "title": "Mahsulotni tahrirlash",
+        "description": "Mahsulot ma’lumotlarini yangilang.",
+        "submit": "Saqlash",
+        "cancel": "Bekor qilish",
+        "brand": {
+          "loading": "Brendlar yuklanmoqda...",
+          "error": "Brendlar yuklanmadi",
+          "placeholder": "Brendsiz"
+        },
+        "fields": {
+          "category": "Kategoriya",
+          "name": "Nomi",
+          "nameUz": "Nomi (UZ)",
+          "nameRu": "Nomi (RU)",
+          "description": "Tavsif",
+          "descriptionUz": "Tavsif (UZ)",
+          "descriptionRu": "Tavsif (RU)",
+          "price": "Narx",
+          "inst6": "Bo‘lib to‘lash 6 oy",
+          "inst12": "Bo‘lib to‘lash 12 oy",
+          "discount": "Chegirma %",
+          "brand": "Brend",
+          "stock": "Ombor",
+          "active": "Faol (true/false)",
+          "images": "Rasmlar"
+        }
+      },
+      "deleteModal": {
+        "title": "O‘chirish",
+        "submit": "O‘chirish",
+        "cancel": "Bekor qilish",
+        "unnamed": "Nomsiz",
+        "description": "Haqiqatan ham \"{name}\" mahsulotini o‘chirmoqchimisiz?"
+      },
+      "createModal": {
+        "title": "Mahsulot yaratish",
+        "description": "Yangi mahsulot qo‘shing.",
+        "submit": "Saqlash",
+        "cancel": "Bekor qilish",
+        "brand": {
+          "loading": "Brendlar yuklanmoqda...",
+          "error": "Brendlar yuklanmadi",
+          "placeholder": "Brendsiz"
+        },
+        "fields": {
+          "category": "Kategoriya",
+          "name": "Nomi",
+          "nameUz": "Nomi (UZ)",
+          "nameRu": "Nomi (RU)",
+          "description": "Tavsif",
+          "descriptionUz": "Tavsif (UZ)",
+          "descriptionRu": "Tavsif (RU)",
+          "price": "Narx",
+          "inst6": "Bo‘lib to‘lash 6 oy",
+          "inst12": "Bo‘lib to‘lash 12 oy",
+          "discount": "Chegirma %",
+          "brand": "Brend",
+          "stock": "Ombor",
+          "active": "Faol (true/false)",
+          "images": "Rasmlar"
+        }
+      },
+      "list": {
+        "loading": "Yuklanmoqda...",
+        "empty": "Mahsulotlar topilmadi",
+        "noImage": "Rasm yo‘q",
+        "unnamed": "Nomsiz",
+        "yes": "✅",
+        "no": "❌",
+        "th": {
+          "index": "#",
+          "image": "Rasm",
+          "name": "Nomi",
+          "brand": "Brend",
+          "price": "Narx",
+          "category": "Kategoriya",
+          "discount": "Chegirma %",
+          "stock": "Ombor",
+          "active": "Faol",
+          "action": "Amallar"
+        },
+        "actions": {
+          "edit": "Tahrirlash",
+          "delete": "O‘chirish"
+        }
+      }
+    },
+    "checkout": {
+      "title": "Buyurtmani rasmiylashtirish",
+      "empty": "Checkout ma’lumotlari topilmadi. /checkout ga query bilan kiring.",
+      "form": {
+        "title": "Ma’lumotlaringiz",
+        "fullName": "Ism, Familiya",
+        "fullNamePlaceholder": "Ismingiz va familiyangiz",
+        "phone": "Telefon raqam",
+        "phonePlaceholder": "+998 90 123 45 67",
+        "region": "Viloyat",
+        "regionPlaceholder": "Viloyatni tanlang",
+        "address": "Manzil",
+        "addressPlaceholder": "tuman, ko‘cha, uy..."
+      },
+      "order": {
+        "title": "Sizning buyurtmangiz",
+        "total": "Jami",
+        "noImage": "Rasm yo‘q",
+        "calculated": "Hisoblangan"
+      },
+      "payment": {
+        "title": "To‘lov usuli",
+        "full": "To‘liq to‘lov",
+        "installment": "Nasiya",
+        "submitOrder": "Buyurtmani yuborish",
+        "submitInstallment": "Arizani yuborish",
+        "provider": {
+          "click": "Click orqali to‘lash",
+          "uzum": "Uzum orqali to‘lash"
+        },
+        "installmentPlan": {
+          "six": "6 oyga",
+          "twelve": "12 oyga",
+          "monthly": "Oylik to‘lov"
+        }
+      },
+      "product": {
+        "defaultTitle": "Mahsulot"
+      }
+    },
+    "nasiyaOrders": {
+      "currency": "so‘m",
+      "months": "oy",
+      "empty": "Nasiya zayavkalar topilmadi",
+      "table": {
+        "product": "Mahsulot",
+        "price": "Narx",
+        "customer": "Mijoz",
+        "phone": "Telefon",
+        "address": "Manzil",
+        "term": "Muddat",
+        "monthly": "Oylik",
+        "status": "Status",
+        "date": "Sana"
+      },
+      "status": {
+        "active": "Active",
+        "pending": "Kutilmoqda",
+        "rejected": "Rad etildi",
+        "closed": "Yopilgan",
+        "unknown": "Noma’lum"
+      },
+      "page": {
+        "title": "Nasiya zayavkalar",
+        "description": "Nasiya buyurtmalar ro‘yxati",
+        "countSuffix": "ta"
+      },
+      "createModal": {
+        "title": "Yangi admin yaratish",
+        "description": "Yangi admin qo‘shish uchun ma’lumotlarni kiriting.",
+        "submit": "Yaratish",
+        "cancel": "Bekor qilish",
+        "fields": {
+          "fullName": {
+            "label": "To‘liq ism",
+            "placeholder": "Masalan: Ali Valiyev"
+          },
+          "username": {
+            "label": "Username",
+            "placeholder": "masalan: ali_admin"
+          },
+          "password": {
+            "label": "Parol",
+            "placeholder": "Yangi parol"
+          }
+        }
+      }
+    },
+    "home": {
+      "productsPage": {
+        "error": "Xatolik bo‘ldi",
+        "empty": "Mahsulotlar topilmadi"
+      },
+      "pagination": {
+        "ariaLabel": "Sahifalash",
+        "previous": "Oldingi",
+        "next": "Keyingi"
+      },
+   
+        "categoriesDropdown": {
+          "loadError": "Categoriyalarni yuklashda xatolik.",
+          "loadingAria": "Categoriyalar yuklanmoqda",
+          "listAria": "Categoriyalar ro‘yxati",
+          "selectCategoryAria": "Kategoriya tanlash: {name}"
+        },
+        "carouselBanner": {
+          "alt": "Banner",
+          "aria": {
+            "carousel": "Banner karusel",
+            "loading": "Banner yuklanmoqda",
+            "open": "Bannerni ochish",
+            "goToSlide": "{n}-slaydga o‘tish"
+          }
+        }
+    
+    },
+    "auth": {
+      "login": {
+        "title": "Kirish",
+        "subtitle": "Hisobingizga kiring va davom ettiring",
+        "submit": "Kirish",
+        "fields": {
+          "username": {
+            "label": "Username",
+            "placeholder": "admin"
+          },
+          "password": {
+            "label": "Parol",
+            "placeholder": "••••••••"
+          }
+        },
+        "aria": {
+          "showPassword": "Parolni ko‘rsatish",
+          "hidePassword": "Parolni yashirish"
+        },
+        "validation": {
+          "usernameRequired": "Username majburiy",
+          "usernameMin": "Kamida {n} ta belgi",
+          "passwordRequired": "Parol majburiy",
+          "passwordMin": "Kamida {n} ta belgi"
+        },
+        "errors": {
+          "network": {
+            "title": "Internet bilan muammo",
+            "message": "Ulanish amalga oshmadi. Internetni tekshirib qayta urinib ko‘ring."
+          },
+          "login": {
+            "title": "Kirishda xatolik",
+            "message": "Xatolik yuz berdi. Qayta urinib ko‘ring."
+          }
+        }
+      },
+      "loginLayout": {
+        "imageAlt": "Atir",
+        "brand": "SEFIR Market",
+        "leftText": {
+          "line1": "Original atirlar va premium kolleksiyalar.",
+          "line2": "Nafosat va ishonch bir joyda."
+        },
+        "leftBadge": "Premium • Original • Tez yetkazib berish",
+        "rightTitle": "Xush kelibsiz!",
+        "rightSubtitle": "Hisobingizga kiring va buyurtmalaringizni davom ettiring.",
+        "copyright": "© {year} SEFIR Market"
+      }
+    },
+    "admins": {
+      "createModal": {
+        "title": "Yangi admin yaratish",
+        "description": "Yangi admin qo‘shish uchun ma’lumotlarni kiriting.",
+        "submit": "Yaratish",
+        "cancel": "Bekor qilish",
+        "fields": {
+          "fullName": {
+            "label": "To‘liq ism",
+            "placeholder": "Masalan: Ali Valiyev"
+          },
+          "username": {
+            "label": "Username",
+            "placeholder": "Masalan: ali_admin"
+          },
+          "password": {
+            "label": "Parol",
+            "placeholder": "Yangi parol"
+          }
+        }
+      },
+      "deleteModal": {
+        "title": "O‘chirish",
+        "description": "Haqiqatan ham \"{name}\" adminini o‘chirmoqchimisiz?",
+        "submit": "O‘chirish",
+        "cancel": "Bekor qilish",
+        "unnamed": "Nomsiz admin"
+      },
+      "updateModal": {
+        "title": "Adminni tahrirlash",
+        "description": "Admin ma’lumotlarini yangilang.",
+        "fullNameLabel": "To‘liq ism",
+        "usernameLabel": "Username",
+        "passwordLabel": "Parol",
+        "passwordPlaceholder": "Yangi parol (ixtiyoriy)",
+        "submit": "Saqlash",
+        "cancel": "Bekor qilish"
+      },
+      "page": {
+        "title": "Adminlar",
+        "description": "Adminlarni boshqarish va yangi admin yaratish",
+        "badgeCount": "{count} ta"
+      },
+      "list": {
+        "th": {
+          "index": "#",
+          "name": "Ism",
+          "username": "Username",
+          "created": "Yaratilgan",
+          "updated": "Yangilangan",
+          "action": "Action"
+        },
+        "loading": "Yuklanmoqda...",
+        "empty": "Adminlar topilmadi",
+        "edit": "Edit",
+        "delete": "Delete",
+        "dash": "-"
+      }
+      
+    }
+}

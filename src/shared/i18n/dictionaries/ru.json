@@ -1,0 +1,669 @@
+{
+  "SearchInput": {
+    "placeholder": "Поиск товаров...",
+    "buttonLabel": "Поиск",
+    "ariaClear": "Очистить поиск"
+  },
+  "ImageUpload": {
+    "previewAlt": "предпросмотр",
+    "removeAria": "Удалить",
+    "removeTitle": "Удалить",
+    "uploading": "Загрузка...",
+    "addAria": "Добавить изображение",
+    "addTitle": "Добавить изображение",
+    "addLabel": "Добавить",
+    "formats": "JPG/PNG",
+    "errors": {
+      "pathNotFound": "Путь не найден",
+      "uploadError": "Ошибка загрузки",
+      "generic": "Ошибка при загрузке изображения."
+    }
+  },
+  "AdminSidebar": {
+    "title": "Sefir Market Admin",
+    "loading": "Загрузка...",
+    "home": "На главную",
+    "homeAria": "Перейти на главную",
+    "date": "Дата",
+    "logout": "Выйти",
+    "ariaOpenSidebar": "Открыть меню",
+    "ariaCloseSidebar": "Закрыть меню",
+    "ariaCloseOverlay": "Закрыть фон",
+    "ariaExpandSidebar": "Развернуть меню",
+    "ariaCollapseSidebar": "Свернуть меню"
+  },
+  "AdminNav": {
+    "admins": "Админы",
+    "products": "Товары",
+    "categories": "Категории",
+    "orders": "Заказы",
+    "nasiyaOrders": "Заказы в рассрочку",
+    "banners": "Баннеры"
+  },
+  "ImageSlider": {
+    "swipeHint": "Листайте",
+    "noImage": "Нет изображения"
+  },
+  "ProductCard": {
+    "unnamed": "Без названия",
+    "defaultCategory": "PARFUM",
+    "outOfStock": "Нет в наличии",
+    "currencyShort": "сум",
+    "monthShort": "мес.",
+    "plan6": "6 мес.",
+    "plan12": "12 мес.",
+    "ariaToggleFav": "Добавить/убрать из избранного",
+    "ariaAddToCart": "Добавить в корзину",
+    "ariaDec": "Уменьшить количество",
+    "ariaInc": "Увеличить количество"
+  },
+  "Footer": {
+    "title": "Есть вопросы? Свяжитесь с нами",
+    "infoTitle": "Информация",
+    "phone": "+998 (77) 501 11 27",
+    "phoneAria": "Позвонить",
+    "social": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "telegram": "Telegram",
+      "linkedin": "LinkedIn"
+    },
+    "links": {
+      "refund": "Политика возврата платежей",
+      "offer": "Публичная оферта",
+      "privacy": "Политика конфиденциальности",
+      "paymentSecurity": "Безопасность платежей",
+      "openPickupPoint": "Открыть пункт выдачи"
+    },
+    "copyright": "© 2025 Market | 2025 Sefir Market. Все права защищены.",
+    "madeBy": "Разработано Nextin Web Studio"
+  },
+  "Common": {
+    "loading": "Загрузка..."
+  },
+  "AdminPageLayout": {
+    "filter": "Фильтр",
+    "filters": "Фильтры",
+    "refresh": "Обновить",
+    "create": "Создать",
+    "new": "Новый",
+    "close": "Закрыть"
+  },
+  "Modal": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "close": "Закрыть",
+    "active": "Активно",
+    "inactive": "Неактивно",
+    "requiredSuffix": "обязательно",
+    "genericError": "Произошла ошибка. Попробуйте еще раз.",
+    "selectPlaceholder": "Без бренда",
+    "removeImage": "Удалить изображение",
+    "uploadNotConfigured": "Загрузка не настроена"
+  },
+  "BackButton": {
+    "goBack": "Назад"
+  },
+  "ErrorPage": {
+    "title": "Произошла ошибка",
+    "description": "Возникла проблема при загрузке страницы. Пожалуйста, попробуйте еще раз.",
+    "retry": "Повторить"
+  },
+  "NotFoundPage": {
+    "goBack": "Назад",
+    "goHome": "На главную",
+    "title": "Страница не найдена",
+    "description": "Страница, которую вы ищете, могла быть удалена, переименована или временно недоступна."
+      
+  },
+  "WishlistPage": {
+    "title": "Избранное",
+    "empty": "Пусто",
+    "clear": "Очистить"
+  },
+  "CartPage": {
+    "title": "Корзина",
+    "empty": "Корзина пуста.",
+    "clear": "Очистить",
+    "noImage": "Нет изображения",
+    "currency": "сум",
+    "orderSummary": "Итог заказа",
+    "products": "Товары",
+    "total": "Итого",
+    "pay": "Оплатить",
+    "unnamed": "Без названия",
+    "incQty": "Увеличить количество",
+    "decQty": "Уменьшить количество",
+    "remove": "Удалить"
+  },
+  "Banners": {
+    "UpdateModal": {
+      "title": "Редактировать баннер",
+      "description": "Обновите данные баннера.",
+      "submit": "Сохранить",
+  
+      "fieldImage": "Изображение баннера",
+      "fieldCategory": "Категория",
+      "fieldActive": "Активен (true/false)",
+  
+      "categoryPlaceholderLoading": "Категории загружаются...",
+      "categoryPlaceholderError": "Категории не загрузились",
+      "categoryPlaceholderDefault": "Выберите категорию"
+    },
+    "DeleteModal": {
+      "title": "Удалить",
+      "description": "Вы действительно хотите удалить баннер \"{slug}\"?",
+      "submit": "Удалить",
+      "cancel": "Отмена"
+    },
+    "CreateModal": {
+      "title": "Создать баннер",
+      "description": "Добавьте новый баннер.",
+      "submit": "Сохранить",
+  
+      "fieldImage": "Изображение баннера",
+      "fieldCategory": "Категория",
+      "fieldActive": "Активен (true/false)",
+  
+      "categoryPlaceholderLoading": "Категории загружаются...",
+      "categoryPlaceholderError": "Категории не загрузились",
+      "categoryPlaceholderDefault": "Выберите категорию"
+    },
+    "List": {
+      "colIndex": "#",
+      "colImage": "Изображение",
+      "colCategorySlug": "Slug категории",
+      "colActive": "Активен",
+      "colCreated": "Создан",
+      "colUpdated": "Обновлён",
+      "colAction": "Действия",
+  
+      "loading": "Загрузка...",
+      "empty": "Баннеры не найдены",
+  
+      "edit": "Редактировать",
+      "delete": "Удалить",
+  
+      "imageAlt": "баннер",
+      "yesIcon": "✅",
+      "noIcon": "❌"
+    },
+    "Page": {
+      "title": "Баннеры",
+      "description": "Управление баннерами и создание новых баннеров",
+      "badgeLoading": "...",
+      "badgeCount": "{count} шт."
+    }
+  },
+  "Categories": {
+    "CreateModal": {
+      "title": "Создать категорию",
+      "description": "Добавьте новую категорию.",
+      "submit": "Сохранить",
+  
+      "nameUz": "Название (UZ)",
+      "nameRu": "Название (RU)",
+      "slug": "Slug",
+      "image": "Изображение"
+    },
+    "DeleteModal": {
+      "title": "Удалить",
+      "description": "Вы действительно хотите удалить категорию \"{name}\"?",
+      "submit": "Удалить",
+      "cancel": "Отмена"
+    },
+    "UpdateModal": {
+      "title": "Редактировать категорию",
+      "description": "Обновите данные категории.",
+      "submit": "Сохранить",
+  
+      "nameUz": "Название (UZ)",
+      "nameRu": "Название (RU)",
+      "slug": "Slug",
+      "image": "Изображение"
+    },
+    "Page": {
+      "title": "Категории",
+      "description": "Управление категориями и создание новой категории",
+      "badgeLoading": "...",
+      "badgeCount": "{count} шт."
+    },
+    "List": {
+      "colIndex": "#",
+      "colImage": "Изображение",
+      "colNameUz": "Название (UZ)",
+      "colNameRu": "Название (RU)",
+      "colSlug": "Slug",
+      "colCreated": "Создано",
+      "colUpdated": "Обновлено",
+      "colAction": "Действия",
+  
+      "loading": "Загрузка...",
+      "empty": "Категории не найдены",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "imageAlt": "категория"
+    }
+  },
+  "FilteredProducts": {
+    "Pagination": {
+      "ariaLabel": "Пагинация",
+      "prev": "Предыдущая",
+      "next": "Следующая"
+    },
+    "ProductsPage": {
+      "error": "Произошла ошибка",
+      "currency": "сум"
+    },
+    "FiltersBar": {
+      "brandTitle": "Бренд",
+      "reset": "Сбросить",
+      "apply": "Применить",
+      "all": "Все",
+      "priceTitle": "Цена",
+      "min": "Мин",
+      "max": "Макс",
+      "minPlaceholder": "0",
+      "maxPlaceholder": "3000000"
+    }
+  },
+  "Orders":{
+    "OrdersPage": {
+      "title": "Заказы",
+      "description": "Список заказов",
+      "countSuffix": "шт"
+    },
+    "OrdersList": {
+      "product": "Товар",
+      "price": "Цена",
+      "customer": "Клиент",
+      "phone": "Телефон",
+      "address": "Адрес",
+      "provider": "Провайдер",
+      "status": "Статус",
+      "date": "Дата",
+      "empty": "Заказы не найдены",
+      "currency": "сум",
+      "noImage": "Нет изображения",
+      "statusPaid": "Оплачено",
+      "statusPending": "В ожидании",
+      "statusFailed": "Отклонено",
+      "statusUnknown": "-"
+    }
+  },
+  "ProductPage": {
+    "loadingError": "Произошла ошибка",
+    "noImage": "Нет изображения",
+    "unnamed": "Без названия",
+    "outOfStock": "Товара нет в наличии",
+    "buyInstallment": "Купить в рассрочку",
+    "buyNow": "Купить",
+    "featuresTitle": "Характеристики товара",
+    "brandLabel": "Бренд",
+    "categoryLabel": "Категория",
+    "availableLabel": "В наличии",
+    "yes": "Да",
+    "no": "Нет",
+    "descriptionLabel": "Описание",
+  
+    "installmentLabel": "Рассрочка:",
+    "priceLabel": "Цена товара:",
+    "payPlanTitle": "Способ оплаты",
+    "plan6": "×6 мес.",
+    "plan12": "×12 мес.",
+    "planFull": "Полная оплата",
+    "fullPayText": "Оплата будет выполнена полностью",
+    "fullPayLine": "Полная оплата:",
+    "selected": "Выбрано",
+    "termLabel": "Срок оплаты:",
+    "monthlyLabel": "Ежемесячный платёж:",
+  
+    "pay": "Оплатить",
+    "addToCart": "В корзину",
+  
+    "accStockTitle": "Товар есть в магазине!",
+    "accStockSubtitle": "Гарантия качества и наличия",
+    "accStockP1": "Возможность рассрочки: вы можете купить товар на 6 или 12 месяцев.",
+    "accStockP2a": "6 месяцев",
+    "accStockP2aText": "удобный ежемесячный платёж.",
+    "accStockP2b": "12 месяцев",
+    "accStockP2bText": "ещё более выгодный ежемесячный платёж.",
+  
+    "accWarrantyTitle": "Официальная гарантия",
+    "accWarrantySubtitle": "1 год",
+    "accWarrantyP1": "На этот товар предоставляется официальная гарантия 1 год.",
+    "accWarrantyP2": "В случае дефекта доступен бесплатный сервис или замена.",
+  
+    "accDeliveryTitle": "Доставка",
+    "accDeliverySubtitle": "Бесплатно по Узбекистану",
+    "accDeliveryP1a": "Бесплатная доставка:",
+    "accDeliveryP1b": "доставим по вашему адресу без доплат.",
+    "accDeliveryP2a": "Быстро:",
+    "accDeliveryP2b": "доставим заказ в кратчайшие сроки.",
+    "accDeliveryP3a": "Безопасно:",
+    "accDeliveryP3b": "доставим товар в целости и сохранности.",
+  
+    "ariaToggleFav": "Добавить/убрать из избранного",
+    "ariaGoToImage": "Перейти к изображению"
+  },
+  "products": {
+    "page": {
+      "title": "Товары",
+      "description": "Управление товарами",
+      "countSuffix": "шт.",
+      "loading": "..."
+    },
+    "updateModal": {
+      "title": "Редактировать товар",
+      "description": "Обновите данные товара.",
+      "submit": "Сохранить",
+      "cancel": "Отмена",
+      "brand": {
+        "loading": "Бренды загружаются...",
+        "error": "Бренды не загрузились",
+        "placeholder": "Без бренда"
+      },
+      "fields": {
+        "category": "Категория",
+        "name": "Название",
+        "nameUz": "Название (UZ)",
+        "nameRu": "Название (RU)",
+        "description": "Описание",
+        "descriptionUz": "Описание (UZ)",
+        "descriptionRu": "Описание (RU)",
+        "price": "Цена",
+        "inst6": "Рассрочка 6 месяцев",
+        "inst12": "Рассрочка 12 месяцев",
+        "discount": "Скидка %",
+        "brand": "Бренд",
+        "stock": "Склад",
+        "active": "Активно (true/false)",
+        "images": "Изображения"
+      }
+    },
+    "deleteModal": {
+      "title": "Удалить",
+      "submit": "Удалить",
+      "cancel": "Отмена",
+      "unnamed": "Без названия",
+      "description": "Вы действительно хотите удалить товар \"{name}\"?"
+    },
+    "createModal": {
+      "title": "Создать товар",
+      "description": "Добавьте новый товар.",
+      "submit": "Сохранить",
+      "cancel": "Отмена",
+      "brand": {
+        "loading": "Бренды загружаются...",
+        "error": "Бренды не загрузились",
+        "placeholder": "Без бренда"
+      },
+      "fields": {
+        "category": "Категория",
+        "name": "Название",
+        "nameUz": "Название (UZ)",
+        "nameRu": "Название (RU)",
+        "description": "Описание",
+        "descriptionUz": "Описание (UZ)",
+        "descriptionRu": "Описание (RU)",
+        "price": "Цена",
+        "inst6": "Рассрочка 6 месяцев",
+        "inst12": "Рассрочка 12 месяцев",
+        "discount": "Скидка %",
+        "brand": "Бренд",
+        "stock": "Склад",
+        "active": "Активно (true/false)",
+        "images": "Изображения"
+      }
+    },
+    "list": {
+      "loading": "Загрузка...",
+      "empty": "Товары не найдены",
+      "noImage": "Нет изображения",
+      "unnamed": "Без названия",
+      "yes": "✅",
+      "no": "❌",
+      "th": {
+        "index": "#",
+        "image": "Фото",
+        "name": "Название",
+        "brand": "Бренд",
+        "price": "Цена",
+        "category": "Категория",
+        "discount": "Скидка %",
+        "stock": "Склад",
+        "active": "Активно",
+        "action": "Действия"
+      },
+      "actions": {
+        "edit": "Редактировать",
+        "delete": "Удалить"
+      }
+    }
+  },
+  "checkout": {
+    "title": "Оформление заказа",
+    "empty": "Данные для оформления заказа не найдены. Перейдите на /checkout с параметрами запроса.",
+    "form": {
+      "title": "Ваши данные",
+      "fullName": "Имя и фамилия",
+      "fullNamePlaceholder": "Введите имя и фамилию",
+      "phone": "Номер телефона",
+      "phonePlaceholder": "+998 90 123 45 67",
+      "region": "Область",
+      "regionPlaceholder": "Выберите область",
+      "address": "Адрес",
+      "addressPlaceholder": "район, улица, дом..."
+    },
+    "order": {
+      "title": "Ваш заказ",
+      "total": "Итого",
+      "noImage": "Нет изображения",
+      "calculated": "Рассчитано"
+    },
+    "payment": {
+      "title": "Способ оплаты",
+      "full": "Полная оплата",
+      "installment": "Рассрочка",
+      "submitOrder": "Отправить заказ",
+      "submitInstallment": "Отправить заявку",
+      "provider": {
+        "click": "Оплатить через Click",
+        "uzum": "Оплатить через Uzum"
+      },
+      "installmentPlan": {
+        "six": "На 6 месяцев",
+        "twelve": "На 12 месяцев",
+        "monthly": "Ежемесячный платеж"
+      }
+    },
+    "product": {
+      "defaultTitle": "Товар"
+    }
+  },
+    "nasiyaOrders": {
+    "currency": "сум",
+    "months": "мес",
+    "empty": "Заявки на рассрочку не найдены",
+    "table": {
+      "product": "Товар",
+      "price": "Цена",
+      "customer": "Клиент",
+      "phone": "Телефон",
+      "address": "Адрес",
+      "term": "Срок",
+      "monthly": "Ежемесячно",
+      "status": "Статус",
+      "date": "Дата"
+    },
+    "status": {
+      "active": "Активно",
+      "pending": "Ожидает",
+      "rejected": "Отклонено",
+      "closed": "Закрыто",
+      "unknown": "Неизвестно"
+    },
+    "page": {
+      "title": "Nasiya zayavkalar",
+      "description": "Nasiya buyurtmalar ro‘yxati",
+      "countSuffix": "ta"
+    },
+    "createModal": {
+      "title": "Создать нового администратора",
+      "description": "Введите данные, чтобы добавить нового администратора.",
+      "submit": "Создать",
+      "cancel": "Отмена",
+      "fields": {
+        "fullName": {
+          "label": "Полное имя",
+          "placeholder": "Например: Ali Valiyev"
+        },
+        "username": {
+          "label": "Имя пользователя",
+          "placeholder": "например: ali_admin"
+        },
+        "password": {
+          "label": "Пароль",
+          "placeholder": "Новый пароль"
+        }
+      }
+    }
+  },
+  "home": {
+    "productsPage": {
+      "error": "Произошла ошибка",
+      "empty": "Товары не найдены"
+    },
+    "pagination": {
+      "ariaLabel": "Пагинация",
+      "previous": "Назад",
+      "next": "Далее"
+    },
+    
+      "categoriesDropdown": {
+        "loadError": "Ошибка при загрузке категорий.",
+        "loadingAria": "Категории загружаются",
+        "listAria": "Список категорий",
+        "selectCategoryAria": "Выбрать категорию: {name}"
+      },
+      "carouselBanner": {
+        "alt": "Баннер",
+        "aria": {
+          "carousel": "Карусель баннеров",
+          "loading": "Загрузка баннера",
+          "open": "Открыть баннер",
+          "goToSlide": "Перейти к слайду {n}"
+        }
+      }
+  
+  },
+  "auth": {
+    "login": {
+      "title": "Вход",
+      "subtitle": "Войдите в аккаунт и продолжайте",
+      "submit": "Войти",
+      "fields": {
+        "username": {
+          "label": "Имя пользователя",
+          "placeholder": "admin"
+        },
+        "password": {
+          "label": "Пароль",
+          "placeholder": "••••••••"
+        }
+      },
+      "aria": {
+        "showPassword": "Показать пароль",
+        "hidePassword": "Скрыть пароль"
+      },
+      "validation": {
+        "usernameRequired": "Имя пользователя обязательно",
+        "usernameMin": "Минимум {n} символа",
+        "passwordRequired": "Пароль обязателен",
+        "passwordMin": "Минимум {n} символа"
+      },
+      "errors": {
+        "network": {
+          "title": "Проблема с интернетом",
+          "message": "Не удалось подключиться. Проверьте интернет и попробуйте снова."
+        },
+        "login": {
+          "title": "Ошибка входа",
+          "message": "Произошла ошибка. Попробуйте снова."
+        }
+      }
+    },
+    "loginLayout": {
+      "imageAlt": "Парфюм",
+      "brand": "SEFIR Market",
+      "leftText": {
+        "line1": "Оригинальные ароматы и премиальные коллекции.",
+        "line2": "Элегантность и доверие — в одном месте."
+      },
+      "leftBadge": "Премиум • Оригинал • Быстрая доставка",
+      "rightTitle": "Добро пожаловать!",
+      "rightSubtitle": "Войдите в аккаунт и продолжайте оформление заказов.",
+      "copyright": "© {year} SEFIR Market"
+    }
+  },
+  "admins": {
+    "createModal": {
+      "title": "Создать нового администратора",
+      "description": "Введите данные, чтобы добавить нового администратора.",
+      "submit": "Создать",
+      "cancel": "Отмена",
+      "fields": {
+        "fullName": {
+          "label": "Полное имя",
+          "placeholder": "Например: Ali Valiyev"
+        },
+        "username": {
+          "label": "Username",
+          "placeholder": "Например: ali_admin"
+        },
+        "password": {
+          "label": "Пароль",
+          "placeholder": "Новый пароль"
+        }
+      }
+    },
+    "deleteModal": {
+      "title": "O‘chirish",
+      "description": "Haqiqatan ham \"{name}\" adminini o‘chirmoqchimisiz?",
+      "submit": "O‘chirish",
+      "cancel": "Bekor qilish",
+      "unnamed": "Nomsiz admin"
+    },
+    "updateModal": {
+      "title": "Редактировать администратора",
+      "description": "Обновите данные администратора.",
+      "fullNameLabel": "Полное имя",
+      "usernameLabel": "Username",
+      "passwordLabel": "Пароль",
+      "passwordPlaceholder": "Новый пароль (необязательно)",
+      "submit": "Сохранить",
+      "cancel": "Отмена"
+    },
+    "page": {
+      "title": "Администраторы",
+      "description": "Управление администраторами и создание нового администратора",
+      "badgeCount": "{count} шт."
+    },
+    "list": {
+      "th": {
+        "index": "#",
+        "name": "Имя",
+        "username": "Username",
+        "created": "Создано",
+        "updated": "Обновлено",
+        "action": "Действия"
+      },
+      "loading": "Загрузка...",
+      "empty": "Администраторы не найдены",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "dash": "-"
+    }
+  }
+
+}

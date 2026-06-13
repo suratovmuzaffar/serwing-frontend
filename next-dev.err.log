@@ -1,0 +1,418 @@
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
+⨯ Error: Invalid locale: logo.png
+    at RootLayout (src\app\[locale]\layout.tsx:135:11)
+  133 |
+  134 |   if (!isLocale(localeParam)) {
+> 135 |     throw new Error(`Invalid locale: ${localeParam}`);
+      |           ^
+  136 |   }
+  137 |
+  138 |   const locale = localeParam; {
+  digest: '957583540'
+}
+⨯ Error: Invalid locale: logo.png
+    at Page (src\app\[locale]\page.tsx:19:11)
+  17 |
+  18 |   if (!isLocale(localeParam)) {
+> 19 |     throw new Error(`Invalid locale: ${localeParam}`);
+     |           ^
+  20 |   }
+  21 |
+  22 |   redirect(`/${localeParam}/home`); {
+  digest: '701601377'
+}
