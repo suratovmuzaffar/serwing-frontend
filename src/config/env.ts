@@ -4,4 +4,6 @@ export const ENV = {
   NODE_ENV: process.env.NODE_ENV,
   API_BASE_URL:
     process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000",
+  TELEGRAM_BOT_USERNAME:
+    process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "serwing_bot",
 } as const;

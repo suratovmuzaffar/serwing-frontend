@@ -4,26 +4,22 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
+import { telegramLoginApi } from "@/features/auth/api";
+import { setMe } from "@/features/auth/slice";
+import { getTelegramInitData, initTelegramWebApp } from "@/features/auth/services/telegram";
+import { tokenStore } from "@/lib/tokenStore";
+import { useAppDispatch } from "@/store/hooks";
+import { ENV } from "@/config/env";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: {
-        initData?: string;
-        ready?: () => void;
-      };
-    };
-  }
-}
-
-const BOT_USERNAME = "serwing_bot";
 
 export function LoginForm() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const [error, setError] = useState("");
   const [isInsideTelegram, setIsInsideTelegram] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,8 +30,8 @@ export function LoginForm() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    window.Telegram?.WebApp?.ready?.();
-    const initData = window.Telegram?.WebApp?.initData ?? "";
+    initTelegramWebApp();
+    const initData = getTelegramInitData();
     setIsInsideTelegram(!!initData);
 
     if (initData && !autoLoginTriggered.current) {
@@ -47,10 +43,11 @@ export function LoginForm() {
 
   async function doAutoLogin(initData: string) {
     try {
-      void initData;
       setLoading(true);
-      // Simulate login
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const result = await telegramLoginApi(initData);
+      tokenStore.setTokens(result.token, result.refreshToken);
+      dispatch(setMe(result.user));
+      queryClient.setQueryData(["auth-me"], result.user);
       router.push(withLocale(locale, "/profile"));
     } catch (err) {
       setError(
@@ -69,13 +66,12 @@ export function LoginForm() {
     if (typeof window === "undefined") return;
 
     if (isInsideTelegram) {
-      const initData = window.Telegram?.WebApp?.initData ?? "";
+      const initData = getTelegramInitData();
       if (initData) {
         await doAutoLogin(initData);
       }
     } else {
-      const appUrl = encodeURIComponent(window.location.origin);
-      window.open(`https://t.me/${BOT_USERNAME}?startapp=${appUrl}`, "_blank");
+      window.location.href = `https://t.me/${ENV.TELEGRAM_BOT_USERNAME}?start=login`;
     }
   }
 

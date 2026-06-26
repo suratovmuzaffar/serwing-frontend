@@ -24,6 +24,15 @@ export async function fetchMe(): Promise<AuthUser> {
   const { data } = await http.get<MeResponse>("/users/me");
   return "user" in data ? data.user : data;
 }
+
+export async function updateMeApi(payload: {
+  telegramName?: string;
+  telegramPhotoUrl?: string;
+}): Promise<AuthUser> {
+  const { data } = await http.patch<MeResponse>("/users/me", payload);
+  return "user" in data ? data.user : data;
+}
+
 export async function logoutApi(): Promise<AuthUser> {
   const { data } = await http.get<MeResponse>("/users/me");
   return "user" in data ? data.user : data;

@@ -9,55 +9,71 @@ import {
   Clock,
   Coins,
   Gift,
+  Loader2,
   LogOut,
-  Mail,
   Package,
-  Phone,
+  Save,
+  Send,
   Settings,
   Star,
-  Send,
-  type LucideIcon,
+  X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { telegramLoginApi, updateMeApi } from "@/features/auth/api";
+import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
+import { useLogout } from "@/features/auth/hooks/useLogout";
+import { setMe } from "@/features/auth/slice";
+import {
+  getTelegramInitData,
+  initTelegramWebApp,
+} from "@/features/auth/services/telegram";
+import type { AuthUser } from "@/features/auth/types";
 import { listings } from "@/lib/data";
+import { tokenStore } from "@/lib/tokenStore";
+import { useAppDispatch } from "@/store/hooks";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
-interface User {
+function Avatar({
+  name,
+  photoUrl,
+  size = "lg",
+}: {
   name: string;
-  email: string;
-  telegramUsername?: string;
-  rating: number;
+  photoUrl?: string | null;
+  size?: "sm" | "lg";
+}) {
+  const className =
+    size === "lg"
+      ? "h-16 w-16 text-2xl"
+      : "h-11 w-11 text-sm";
+  const initial = (name || "U").charAt(0).toUpperCase();
+
+  if (photoUrl) {
+    return (
+      <div
+        className={`${className} shrink-0 rounded-full bg-cover bg-center`}
+        style={{ backgroundImage: `url("${photoUrl}")` }}
+        aria-label={name}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={`${className} flex shrink-0 items-center justify-center rounded-full bg-gradient-primary font-bold text-primary-foreground`}
+    >
+      {initial}
+    </div>
+  );
 }
 
-function AccountMethodComponent({
-  icon: Icon,
-  label,
-  value,
-  verified,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  verified: boolean;
-}) {
+function getDisplayName(user: AuthUser) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-secondary px-3 py-2.5">
-      <Icon className="h-4 w-4 text-primary" />
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">{label}</p>
-        <p className="truncate text-xs text-muted-foreground">{value}</p>
-      </div>
-      <span
-        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-          verified
-            ? "bg-success/20 text-success"
-            : "bg-muted text-muted-foreground"
-        }`}
-      >
-        {verified ? "Tasdiqlangan" : "Kutilmoqda"}
-      </span>
-    </div>
+    user.telegramName ||
+    user.telegramUsername ||
+    (user.telegramId ? `Telegram ${user.telegramId}` : "Foydalanuvchi")
   );
 }
 
@@ -66,7 +82,7 @@ function Stat({
   label,
   value,
 }: {
-  icon: LucideIcon;
+  icon: typeof Package;
   label: string;
   value: string;
 }) {
@@ -83,70 +99,209 @@ export function ProfilePage() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
-  const [user] = useState<User>({
-    name: "Ahmed",
-    email: "ahmed@example.com",
-    telegramUsername: "ahmed_coc",
-    rating: 4.9,
-  });
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
+  const logout = useLogout();
+  const [hasToken, setHasToken] = useState(false);
+  const [autoLoginLoading, setAutoLoginLoading] = useState(true);
+  const [authError, setAuthError] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ telegramName: "", telegramPhotoUrl: "" });
   const [points] = useState(5);
-  const [referralCode] = useState("AHMED123");
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    initTelegramWebApp();
+    const existingToken = tokenStore.getAccessToken();
+    if (existingToken) {
+      setHasToken(true);
+      setAutoLoginLoading(false);
+      return;
+    }
+
+    const initData = getTelegramInitData();
+    if (!initData) {
+      setAutoLoginLoading(false);
+      router.replace(withLocale(locale, "/login"));
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loginFromTelegram() {
+      try {
+        const result = await telegramLoginApi(initData);
+        if (cancelled) return;
+
+        tokenStore.setTokens(result.token, result.refreshToken);
+        dispatch(setMe(result.user));
+        queryClient.setQueryData(["auth-me"], result.user);
+        setHasToken(true);
+      } catch (err) {
+        if (cancelled) return;
+        setAuthError(
+          err instanceof Error
+            ? err.message
+            : "Telegram orqali kirishda xatolik yuz berdi"
+        );
+        router.replace(withLocale(locale, "/login"));
+      } finally {
+        if (!cancelled) setAutoLoginLoading(false);
+      }
+    }
+
+    void loginFromTelegram();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, locale, queryClient, router]);
+
+  const meQuery = useAuthMe(hasToken);
+  const user = meQuery.data;
+
+  useEffect(() => {
+    if (meQuery.isError && !autoLoginLoading) {
+      tokenStore.clear();
+      router.replace(withLocale(locale, "/login"));
+    }
+  }, [autoLoginLoading, locale, meQuery.isError, router]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    setForm({
+      telegramName: user.telegramName ?? "",
+      telegramPhotoUrl: user.telegramPhotoUrl ?? "",
+    });
+  }, [user]);
+
+  const updateProfile = useMutation({
+    mutationFn: updateMeApi,
+    onSuccess: (updatedUser) => {
+      dispatch(setMe(updatedUser));
+      queryClient.setQueryData(["auth-me"], updatedUser);
+      setEditing(false);
+    },
+  });
+
+  const displayName = useMemo(
+    () => (user ? getDisplayName(user) : "Foydalanuvchi"),
+    [user]
+  );
+  const referralCode = user?.telegramId ? `TG${user.telegramId}` : "SERWING";
   const myListings = listings.slice(0, 2);
-  const displayName = user.name || "Foydalanuvchi";
-  const initial = displayName.charAt(0).toUpperCase();
 
   function handleLogout() {
-    router.push(withLocale(locale, "/home"));
+    logout.mutate(undefined, {
+      onSettled: () => router.replace(withLocale(locale, "/login")),
+    });
+  }
+
+  if (autoLoginLoading || (hasToken && meQuery.isLoading)) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="px-4 pt-10 text-center text-sm text-muted-foreground">
+        {authError || "Profil yuklanmoqda..."}
+      </div>
+    );
   }
 
   return (
     <div className="px-4 pt-6">
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-primary text-2xl font-bold text-primary-foreground">
-            {initial}
-          </div>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold">{displayName}</h1>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
+          <Avatar name={displayName} photoUrl={user.telegramPhotoUrl} />
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-lg font-bold">{displayName}</h1>
+            <p className="truncate text-sm text-muted-foreground">
+              {user.email || (user.telegramUsername ? `@${user.telegramUsername}` : `ID ${user.telegramId}`)}
+            </p>
             <div className="mt-1 flex items-center gap-1 text-xs text-warning">
-              <Star className="h-3 w-3 fill-warning" /> {user.rating} reyting
+              <Star className="h-3 w-3 fill-warning" /> 4.9 reyting
             </div>
           </div>
           <button
             type="button"
+            onClick={() => setEditing((value) => !value)}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary"
-            aria-label="Sozlamalar"
+            aria-label="Profilni tahrirlash"
           >
-            <Settings className="h-4 w-4" />
+            {editing ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
           </button>
         </div>
+
+        {editing && (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              updateProfile.mutate({
+                telegramName: form.telegramName,
+                telegramPhotoUrl: form.telegramPhotoUrl,
+              });
+            }}
+            className="mt-5 space-y-3 border-t border-border pt-4"
+          >
+            <input
+              value={form.telegramName}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  telegramName: event.target.value,
+                }))
+              }
+              placeholder="Ism familiya"
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+            />
+            <input
+              value={form.telegramPhotoUrl}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  telegramPhotoUrl: event.target.value,
+                }))
+              }
+              placeholder="Rasm URL"
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+            />
+            <button
+              type="submit"
+              disabled={updateProfile.isPending}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-70"
+            >
+              {updateProfile.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              Saqlash
+            </button>
+          </form>
+        )}
       </div>
 
       <div className="mt-4 rounded-2xl border border-border bg-card p-4">
         <h2 className="text-sm font-semibold">Kirish usullari</h2>
-        <div className="mt-3 space-y-2">
-          <AccountMethodComponent
-            icon={Send}
-            label="Telegram"
-            value={
-              user.telegramUsername ? `@${user.telegramUsername}` : "Ulanmagan"
-            }
-            verified={!!user.telegramUsername}
-          />
-          <AccountMethodComponent
-            icon={Mail}
-            label="Email"
-            value={user.email}
-            verified
-          />
-          <AccountMethodComponent
-            icon={Phone}
-            label="Telefon"
-            value="Keyinroq ulanadi"
-            verified={false}
-          />
+        <div className="mt-3 flex items-center gap-3 rounded-xl bg-secondary px-3 py-2.5">
+          <Send className="h-4 w-4 text-primary" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">Telegram</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {user.telegramId ? `ID ${user.telegramId}` : "Ulanmagan"}
+            </p>
+          </div>
+          <span className="rounded-full bg-success/20 px-2 py-0.5 text-[10px] font-semibold text-success">
+            Tasdiqlangan
+          </span>
+          <Avatar name={displayName} photoUrl={user.telegramPhotoUrl} size="sm" />
         </div>
       </div>
 

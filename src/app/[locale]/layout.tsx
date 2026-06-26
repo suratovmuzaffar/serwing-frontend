@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import "@/styles/global.css";
 import AppProviders from "@/providers/AppProviders";
 import { locales, type Locale } from "@/shared/i18n/config";
@@ -132,6 +133,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body>
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
         <AppProviders locale={locale} dictionary={dictionary}>
           {children}
         </AppProviders>
