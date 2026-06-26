@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+type ClientDiagnostics = {
+  href: string;
+  userAgent: string;
+  platform: string;
+  telegramWebApp: boolean;
+};
 
 export default function Error({
   error,
@@ -9,12 +16,40 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [diagnostics] = useState<ClientDiagnostics | null>(() => {
+    if (typeof window === "undefined") return null;
+
+    return {
+      href: window.location.href,
+      userAgent: window.navigator.userAgent,
+      platform: window.navigator.platform,
+      telegramWebApp: Boolean(window.Telegram?.WebApp),
+    };
+  });
+
   useEffect(() => {
     console.error(error);
   }, [error]);
 
+  const errorDetails = useMemo(
+    () =>
+      [
+        `name: ${error.name || "Error"}`,
+        `message: ${error.message || "No error message"}`,
+        error.digest ? `digest: ${error.digest}` : null,
+        diagnostics?.href ? `url: ${diagnostics.href}` : null,
+        diagnostics?.platform ? `platform: ${diagnostics.platform}` : null,
+        diagnostics ? `telegramWebApp: ${diagnostics.telegramWebApp}` : null,
+        diagnostics?.userAgent ? `userAgent: ${diagnostics.userAgent}` : null,
+        error.stack ? `stack:\n${error.stack}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n\n"),
+    [diagnostics, error]
+  );
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
       <div className="w-full max-w-md text-center">
         <h1 className="text-3xl font-bold text-foreground">Xatolik yuz berdi</h1>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -38,11 +73,12 @@ export default function Error({
           </button>
         </div>
 
-        {process.env.NODE_ENV === "development" && (
-          <pre className="mt-6 max-h-[180px] overflow-auto rounded-lg bg-black/[0.04] p-4 text-left text-xs text-black/60">
-            {error.message}
+        <div className="mt-6 rounded-xl border border-border bg-card p-3 text-left">
+          <p className="text-xs font-semibold text-foreground">Xato tafsiloti</p>
+          <pre className="mt-2 max-h-[320px] whitespace-pre-wrap break-words overflow-auto rounded-lg bg-black/[0.04] p-3 text-[11px] leading-5 text-foreground/80">
+            {errorDetails}
           </pre>
-        )}
+        </div>
       </div>
     </div>
   );
