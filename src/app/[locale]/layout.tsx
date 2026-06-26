@@ -1,13 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import "@/styles/global.css";
 import AppProviders from "@/providers/AppProviders";
 import { locales, type Locale } from "@/shared/i18n/config";
 import { getDictionary } from "@/shared/i18n/getDictionary";
-
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 // ✅ (SEO) asosiy domain (https bo‘lishi kerak)
 const SITE_URL = "https://sefirmarket.uz";
@@ -121,7 +117,7 @@ export default async function RootLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: LayoutParams | Promise<LayoutParams>;
+  params: Promise<LayoutParams>;
 }) {
   const resolvedParams = await params;
   const localeParam = resolvedParams.locale;
@@ -135,7 +131,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body>
         <AppProviders locale={locale} dictionary={dictionary}>
           {children}
         </AppProviders>

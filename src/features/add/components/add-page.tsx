@@ -6,13 +6,9 @@ import { usePathname } from "next/navigation";
 import { Check, Coins, Upload } from "lucide-react";
 
 import { categories } from "@/lib/data";
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 const LISTING_POINT_COST = 1;
-
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
-}
 
 function Field({
   label,
@@ -33,7 +29,7 @@ function Field({
 
 export function AddPage() {
   const pathname = usePathname();
-  const locale = getLocale(pathname);
+  const locale = getLocaleFromPath(pathname);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [game, setGame] = useState(categories[0]?.id ?? "coc");
@@ -186,7 +182,7 @@ export function AddPage() {
         </button>
 
         <Link
-          href={`/${locale}/home`}
+          href={withLocale(locale, "/home")}
           className="block text-center text-xs text-muted-foreground"
         >
           Bosh sahifaga qaytish

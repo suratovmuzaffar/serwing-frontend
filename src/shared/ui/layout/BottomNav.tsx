@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Grid3x3, Heart, Home, PlusCircle, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 const tabs = [
   { path: "/home", icon: Home, label: "Asosiy" },
@@ -14,21 +15,16 @@ const tabs = [
   { path: "/profile", icon: User, label: "Profil" },
 ];
 
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
-}
-
 export function BottomNav() {
   const pathname = usePathname();
-  const locale = getLocale(pathname);
+  const locale = getLocaleFromPath(pathname);
 
   return (
     <div className="fixed bottom-4 left-1/2 z-50 w-full max-w-[390px] -translate-x-1/2 px-4 pb-[env(safe-area-inset-bottom)]">
       <nav className="mx-auto w-max rounded-3xl border border-white/10 bg-background/70 shadow-2xl backdrop-blur-2xl">
         <div className="flex items-center gap-1 px-2 py-2">
           {tabs.map(({ path, icon: Icon, label }) => {
-            const href = `/${locale}${path}`;
+            const href = withLocale(locale, path);
             const active =
               path === "/home"
                 ? pathname === `/${locale}` || pathname === href

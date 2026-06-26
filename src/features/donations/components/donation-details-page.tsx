@@ -5,11 +5,7 @@ import { usePathname } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
 import { donations, type Category } from "@/lib/data";
-
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
-}
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function DonationDetailsPage({
   id,
@@ -19,13 +15,13 @@ export function DonationDetailsPage({
   category: Category;
 }) {
   const pathname = usePathname();
-  const locale = getLocale(pathname);
+  const locale = getLocaleFromPath(pathname);
   const items = donations.filter((donation) => donation.gameId === id);
 
   return (
     <div className="px-4 pt-6">
       <Link
-        href={`/${locale}/donations`}
+        href={withLocale(locale, "/donations")}
         className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card"
         aria-label="Ortga"
       >
@@ -73,7 +69,7 @@ export function DonationDetailsPage({
           <div className="rounded-2xl border border-dashed border-border bg-card p-5 text-center">
             <p className="text-sm font-semibold">Tez orada</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Bu o'yin uchun donat va yangiliklar qo'shiladi.
+              Bu o&apos;yin uchun donat va yangiliklar qo&apos;shiladi.
             </p>
           </div>
         )}

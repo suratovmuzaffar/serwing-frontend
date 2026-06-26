@@ -4,49 +4,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { BadgeCheck, Heart } from "lucide-react";
-import { useState } from "react";
 
+import { useFavorites } from "@/features/favorites/services/favorites";
 import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
-
-const FAVORITES_KEY = "gm-favorites";
-
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
-}
-
-function readFavorites() {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const value = window.localStorage.getItem(FAVORITES_KEY);
-    return value ? (JSON.parse(value) as string[]) : [];
-  } catch {
-    return [];
-  }
-}
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function ListingCard({ item, index = 0 }: { item: Listing; index?: number }) {
   const pathname = usePathname();
-  const locale = getLocale(pathname);
-  const [favoriteIds, setFavoriteIds] = useState<string[]>(() => readFavorites());
-  const fav = favoriteIds.includes(item.id);
-
-  function toggleFavorite() {
-    setFavoriteIds((current) => {
-      const next = current.includes(item.id)
-        ? current.filter((id) => id !== item.id)
-        : [...current, item.id];
-
-      window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
-      return next;
-    });
-  }
+  const locale = getLocaleFromPath(pathname);
+  const { has, toggle } = useFavorites();
+  const fav = has(item.id);
 
   return (
     <Link
-      href={`/${locale}/donations/${item.id}`}
+      href={withLocale(locale, `/donations/${item.id}`)}
       className="group relative block animate-float-up overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
       style={{ animationDelay: `${index * 40}ms` }}
     >
@@ -69,7 +41,8 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
           type="button"
           onClick={(event) => {
             event.preventDefault();
-            toggleFavorite();
+            event.stopPropagation();
+            toggle(item.id);
           }}
           className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-foreground transition-colors hover:bg-white"
           aria-label="Saqlash"

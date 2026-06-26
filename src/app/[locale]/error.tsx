@@ -10,7 +10,6 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // eslint-disable-next-line no-console
     console.error(error);
   }, [error]);
 
@@ -19,7 +18,7 @@ export default function Error({
       <div className="w-full max-w-md text-center">
         <h1 className="text-3xl font-bold text-foreground">Xatolik yuz berdi</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Sahifa yuklanishida muammo bo'ldi. Iltimos, qayta urinib ko'ring.
+          Sahifa yuklanishida muammo bo&apos;ldi. Iltimos, qayta urinib ko&apos;ring.
         </p>
 
         <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">

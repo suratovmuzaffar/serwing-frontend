@@ -4,21 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { categories, donations } from "@/lib/data";
-
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
-}
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function DonationsPage() {
   const pathname = usePathname();
-  const locale = getLocale(pathname);
+  const locale = getLocaleFromPath(pathname);
 
   return (
     <div className="px-4 pt-6">
       <h1 className="text-2xl font-bold">Donatlar</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        O'yin donatlari, passlar va tezkor takliflar
+        O&apos;yin donatlari, passlar va tezkor takliflar
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
@@ -29,7 +25,7 @@ export function DonationsPage() {
           return (
             <Link
               key={category.id}
-              href={`/${locale}/donations/${category.id}`}
+              href={withLocale(locale, `/donations/${category.id}`)}
               className="group relative min-h-32 animate-float-up overflow-hidden rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/50"
               style={{ animationDelay: `${index * 50}ms` }}
             >

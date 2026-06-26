@@ -35,6 +35,11 @@ export function stripLocale(path: string) {
   return parts.length ? `/${parts.join("/")}` : "/";
 }
 
+export function getLocaleFromPath(path: string | null | undefined): Locale {
+  const firstSegment = sanitizePath(path ?? "/").split("/").filter(Boolean)[0];
+  return isLocale(firstSegment) ? firstSegment : defaultLocale;
+}
+
 /**
  * ✅ Safe withLocale:
  * - locale noto'g'ri/undefined bo'lsa defaultLocale ishlatadi

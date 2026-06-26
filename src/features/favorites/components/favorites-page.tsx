@@ -7,15 +7,11 @@ import { Heart } from "lucide-react";
 
 import { listings } from "@/lib/data";
 import { useFavorites } from "@/features/favorites/services/favorites";
-
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
-}
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function FavoritesPage() {
   const pathname = usePathname();
-  const locale = getLocale(pathname);
+  const locale = getLocaleFromPath(pathname);
   // ✅ Faqat useFavorites hook ishlatamiz - u getServerSnapshot ni to'g'ri hal qiladi
   const { ids: favoriteIds, toggle } = useFavorites();
   const items = listings.filter((listing) => favoriteIds.includes(listing.id));
@@ -32,15 +28,15 @@ export function FavoritesPage() {
           <div className="flex h-20 w-20 items-center justify-center rounded-full border border-border bg-card">
             <Heart className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h2 className="mt-4 text-base font-semibold">Bo'sh</h2>
+          <h2 className="mt-4 text-base font-semibold">Bo&apos;sh</h2>
           <p className="mt-1 max-w-[240px] text-sm text-muted-foreground">
             Yoqqan akkauntlarni saqlash uchun yurak tugmasini bosing
           </p>
           <Link
-            href={`/${locale}/home`}
+            href={withLocale(locale, "/home")}
             className="mt-5 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
           >
-            Akkauntlarni ko'rish
+            Akkauntlarni ko&apos;rish
           </Link>
         </div>
       ) : (
@@ -48,7 +44,7 @@ export function FavoritesPage() {
           {items.map((item, index) => (
             <Link
               key={item.id}
-              href={`/${locale}/donations/${item.id}`}
+              href={withLocale(locale, `/donations/${item.id}`)}
               className="group relative block animate-float-up overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
               style={{ animationDelay: `${index * 40}ms` }}
             >
@@ -66,6 +62,7 @@ export function FavoritesPage() {
                   type="button"
                   onClick={(event) => {
                     event.preventDefault();
+                    event.stopPropagation();
                     toggle(item.id);
                   }}
                   className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-foreground transition-colors hover:bg-white"

@@ -21,17 +21,13 @@ import {
 import { useState } from "react";
 
 import { listings } from "@/lib/data";
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 interface User {
   name: string;
   email: string;
   telegramUsername?: string;
   rating: number;
-}
-
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
 }
 
 function AccountMethodComponent({
@@ -86,7 +82,7 @@ function Stat({
 export function ProfilePage() {
   const router = useRouter();
   const pathname = usePathname();
-  const locale = getLocale(pathname);
+  const locale = getLocaleFromPath(pathname);
   const [user] = useState<User>({
     name: "Ahmed",
     email: "ahmed@example.com",
@@ -101,7 +97,7 @@ export function ProfilePage() {
   const initial = displayName.charAt(0).toUpperCase();
 
   function handleLogout() {
-    router.push(`/${locale}/home`);
+    router.push(withLocale(locale, "/home"));
   }
 
   return (
@@ -168,7 +164,7 @@ export function ProfilePage() {
           <div className="flex-1">
             <p className="text-sm font-semibold">{points} ball</p>
             <p className="text-xs text-muted-foreground">
-              1 ta e'lon joylash uchun 1 ball kerak
+              1 ta e&apos;lon joylash uchun 1 ball kerak
             </p>
           </div>
         </div>
@@ -189,7 +185,7 @@ export function ProfilePage() {
       </div>
 
       <div className="mt-6 flex items-center justify-between">
-        <h2 className="text-sm font-semibold">Mening e'lonlarim</h2>
+        <h2 className="text-sm font-semibold">Mening e&apos;lonlarim</h2>
         <button type="button" className="text-xs text-primary">
           Barchasi
         </button>
@@ -198,7 +194,7 @@ export function ProfilePage() {
         {myListings.map((listing) => (
           <Link
             key={listing.id}
-            href={`/${locale}/donations/${listing.id}`}
+            href={withLocale(locale, `/donations/${listing.id}`)}
             className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-primary/40"
           >
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">

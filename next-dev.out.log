@@ -64,3 +64,4 @@
  GET /uz/profile 200 in 130ms (compile: 23ms, generate-params: 6ms, render: 108ms)
  GET /uz/login 200 in 87ms (compile: 24ms, generate-params: 9ms, render: 63ms)
  GET /AuthImg.png 404 in 63ms (compile: 21ms, generate-params: 6ms, render: 42ms)
+ GET /uz/home 200 in 49ms (compile: 21ms, generate-params: 6ms, render: 28ms)

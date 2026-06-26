@@ -10,7 +10,7 @@ type PageParams = { locale: string };
 export default async function Page({
   params,
 }: {
-  params: PageParams | Promise<PageParams>;
+  params: Promise<PageParams>;
 }) {
   const resolvedParams = await params;
   const localeParam = resolvedParams.locale;

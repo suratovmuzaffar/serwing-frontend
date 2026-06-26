@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+
 declare global {
   interface Window {
     Telegram?: {
@@ -18,15 +20,10 @@ declare global {
 
 const BOT_USERNAME = "serwing_bot";
 
-function getLocale(pathname: string) {
-  const locale = pathname.split("/").filter(Boolean)[0];
-  return locale || "uz";
-}
-
 export function LoginForm() {
   const router = useRouter();
   const pathname = usePathname();
-  const locale = getLocale(pathname);
+  const locale = getLocaleFromPath(pathname);
   const [error, setError] = useState("");
   const [isInsideTelegram, setIsInsideTelegram] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,10 +47,11 @@ export function LoginForm() {
 
   async function doAutoLogin(initData: string) {
     try {
+      void initData;
       setLoading(true);
       // Simulate login
       await new Promise((resolve) => setTimeout(resolve, 800));
-      router.push(`/${locale}/profile`);
+      router.push(withLocale(locale, "/profile"));
     } catch (err) {
       setError(
         err instanceof Error
@@ -92,7 +90,7 @@ export function LoginForm() {
   return (
     <div className="min-h-screen px-4 pt-6">
       <Link
-        href={`/${locale}/home`}
+        href={withLocale(locale, "/home")}
         className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
         aria-label="Ortga"
       >
