@@ -14,7 +14,8 @@ export function FavoritesPage() {
   const locale = getLocaleFromPath(pathname);
   // ✅ Faqat useFavorites hook ishlatamiz - u getServerSnapshot ni to'g'ri hal qiladi
   const { ids: favoriteIds, toggle } = useFavorites();
-  const items = listings.filter((listing) => favoriteIds.includes(listing.id));
+  const favoriteIdSet = new Set(favoriteIds);
+  const items = listings.filter((listing) => favoriteIdSet.has(listing.id));
 
   return (
     <div className="px-4 pb-20 pt-6">

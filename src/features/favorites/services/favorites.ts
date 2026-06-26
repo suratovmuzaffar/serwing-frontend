@@ -8,6 +8,13 @@ const EMPTY_FAVORITES: readonly string[] = Object.freeze([]);
 let cachedRaw: string | null = null;
 let cachedFavorites: readonly string[] = EMPTY_FAVORITES;
 
+function normalizeFavorites(value: unknown): readonly string[] {
+  if (!Array.isArray(value)) return EMPTY_FAVORITES;
+
+  const ids = value.filter((id): id is string => typeof id === "string");
+  return ids.length ? ids : EMPTY_FAVORITES;
+}
+
 function readFavorites(): readonly string[] {
   if (typeof window === "undefined") return EMPTY_FAVORITES;
 
@@ -16,11 +23,20 @@ function readFavorites(): readonly string[] {
     if (raw === cachedRaw) return cachedFavorites;
 
     cachedRaw = raw;
-    cachedFavorites = raw ? (JSON.parse(raw) as string[]) : EMPTY_FAVORITES;
+    cachedFavorites = raw
+      ? normalizeFavorites(JSON.parse(raw))
+      : EMPTY_FAVORITES;
+
+    if (raw && cachedFavorites === EMPTY_FAVORITES) {
+      window.localStorage.removeItem(FAVORITES_KEY);
+      cachedRaw = null;
+    }
+
     return cachedFavorites;
   } catch {
     cachedRaw = null;
     cachedFavorites = EMPTY_FAVORITES;
+    window.localStorage.removeItem(FAVORITES_KEY);
     return cachedFavorites;
   }
 }
