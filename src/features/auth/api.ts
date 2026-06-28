@@ -41,6 +41,23 @@ export async function updateMeApi(payload: {
   return "user" in data ? data.user : data;
 }
 
+type UploadImageResponse = {
+  data: {
+    fileUrl: string;
+  };
+};
+
+export async function uploadProfileImageApi(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const { data } = await http.post<UploadImageResponse>("/uploads/image", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return data.data.fileUrl;
+}
+
 export async function logoutApi(): Promise<AuthUser> {
   const { data } = await http.get<MeResponse>("/users/me");
   return "user" in data ? data.user : data;

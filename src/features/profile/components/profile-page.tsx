@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Camera,
   ChevronRight,
   Loader2,
   LogOut,
@@ -14,12 +15,13 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updateMeApi } from "@/features/auth/api";
+import { updateMeApi, uploadProfileImageApi } from "@/features/auth/api";
 import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { setMe } from "@/features/auth/slice";
 import { getTelegramInitData } from "@/features/auth/services/telegram";
 import type { AuthUser } from "@/features/auth/types";
+import { getAssetUrl } from "@/lib/assets";
 import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
@@ -43,7 +45,7 @@ function Avatar({
     return (
       <div
         className={`${className} shrink-0 rounded-full bg-cover bg-center`}
-        style={{ backgroundImage: `url("${photoUrl}")` }}
+        style={{ backgroundImage: `url("${getAssetUrl(photoUrl)}")` }}
         aria-label={name}
       />
     );
@@ -68,7 +70,7 @@ function getDisplayName(user: AuthUser) {
 }
 
 function getDisplayPhoto(user: AuthUser) {
-  return user.profilePhotoUrl || null;
+  return getAssetUrl(user.profilePhotoUrl);
 }
 
 function TelegramAvatar({ photoUrl }: { photoUrl?: string | null }) {
@@ -76,7 +78,7 @@ function TelegramAvatar({ photoUrl }: { photoUrl?: string | null }) {
     return (
       <div
         className="h-11 w-11 shrink-0 rounded-full bg-cover bg-center"
-        style={{ backgroundImage: `url("${photoUrl}")` }}
+        style={{ backgroundImage: `url("${getAssetUrl(photoUrl)}")` }}
         aria-label="Telegram rasmi"
       />
     );
@@ -121,6 +123,7 @@ export function ProfilePage() {
     profilePhotoUrl: "",
     profileBio: "",
   });
+  const [imageUploadError, setImageUploadError] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -197,6 +200,27 @@ export function ProfilePage() {
     },
   });
 
+  const uploadProfileImage = useMutation({
+    mutationFn: async (file: File) => {
+      const fileUrl = await uploadProfileImageApi(file);
+      const updatedUser = await updateMeApi({ profilePhotoUrl: fileUrl });
+
+      return { fileUrl, updatedUser };
+    },
+    onMutate: () => setImageUploadError(""),
+    onSuccess: ({ fileUrl, updatedUser }) => {
+      setForm((current) => ({
+        ...current,
+        profilePhotoUrl: fileUrl,
+      }));
+      dispatch(setMe(updatedUser));
+      queryClient.setQueryData(["auth-me"], updatedUser);
+    },
+    onError: () => {
+      setImageUploadError("Rasm yuklanmadi. Qayta urinib ko'ring.");
+    },
+  });
+
   const displayName = useMemo(
     () => (user ? getDisplayName(user) : "Anonim foydalanuvchi"),
     [user]
@@ -208,6 +232,17 @@ export function ProfilePage() {
     logout.mutate(undefined, {
       onSettled: () => router.replace(withLocale(locale, "/login")),
     });
+  }
+
+  function handleProfileImageChange(file?: File) {
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setImageUploadError("Faqat rasm faylini tanlang.");
+      return;
+    }
+
+    uploadProfileImage.mutate(file);
   }
 
   if (!authChecked || (hasToken && meQuery.isLoading)) {
@@ -249,6 +284,8 @@ export function ProfilePage() {
           <form
             onSubmit={(event) => {
               event.preventDefault();
+              if (uploadProfileImage.isPending) return;
+
               const profileName = [
                 form.profileFirstName,
                 form.profileLastName,
@@ -265,57 +302,90 @@ export function ProfilePage() {
                 profileBio: form.profileBio,
               });
             }}
-            className="mt-5 space-y-3 border-t border-border pt-4"
+            className="mt-5 space-y-4 border-t border-border pt-4"
           >
-            <input
-              value={form.profileFirstName}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  profileFirstName: event.target.value,
-                }))
-              }
-              placeholder="Ism"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-            />
-            <input
-              value={form.profileLastName}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  profileLastName: event.target.value,
-                }))
-              }
-              placeholder="Familiya"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-            />
-            <input
-              value={form.profilePhotoUrl}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  profilePhotoUrl: event.target.value,
-                }))
-              }
-              placeholder="Rasm URL"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-            />
-            <textarea
-              value={form.profileBio}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  profileBio: event.target.value,
-                }))
-              }
-              maxLength={240}
-              rows={3}
-              placeholder="Bio"
-              className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-            />
+            <div className="flex flex-col items-center gap-2">
+              <label
+                className="group relative block cursor-pointer"
+                aria-label="Profil rasmini almashtirish"
+              >
+                <Avatar
+                  name={displayName}
+                  photoUrl={form.profilePhotoUrl || displayPhoto}
+                />
+                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white transition-colors group-hover:bg-black/35">
+                  {uploadProfileImage.isPending ? (
+                    <Loader2 className="h-5 w-5 animate-spin opacity-100" />
+                  ) : (
+                    <Camera className="h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100" />
+                  )}
+                </span>
+                <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-primary text-primary-foreground shadow-sm">
+                  {uploadProfileImage.isPending ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Camera className="h-3.5 w-3.5" />
+                  )}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploadProfileImage.isPending}
+                  onChange={(event) => {
+                    handleProfileImageChange(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                  className="sr-only"
+                />
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Rasmni almashtirish uchun ustiga bosing
+              </p>
+              {imageUploadError && (
+                <p className="text-xs text-destructive">{imageUploadError}</p>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <input
+                value={form.profileFirstName}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    profileFirstName: event.target.value,
+                  }))
+                }
+                placeholder="Ism"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
+              />
+              <input
+                value={form.profileLastName}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    profileLastName: event.target.value,
+                  }))
+                }
+                placeholder="Familiya"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
+              />
+              <textarea
+                value={form.profileBio}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    profileBio: event.target.value,
+                  }))
+                }
+                maxLength={240}
+                rows={3}
+                placeholder="Bio"
+                className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
+              />
+            </div>
             <button
               type="submit"
-              disabled={updateProfile.isPending}
+              disabled={updateProfile.isPending || uploadProfileImage.isPending}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-70"
             >
               {updateProfile.isPending ? (
