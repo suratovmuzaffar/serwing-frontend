@@ -226,6 +226,7 @@ export function ProfilePage() {
     [user]
   );
   const displayPhoto = user ? getDisplayPhoto(user) : null;
+  const profilePhoto = form.profilePhotoUrl || displayPhoto;
   const displayBio = user?.profileBio || "SERWING foydalanuvchisi";
 
   function handleLogout() {
@@ -265,10 +266,51 @@ export function ProfilePage() {
     <div className="px-4 pt-6">
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center gap-4">
-          <Avatar name={displayName} photoUrl={displayPhoto} />
+          {editing ? (
+            <label
+              className="group relative block cursor-pointer"
+              aria-label="Profil rasmini almashtirish"
+            >
+              <Avatar name={displayName} photoUrl={profilePhoto} />
+              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white transition-colors group-hover:bg-black/35">
+                {uploadProfileImage.isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin opacity-100" />
+                ) : (
+                  <Camera className="h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100" />
+                )}
+              </span>
+              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-primary text-primary-foreground shadow-sm">
+                {uploadProfileImage.isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Camera className="h-3.5 w-3.5" />
+                )}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                disabled={uploadProfileImage.isPending}
+                onChange={(event) => {
+                  handleProfileImageChange(event.target.files?.[0]);
+                  event.target.value = "";
+                }}
+                className="sr-only"
+              />
+            </label>
+          ) : (
+            <Avatar name={displayName} photoUrl={displayPhoto} />
+          )}
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-bold">{displayName}</h1>
             <p className="line-clamp-1 text-sm text-muted-foreground">{displayBio}</p>
+            {editing && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Avatarni almashtirish uchun rasmga bosing
+              </p>
+            )}
+            {editing && imageUploadError && (
+              <p className="mt-1 text-xs text-destructive">{imageUploadError}</p>
+            )}
           </div>
           <button
             type="button"
@@ -304,48 +346,6 @@ export function ProfilePage() {
             }}
             className="mt-5 space-y-4 border-t border-border pt-4"
           >
-            <div className="flex flex-col items-center gap-2">
-              <label
-                className="group relative block cursor-pointer"
-                aria-label="Profil rasmini almashtirish"
-              >
-                <Avatar
-                  name={displayName}
-                  photoUrl={form.profilePhotoUrl || displayPhoto}
-                />
-                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white transition-colors group-hover:bg-black/35">
-                  {uploadProfileImage.isPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin opacity-100" />
-                  ) : (
-                    <Camera className="h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100" />
-                  )}
-                </span>
-                <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-primary text-primary-foreground shadow-sm">
-                  {uploadProfileImage.isPending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Camera className="h-3.5 w-3.5" />
-                  )}
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  disabled={uploadProfileImage.isPending}
-                  onChange={(event) => {
-                    handleProfileImageChange(event.target.files?.[0]);
-                    event.target.value = "";
-                  }}
-                  className="sr-only"
-                />
-              </label>
-              <p className="text-xs text-muted-foreground">
-                Rasmni almashtirish uchun ustiga bosing
-              </p>
-              {imageUploadError && (
-                <p className="text-xs text-destructive">{imageUploadError}</p>
-              )}
-            </div>
-
             <div className="space-y-3">
               <input
                 value={form.profileFirstName}
@@ -356,7 +356,7 @@ export function ProfilePage() {
                   }))
                 }
                 placeholder="Ism"
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
+                className="w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
               />
               <input
                 value={form.profileLastName}
@@ -367,7 +367,7 @@ export function ProfilePage() {
                   }))
                 }
                 placeholder="Familiya"
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
+                className="w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
               />
               <textarea
                 value={form.profileBio}
@@ -380,7 +380,7 @@ export function ProfilePage() {
                 maxLength={240}
                 rows={3}
                 placeholder="Bio"
-                className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
+                className="w-full resize-none border-0 border-b border-border bg-transparent px-0 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
               />
             </div>
             <button
@@ -399,10 +399,10 @@ export function ProfilePage() {
         )}
       </div>
 
-      <div className="mt-5 rounded-2xl border border-border bg-card p-4">
-        <p className="mb-3 text-sm font-semibold">Ulanganlar</p>
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="mt-5 rounded-2xl border border-border bg-card p-5">
+        <p className="text-sm font-semibold">Ulanganlar</p>
+        <div className="mt-4 flex items-center gap-3 border-t border-border pt-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-primary">
             <Send className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -430,8 +430,8 @@ export function ProfilePage() {
               }
             }}
             className={`flex w-full items-center gap-3 px-4 py-3.5 text-sm transition-colors hover:bg-secondary ${
-              index === 0 ? "bg-secondary" : ""
-            } ${index > 0 ? "border-t border-border" : ""} ${
+              index > 0 ? "border-t border-border" : ""
+            } ${
               item.danger ? "text-destructive" : ""
             }`}
           >
