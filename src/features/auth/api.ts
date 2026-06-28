@@ -20,14 +20,19 @@ export async function telegramLoginApi(initData: string): Promise<AuthResponse> 
   return data;
 }
 
+export async function telegramLinkLoginApi(token: string): Promise<AuthResponse> {
+  const { data } = await http.post<AuthResponse>("/auth/telegram/link", { token });
+  return data;
+}
+
 export async function fetchMe(): Promise<AuthUser> {
   const { data } = await http.get<MeResponse>("/users/me");
   return "user" in data ? data.user : data;
 }
 
 export async function updateMeApi(payload: {
-  telegramName?: string;
-  telegramPhotoUrl?: string;
+  profileName?: string;
+  profilePhotoUrl?: string;
 }): Promise<AuthUser> {
   const { data } = await http.patch<MeResponse>("/users/me", payload);
   return "user" in data ? data.user : data;

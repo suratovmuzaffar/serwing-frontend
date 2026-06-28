@@ -6,7 +6,7 @@ import { ArrowLeft, Loader2, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { telegramLoginApi } from "@/features/auth/api";
+import { telegramLinkLoginApi, telegramLoginApi } from "@/features/auth/api";
 import { setMe } from "@/features/auth/slice";
 import {
   getTelegramInitData,
@@ -35,6 +35,13 @@ export function LoginForm() {
     if (typeof window === "undefined") return;
 
     initTelegramWebApp();
+    const loginToken = new URLSearchParams(window.location.search).get("tgLoginToken");
+    if (loginToken && !autoLoginTriggered.current) {
+      autoLoginTriggered.current = true;
+      void doTokenLogin(loginToken);
+      return;
+    }
+
     const initData = getTelegramInitData();
     setIsInsideTelegram(!!initData);
 
@@ -81,6 +88,25 @@ export function LoginForm() {
 
     if (!opened) {
       setError("Telegram bot username sozlanmagan");
+    }
+  }
+
+  async function doTokenLogin(token: string) {
+    try {
+      setLoading(true);
+      const result = await telegramLinkLoginApi(token);
+      tokenStore.setTokens(result.token, result.refreshToken);
+      dispatch(setMe(result.user));
+      queryClient.setQueryData(["auth-me"], result.user);
+      router.replace(withLocale(locale, "/profile"));
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Telegram link orqali kirishda xatolik yuz berdi"
+      );
+    } finally {
+      setLoading(false);
     }
   }
 

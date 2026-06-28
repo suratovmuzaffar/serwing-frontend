@@ -71,10 +71,15 @@ function Avatar({
 
 function getDisplayName(user: AuthUser) {
   return (
+    user.profileName ||
     user.telegramName ||
     user.telegramUsername ||
-    (user.telegramId ? `Telegram ${user.telegramId}` : "Foydalanuvchi")
+    (user.telegramId ? `Telegram ${user.telegramId}` : "Anonim foydalanuvchi")
   );
+}
+
+function getDisplayPhoto(user: AuthUser) {
+  return user.profilePhotoUrl || user.telegramPhotoUrl || null;
 }
 
 function Stat({
@@ -106,7 +111,7 @@ export function ProfilePage() {
   const [autoLoginLoading, setAutoLoginLoading] = useState(true);
   const [authError, setAuthError] = useState("");
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ telegramName: "", telegramPhotoUrl: "" });
+  const [form, setForm] = useState({ profileName: "", profilePhotoUrl: "" });
   const [points] = useState(5);
 
   useEffect(() => {
@@ -172,8 +177,8 @@ export function ProfilePage() {
     if (!user) return;
 
     setForm({
-      telegramName: user.telegramName ?? "",
-      telegramPhotoUrl: user.telegramPhotoUrl ?? "",
+      profileName: user.profileName || user.telegramName || user.telegramUsername || "",
+      profilePhotoUrl: user.profilePhotoUrl || user.telegramPhotoUrl || "",
     });
   }, [user]);
 
@@ -187,9 +192,10 @@ export function ProfilePage() {
   });
 
   const displayName = useMemo(
-    () => (user ? getDisplayName(user) : "Foydalanuvchi"),
+    () => (user ? getDisplayName(user) : "Anonim foydalanuvchi"),
     [user]
   );
+  const displayPhoto = user ? getDisplayPhoto(user) : null;
   const referralCode = user?.telegramId ? `TG${user.telegramId}` : "SERWING";
   const myListings = listings.slice(0, 2);
 
@@ -219,7 +225,7 @@ export function ProfilePage() {
     <div className="px-4 pt-6">
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center gap-4">
-          <Avatar name={displayName} photoUrl={user.telegramPhotoUrl} />
+          <Avatar name={displayName} photoUrl={displayPhoto} />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-bold">{displayName}</h1>
             <p className="truncate text-sm text-muted-foreground">
@@ -244,29 +250,29 @@ export function ProfilePage() {
             onSubmit={(event) => {
               event.preventDefault();
               updateProfile.mutate({
-                telegramName: form.telegramName,
-                telegramPhotoUrl: form.telegramPhotoUrl,
+                profileName: form.profileName,
+                profilePhotoUrl: form.profilePhotoUrl,
               });
             }}
             className="mt-5 space-y-3 border-t border-border pt-4"
           >
             <input
-              value={form.telegramName}
+              value={form.profileName}
               onChange={(event) =>
                 setForm((current) => ({
                   ...current,
-                  telegramName: event.target.value,
+                  profileName: event.target.value,
                 }))
               }
               placeholder="Ism familiya"
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
             />
             <input
-              value={form.telegramPhotoUrl}
+              value={form.profilePhotoUrl}
               onChange={(event) =>
                 setForm((current) => ({
                   ...current,
-                  telegramPhotoUrl: event.target.value,
+                  profilePhotoUrl: event.target.value,
                 }))
               }
               placeholder="Rasm URL"
@@ -301,7 +307,7 @@ export function ProfilePage() {
           <span className="rounded-full bg-success/20 px-2 py-0.5 text-[10px] font-semibold text-success">
             Tasdiqlangan
           </span>
-          <Avatar name={displayName} photoUrl={user.telegramPhotoUrl} size="sm" />
+          <Avatar name={user.telegramName || displayName} photoUrl={user.telegramPhotoUrl} size="sm" />
         </div>
       </div>
 
