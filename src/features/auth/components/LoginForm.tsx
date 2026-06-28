@@ -8,7 +8,11 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { telegramLoginApi } from "@/features/auth/api";
 import { setMe } from "@/features/auth/slice";
-import { getTelegramInitData, initTelegramWebApp } from "@/features/auth/services/telegram";
+import {
+  getTelegramInitData,
+  initTelegramWebApp,
+  openTelegramBot,
+} from "@/features/auth/services/telegram";
 import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
 import { ENV } from "@/config/env";
@@ -69,9 +73,14 @@ export function LoginForm() {
       const initData = getTelegramInitData();
       if (initData) {
         await doAutoLogin(initData);
+        return;
       }
-    } else {
-      window.location.href = `https://t.me/${ENV.TELEGRAM_BOT_USERNAME}?start=login`;
+    }
+
+    const opened = openTelegramBot(ENV.TELEGRAM_BOT_USERNAME, "login");
+
+    if (!opened) {
+      setError("Telegram bot username sozlanmagan");
     }
   }
 

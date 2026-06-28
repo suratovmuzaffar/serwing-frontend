@@ -7,6 +7,7 @@ declare global {
         initData?: string;
         ready?: () => void;
         expand?: () => void;
+        openTelegramLink?: (url: string) => void;
       };
     };
   }
@@ -33,3 +34,30 @@ export function initTelegramWebApp() {
   window.Telegram?.WebApp?.expand?.();
 }
 
+export function isTelegramWebApp() {
+  return Boolean(getTelegramInitData());
+}
+
+export function getTelegramBotStartUrl(username: string, start = "login") {
+  const cleanUsername = username.trim().replace(/^@/, "");
+  const cleanStart = encodeURIComponent(start);
+
+  if (!cleanUsername) return "";
+
+  return `https://t.me/${cleanUsername}?start=${cleanStart}`;
+}
+
+export function openTelegramBot(username: string, start = "login") {
+  if (typeof window === "undefined") return false;
+
+  const url = getTelegramBotStartUrl(username, start);
+  if (!url) return false;
+
+  if (window.Telegram?.WebApp?.openTelegramLink) {
+    window.Telegram.WebApp.openTelegramLink(url);
+  } else {
+    window.location.href = url;
+  }
+
+  return true;
+}
