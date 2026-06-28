@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   CheckCircle2,
   ChevronRight,
@@ -30,7 +28,6 @@ import {
   initTelegramWebApp,
 } from "@/features/auth/services/telegram";
 import type { AuthUser } from "@/features/auth/types";
-import { listings } from "@/lib/data";
 import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
@@ -197,7 +194,6 @@ export function ProfilePage() {
   );
   const displayPhoto = user ? getDisplayPhoto(user) : null;
   const referralCode = user?.telegramId ? `TG${user.telegramId}` : "SERWING";
-  const myListings = listings.slice(0, 2);
 
   function handleLogout() {
     logout.mutate(undefined, {
@@ -345,40 +341,11 @@ export function ProfilePage() {
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-6 rounded-2xl border border-border bg-card p-4 text-center">
         <h2 className="text-sm font-semibold">Mening e&apos;lonlarim</h2>
-        <button type="button" className="text-xs text-primary">
-          Barchasi
-        </button>
-      </div>
-      <div className="mt-3 space-y-2">
-        {myListings.map((listing) => (
-          <Link
-            key={listing.id}
-            href={withLocale(locale, `/donations/${listing.id}`)}
-            className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-primary/40"
-          >
-            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
-              <Image
-                src={listing.image}
-                alt={listing.title}
-                fill
-                sizes="56px"
-                className="object-cover"
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{listing.title}</p>
-              <p className="text-xs text-muted-foreground">{listing.game}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-bold">${listing.price}</p>
-              <span className="rounded-full bg-success/20 px-2 py-0.5 text-[10px] text-success">
-                Faol
-              </span>
-            </div>
-          </Link>
-        ))}
+        <p className="mt-1 text-xs text-muted-foreground">
+          Joylagan e&apos;lonlaringiz home sahifasida ko&apos;rinadi.
+        </p>
       </div>
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">

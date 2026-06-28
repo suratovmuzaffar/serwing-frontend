@@ -22,12 +22,18 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-        <img
-          src={item.image}
-          alt={item.title}
-          loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-3 text-center text-xs text-muted-foreground">
+            Rasm yo&apos;q
+          </div>
+        )}
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-card to-transparent" />
         {item.premium && (
           <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-[10px] font-bold text-primary-foreground backdrop-blur-sm">

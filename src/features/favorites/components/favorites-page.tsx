@@ -1,21 +1,41 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Heart } from "lucide-react";
 
-import { listings } from "@/lib/data";
 import { useFavorites } from "@/features/favorites/services/favorites";
+import { fetchListings } from "@/features/home/services/listings-api";
+import type { Listing } from "@/lib/data";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function FavoritesPage() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
-  // ✅ Faqat useFavorites hook ishlatamiz - u getServerSnapshot ni to'g'ri hal qiladi
+  const [listings, setListings] = useState<Listing[]>([]);
   const { ids: favoriteIds, toggle } = useFavorites();
-  const favoriteIdSet = new Set(favoriteIds);
+  const favoriteIdSet = useMemo(() => new Set(favoriteIds), [favoriteIds]);
   const items = listings.filter((listing) => favoriteIdSet.has(listing.id));
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadListings() {
+      try {
+        const items = await fetchListings();
+        if (!cancelled) setListings(items);
+      } catch {
+        if (!cancelled) setListings([]);
+      }
+    }
+
+    void loadListings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="px-4 pb-20 pt-6">
@@ -50,14 +70,18 @@ export function FavoritesPage() {
               style={{ animationDelay: `${index * 40}ms` }}
             >
               <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 390px) 50vw, 180px"
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center px-3 text-center text-xs text-muted-foreground">
+                    Rasm yo&apos;q
+                  </div>
+                )}
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-card to-transparent" />
                 <button
                   type="button"

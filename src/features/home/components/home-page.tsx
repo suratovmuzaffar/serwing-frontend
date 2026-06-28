@@ -12,7 +12,7 @@ import {
   type ListingFilter as ListingFilterValue,
 } from "@/features/home/services/listing-filters";
 import { fetchListings } from "@/features/home/services/listings-api";
-import { categories, listings } from "@/lib/data";
+import { categories } from "@/lib/data";
 import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -45,12 +45,11 @@ export function HomePage() {
   }, []);
 
   const filtered = useMemo(() => {
-    const allListings = [...remoteListings, ...listings];
     const normalizedQuery = query.trim().toLowerCase();
     const byCategory =
       selectedCategory === "all"
-        ? allListings
-        : allListings.filter((listing) => listing.gameId === selectedCategory);
+        ? remoteListings
+        : remoteListings.filter((listing) => listing.gameId === selectedCategory);
     const matched = normalizedQuery
       ? byCategory.filter((listing) =>
           (listing.title + listing.game).toLowerCase().includes(normalizedQuery)

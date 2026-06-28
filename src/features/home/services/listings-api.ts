@@ -53,7 +53,7 @@ function mapBackendListing(item: BackendListing): Listing {
     game: category?.name ?? item.game,
     gameId: category?.id ?? "other",
     price: item.price,
-    image: getAssetUrl(item.imageUrl) || category?.image || "/assets/coc-1.jpg",
+    image: getAssetUrl(item.imageUrl),
     level: 1,
     rank: item.rank || "",
     description: item.description,
