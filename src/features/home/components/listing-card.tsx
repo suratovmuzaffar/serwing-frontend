@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { BadgeCheck, Heart } from "lucide-react";
 
@@ -23,11 +22,9 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-        <Image
+        <img
           src={item.image}
           alt={item.title}
-          fill
-          sizes="(max-width: 390px) 50vw, 180px"
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />

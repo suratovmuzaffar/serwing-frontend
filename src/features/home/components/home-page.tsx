@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Bell, Search, TrendingUp } from "lucide-react";
 
@@ -11,21 +11,46 @@ import {
   sortListings,
   type ListingFilter as ListingFilterValue,
 } from "@/features/home/services/listing-filters";
+import { fetchListings } from "@/features/home/services/listings-api";
 import { categories, listings } from "@/lib/data";
+import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export function HomePage() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<ListingFilterValue>("top");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [loading] = useState(false);
+  const [remoteListings, setRemoteListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadListings() {
+      try {
+        const items = await fetchListings();
+        if (!cancelled) setRemoteListings(items);
+      } catch {
+        if (!cancelled) setRemoteListings([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void loadListings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
+    const allListings = [...remoteListings, ...listings];
     const normalizedQuery = query.trim().toLowerCase();
     const byCategory =
       selectedCategory === "all"
-        ? listings
-        : listings.filter((listing) => listing.gameId === selectedCategory);
+        ? allListings
+        : allListings.filter((listing) => listing.gameId === selectedCategory);
     const matched = normalizedQuery
       ? byCategory.filter((listing) =>
           (listing.title + listing.game).toLowerCase().includes(normalizedQuery)
@@ -33,7 +58,7 @@ export function HomePage() {
       : byCategory;
 
     return sortListings(matched, filter);
-  }, [query, filter, selectedCategory]);
+  }, [query, filter, selectedCategory, remoteListings]);
 
   const selectedCategoryName =
     selectedCategory === "all"

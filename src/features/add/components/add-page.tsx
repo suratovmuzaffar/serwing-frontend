@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Check, Coins, Upload } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Check, ImagePlus, Loader2, Upload, X } from "lucide-react";
 
 import { categories } from "@/lib/data";
+import { tokenStore } from "@/lib/tokenStore";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
-
-const LISTING_POINT_COST = 1;
+import {
+  createListing,
+  uploadListingImage,
+} from "@/features/add/services/add-listing";
 
 function Field({
   label,
@@ -28,12 +31,31 @@ function Field({
 }
 
 export function AddPage() {
+  const router = useRouter();
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
-  const [game, setGame] = useState(categories[0]?.id ?? "coc");
-  const [points, setPoints] = useState(5);
+  const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "coc");
+  const [description, setDescription] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const selectedCategory = useMemo(
+    () => categories.find((category) => category.id === categoryId) ?? categories[0],
+    [categoryId]
+  );
+
+  const imagePreview = useMemo(() => {
+    if (!imageFile) return "";
+    return URL.createObjectURL(imageFile);
+  }, [imageFile]);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
 
   if (done) {
     return (
@@ -43,12 +65,16 @@ export function AddPage() {
         </div>
         <h1 className="mt-5 text-xl font-bold">E&apos;lon yuborildi!</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {LISTING_POINT_COST} ball yechildi. Admin moderatsiyasidan
-          o&apos;tgach, e&apos;loningiz ko&apos;rinadi.
+          E&apos;loningiz yaratildi. Tekshiruvdan keyin ro&apos;yxatda
+          ko&apos;rinadi.
         </p>
         <button
           type="button"
-          onClick={() => setDone(false)}
+          onClick={() => {
+            setDescription("");
+            setImageFile(null);
+            setDone(false);
+          }}
           className="mt-6 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
         >
           Yangi e&apos;lon
@@ -61,56 +87,98 @@ export function AddPage() {
     <div className="px-4 pt-6">
       <h1 className="text-2xl font-bold">Yangi e&apos;lon</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Akkauntingiz haqida ma&apos;lumotlarni to&apos;ldiring
+        Kategoriya, rasm va tavsifni kiriting
       </p>
 
-      <div className="mt-5 rounded-2xl border border-border bg-card p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Coins className="h-5 w-5" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold">
-              E&apos;lon narxi: {LISTING_POINT_COST} ball
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Sizda {points} ball bor. Ballni profil orqali referral bilan
-              to&apos;plash mumkin.
-            </p>
-          </div>
-        </div>
-      </div>
-
       <form
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
           setError("");
 
-          if (points < LISTING_POINT_COST) {
-            setError(
-              "E'lon joylash uchun ball yetarli emas. Profil bo'limida referral orqali ball to'plang."
-            );
+          if (!tokenStore.getAccessToken()) {
+            router.replace(withLocale(locale, "/login"));
             return;
           }
 
-          setPoints((current) => current - LISTING_POINT_COST);
-          setDone(true);
+          if (!selectedCategory) {
+            setError("Kategoriya tanlang");
+            return;
+          }
+
+          if (!imageFile) {
+            setError("Rasm yuklang");
+            return;
+          }
+
+          if (!description.trim()) {
+            setError("Tavsif yozing");
+            return;
+          }
+
+          try {
+            setIsSubmitting(true);
+            const imageUrl = await uploadListingImage(imageFile);
+
+            await createListing({
+              game: selectedCategory.name,
+              description: description.trim(),
+              imageUrl,
+            });
+
+            setDone(true);
+          } catch (err) {
+            setError(
+              err instanceof Error
+                ? err.message
+                : "E'lon joylashda xatolik yuz berdi"
+            );
+          } finally {
+            setIsSubmitting(false);
+          }
         }}
         className="mt-6 space-y-4 pb-8"
       >
-        <label className="flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-card transition-colors hover:border-primary">
-          <Upload className="h-6 w-6 text-muted-foreground" />
-          <span className="text-sm font-medium">Rasm yuklash</span>
-          <span className="text-xs text-muted-foreground">
-            PNG, JPG - max 5MB
-          </span>
-          <input type="file" accept="image/*" className="hidden" />
-        </label>
+        <div>
+          {imagePreview ? (
+            <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-card">
+              <img
+                src={imagePreview}
+                alt="Tanlangan rasm"
+                className="h-full w-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => setImageFile(null)}
+                className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow"
+                aria-label="Rasmni olib tashlash"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <label className="flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-card transition-colors hover:border-primary">
+              <ImagePlus className="h-7 w-7 text-muted-foreground" />
+              <span className="text-sm font-medium">Rasm yuklash</span>
+              <span className="text-xs text-muted-foreground">
+                PNG, JPG - max 10MB
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0] ?? null;
+                  setImageFile(file);
+                }}
+              />
+            </label>
+          )}
+        </div>
 
         <Field label="O'yin kategoriyasi">
           <select
-            value={game}
-            onChange={(event) => setGame(event.target.value)}
+            value={categoryId}
+            onChange={(event) => setCategoryId(event.target.value)}
             className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
           >
             {categories.map((category) => (
@@ -121,50 +189,15 @@ export function AddPage() {
           </select>
         </Field>
 
-        <Field label="Sarlavha">
-          <input
-            required
-            maxLength={80}
-            placeholder="TH14 Max | 6500 kuboklar"
-            className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
-          />
-        </Field>
-
         <Field label="Tavsif">
           <textarea
             required
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
             maxLength={500}
-            rows={4}
+            rows={6}
             placeholder="Akkaunt haqida batafsil ma'lumot..."
             className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
-          />
-        </Field>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Narx ($)">
-            <input
-              required
-              type="number"
-              min={1}
-              placeholder="250"
-              className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
-            />
-          </Field>
-          <Field label="Level">
-            <input
-              required
-              type="number"
-              min={1}
-              placeholder="220"
-              className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
-            />
-          </Field>
-        </div>
-
-        <Field label="Rank">
-          <input
-            placeholder="Titan I"
-            className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
           />
         </Field>
 
@@ -176,8 +209,14 @@ export function AddPage() {
 
         <button
           type="submit"
-          className="mt-2 w-full rounded-xl bg-gradient-primary py-4 text-sm font-bold text-primary-foreground transition-transform active:scale-[0.98]"
+          disabled={isSubmitting}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-primary py-4 text-sm font-bold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-70"
         >
+          {isSubmitting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="h-4 w-4" />
+          )}
           E&apos;lonni joylashtirish
         </button>
 
