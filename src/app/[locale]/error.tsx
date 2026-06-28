@@ -9,6 +9,19 @@ type ClientDiagnostics = {
   telegramWebApp: boolean;
 };
 
+function isChunkLoadError(error: Error) {
+  const message = `${error.name || ""} ${error.message || ""} ${error.stack || ""}`;
+  return /ChunkLoadError|Loading chunk|Failed to load chunk/i.test(message);
+}
+
+function reloadFresh() {
+  if (typeof window === "undefined") return;
+
+  const url = new URL(window.location.href);
+  url.searchParams.set("_fresh", String(Date.now()));
+  window.location.replace(url.toString());
+}
+
 export default function Error({
   error,
   reset,
@@ -29,6 +42,19 @@ export default function Error({
 
   useEffect(() => {
     console.error(error);
+  }, [error]);
+
+  useEffect(() => {
+    if (!isChunkLoadError(error)) return;
+    if (typeof window === "undefined") return;
+
+    const reloadKey = "serwing:chunk-reload";
+    const lastReload = Number(window.sessionStorage.getItem(reloadKey) || 0);
+
+    if (Date.now() - lastReload < 30_000) return;
+
+    window.sessionStorage.setItem(reloadKey, String(Date.now()));
+    reloadFresh();
   }, [error]);
 
   const errorDetails = useMemo(
@@ -59,7 +85,14 @@ export default function Error({
         <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <button
             type="button"
-            onClick={() => reset()}
+            onClick={() => {
+              if (isChunkLoadError(error)) {
+                reloadFresh();
+                return;
+              }
+
+              reset();
+            }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Qayta urinish
