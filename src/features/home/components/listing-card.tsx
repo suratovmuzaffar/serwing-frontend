@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BadgeCheck, Heart } from "lucide-react";
@@ -14,6 +15,7 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
   const locale = getLocaleFromPath(pathname);
   const { has, toggle } = useFavorites();
   const fav = has(item.id);
+  const [imageFailed, setImageFailed] = useState(false);
 
   return (
     <Link
@@ -22,11 +24,12 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-        {item.image ? (
+        {item.image && !imageFailed ? (
           <img
             src={item.image}
             alt={item.title}
             loading="lazy"
+            onError={() => setImageFailed(true)}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

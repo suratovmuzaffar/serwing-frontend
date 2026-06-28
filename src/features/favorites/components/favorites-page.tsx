@@ -1,11 +1,76 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Heart } from "lucide-react";
 
 import { useFavorites } from "@/features/favorites/services/favorites";
+import type { Listing } from "@/lib/data";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+
+function FavoriteCard({
+  item,
+  index,
+  onToggle,
+}: {
+  item: Listing;
+  index: number;
+  onToggle: (item: Listing) => void;
+}) {
+  const pathname = usePathname();
+  const locale = getLocaleFromPath(pathname);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  return (
+    <Link
+      href={withLocale(locale, `/donations/${item.id}`)}
+      className="group relative block animate-float-up overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
+      style={{ animationDelay: `${index * 40}ms` }}
+    >
+      <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+        {item.image && !imageFailed ? (
+          <img
+            src={item.image}
+            alt={item.title}
+            loading="lazy"
+            onError={() => setImageFailed(true)}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-3 text-center text-xs text-muted-foreground">
+            Rasm yo&apos;q
+          </div>
+        )}
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-card to-transparent" />
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onToggle(item);
+          }}
+          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-foreground transition-colors hover:bg-white"
+          aria-label="Saqlash"
+        >
+          <Heart className="h-4 w-4 scale-110 fill-primary text-primary" />
+        </button>
+      </div>
+      <div className="p-3 pt-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-primary/80">
+          {item.game}
+        </p>
+        <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-foreground">
+          {item.title}
+        </h3>
+        <div className="mt-2 flex items-baseline justify-between">
+          <span className="text-base font-bold text-foreground">${item.price}</span>
+          <span className="text-[10px] text-muted-foreground">Lvl {item.level}</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export function FavoritesPage() {
   const pathname = usePathname();
@@ -38,56 +103,12 @@ export function FavoritesPage() {
       ) : (
         <div className="mt-5 grid grid-cols-2 gap-3">
           {items.map((item, index) => (
-            <Link
+            <FavoriteCard
               key={item.id}
-              href={withLocale(locale, `/donations/${item.id}`)}
-              className="group relative block animate-float-up overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
-              style={{ animationDelay: `${index * 40}ms` }}
-            >
-              <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-                {item.image ? (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center px-3 text-center text-xs text-muted-foreground">
-                    Rasm yo&apos;q
-                  </div>
-                )}
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-card to-transparent" />
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    toggle(item.id, item);
-                  }}
-                  className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-foreground transition-colors hover:bg-white"
-                  aria-label="Saqlash"
-                >
-                  <Heart className="h-4 w-4 scale-110 fill-primary text-primary" />
-                </button>
-              </div>
-              <div className="p-3 pt-2">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-primary/80">
-                  {item.game}
-                </p>
-                <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-foreground">
-                  {item.title}
-                </h3>
-                <div className="mt-2 flex items-baseline justify-between">
-                  <span className="text-base font-bold text-foreground">
-                    ${item.price}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    Lvl {item.level}
-                  </span>
-                </div>
-              </div>
-            </Link>
+              item={item}
+              index={index}
+              onToggle={(listing) => toggle(listing.id, listing)}
+            />
           ))}
         </div>
       )}
