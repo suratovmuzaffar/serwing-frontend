@@ -31,6 +31,8 @@ export async function fetchMe(): Promise<AuthUser> {
 }
 
 export async function updateMeApi(payload: {
+  profileFirstName?: string;
+  profileLastName?: string;
   profileName?: string;
   profilePhotoUrl?: string;
   profileBio?: string;

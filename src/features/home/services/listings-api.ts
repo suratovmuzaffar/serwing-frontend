@@ -11,8 +11,9 @@ export type BackendListing = {
   imageUrl?: string | null;
   rank?: string | null;
   seller?: {
-    telegramUsername?: string | null;
-    telegramName?: string | null;
+    profileFirstName?: string | null;
+    profileLastName?: string | null;
+    profileName?: string | null;
     email?: string | null;
   };
 };
@@ -41,9 +42,16 @@ function getCategoryByGame(game: string) {
 
 export function mapBackendListing(item: BackendListing): Listing {
   const category = getCategoryByGame(item.game);
+  const sellerFullName = [
+    item.seller?.profileFirstName,
+    item.seller?.profileLastName,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
   const sellerName =
-    item.seller?.telegramName ||
-    item.seller?.telegramUsername ||
+    sellerFullName ||
+    item.seller?.profileName ||
     item.seller?.email ||
     "Foydalanuvchi";
 
@@ -61,7 +69,7 @@ export function mapBackendListing(item: BackendListing): Listing {
     linked: ["Telegram"],
     seller: {
       name: sellerName,
-      username: item.seller?.telegramUsername || "",
+      username: "",
       rating: 5,
     },
   };

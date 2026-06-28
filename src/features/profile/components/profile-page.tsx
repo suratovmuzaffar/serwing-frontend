@@ -2,17 +2,10 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import {
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  Coins,
-  Gift,
   Loader2,
   LogOut,
-  Package,
   Save,
   Settings,
-  Star,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -63,34 +56,32 @@ function Avatar({
 }
 
 function getDisplayName(user: AuthUser) {
-  return (
-    user.profileName ||
-    user.telegramName ||
-    user.telegramUsername ||
-    (user.telegramId ? `Telegram ${user.telegramId}` : "Anonim foydalanuvchi")
-  );
+  const fullName = [user.profileFirstName, user.profileLastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  return fullName || user.profileName || "Anonim foydalanuvchi";
 }
 
 function getDisplayPhoto(user: AuthUser) {
-  return user.profilePhotoUrl || user.telegramPhotoUrl || null;
+  return user.profilePhotoUrl || null;
 }
 
-function Stat({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Package;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-3 text-center">
-      <Icon className="mx-auto h-4 w-4 text-primary" />
-      <p className="mt-1 text-lg font-bold">{value}</p>
-      <p className="text-[10px] text-muted-foreground">{label}</p>
-    </div>
-  );
+function splitProfileName(profileName?: string | null) {
+  const parts = String(profileName || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length <= 1) {
+    return { firstName: parts[0] || "", lastName: "" };
+  }
+
+  return {
+    firstName: parts[0],
+    lastName: parts.slice(1).join(" "),
+  };
 }
 
 export function ProfilePage() {
@@ -104,11 +95,11 @@ export function ProfilePage() {
   const [authChecked, setAuthChecked] = useState(false);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
-    profileName: "",
+    profileFirstName: "",
+    profileLastName: "",
     profilePhotoUrl: "",
     profileBio: "",
   });
-  const [points] = useState(5);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -166,10 +157,12 @@ export function ProfilePage() {
 
   useEffect(() => {
     if (!user) return;
+    const splitName = splitProfileName(user.profileName);
 
     setForm({
-      profileName: user.profileName || user.telegramName || user.telegramUsername || "",
-      profilePhotoUrl: user.profilePhotoUrl || user.telegramPhotoUrl || "",
+      profileFirstName: user.profileFirstName ?? splitName.firstName,
+      profileLastName: user.profileLastName ?? splitName.lastName,
+      profilePhotoUrl: user.profilePhotoUrl || "",
       profileBio: user.profileBio || "",
     });
   }, [user]);
@@ -189,7 +182,6 @@ export function ProfilePage() {
   );
   const displayPhoto = user ? getDisplayPhoto(user) : null;
   const displayBio = user?.profileBio || "SERWING foydalanuvchisi";
-  const referralCode = user?.telegramId ? `TG${user.telegramId}` : "SERWING";
 
   function handleLogout() {
     logout.mutate(undefined, {
@@ -221,9 +213,6 @@ export function ProfilePage() {
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-bold">{displayName}</h1>
             <p className="line-clamp-1 text-sm text-muted-foreground">{displayBio}</p>
-            <div className="mt-1 flex items-center gap-1 text-xs text-warning">
-              <Star className="h-3 w-3 fill-warning" /> 4.9 reyting
-            </div>
           </div>
           <button
             type="button"
@@ -239,8 +228,18 @@ export function ProfilePage() {
           <form
             onSubmit={(event) => {
               event.preventDefault();
+              const profileName = [
+                form.profileFirstName,
+                form.profileLastName,
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .trim();
+
               updateProfile.mutate({
-                profileName: form.profileName,
+                profileFirstName: form.profileFirstName,
+                profileLastName: form.profileLastName,
+                profileName,
                 profilePhotoUrl: form.profilePhotoUrl,
                 profileBio: form.profileBio,
               });
@@ -248,14 +247,25 @@ export function ProfilePage() {
             className="mt-5 space-y-3 border-t border-border pt-4"
           >
             <input
-              value={form.profileName}
+              value={form.profileFirstName}
               onChange={(event) =>
                 setForm((current) => ({
                   ...current,
-                  profileName: event.target.value,
+                  profileFirstName: event.target.value,
                 }))
               }
-              placeholder="Ism familiya"
+              placeholder="Ism"
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+            />
+            <input
+              value={form.profileLastName}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  profileLastName: event.target.value,
+                }))
+              }
+              placeholder="Familiya"
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
             />
             <input
@@ -298,71 +308,14 @@ export function ProfilePage() {
         )}
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <Stat icon={Package} label="E'lonlar" value="8" />
-        <Stat icon={CheckCircle2} label="Sotilgan" value="23" />
-        <Stat icon={Clock} label="Faol" value="2" />
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-border bg-card p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Coins className="h-5 w-5" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold">{points} ball</p>
-            <p className="text-xs text-muted-foreground">
-              1 ta e&apos;lon joylash uchun 1 ball kerak
-            </p>
-          </div>
-        </div>
-        <div className="mt-3 rounded-xl bg-secondary p-3">
-          <p className="text-[10px] font-semibold uppercase text-muted-foreground">
-            Referral kod
-          </p>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <span className="truncate text-sm font-bold">{referralCode}</span>
-            <button
-              type="button"
-              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
-            >
-              <Gift className="h-3.5 w-3.5" /> +1 ball
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 rounded-2xl border border-border bg-card p-4 text-center">
-        <h2 className="text-sm font-semibold">Mening e&apos;lonlarim</h2>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Joylagan e&apos;lonlaringiz home sahifasida ko&apos;rinadi.
-        </p>
-      </div>
-
-      <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
-        {[
-          { label: "Sozlamalar", icon: Settings },
-          { label: "Mening sotuvlarim", icon: Package },
-          { label: "Chiqish", icon: LogOut, danger: true },
-        ].map((item, index) => (
-          <button
-            key={item.label}
-            type="button"
-            onClick={() => {
-              if (item.label === "Chiqish") {
-                handleLogout();
-              }
-            }}
-            className={`flex w-full items-center gap-3 px-4 py-3.5 text-sm transition-colors hover:bg-secondary ${
-              index > 0 ? "border-t border-border" : ""
-            } ${item.danger ? "text-destructive" : ""}`}
-          >
-            <item.icon className="h-4 w-4" />
-            <span className="flex-1 text-left font-medium">{item.label}</span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </button>
-        ))}
-      </div>
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold text-destructive"
+      >
+        <LogOut className="h-4 w-4" />
+        Chiqish
+      </button>
     </div>
   );
 }

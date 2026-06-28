@@ -7,11 +7,12 @@ export type AuthUser = {
   id: number;
   email: string | null;
   emailVerified: boolean;
+  profileFirstName: string | null;
+  profileLastName: string | null;
   profileName: string | null;
   profilePhotoUrl: string | null;
   profileBio: string | null;
   telegramId: string | null;
-  telegramUsername: string | null;
   telegramName: string | null;
   telegramPhotoUrl: string | null;
   telegramVerified: boolean;
