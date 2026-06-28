@@ -11,7 +11,6 @@ import {
   LogOut,
   Package,
   Save,
-  Send,
   Settings,
   Star,
   X,
@@ -104,7 +103,11 @@ export function ProfilePage() {
   const [hasToken, setHasToken] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ profileName: "", profilePhotoUrl: "" });
+  const [form, setForm] = useState({
+    profileName: "",
+    profilePhotoUrl: "",
+    profileBio: "",
+  });
   const [points] = useState(5);
 
   useEffect(() => {
@@ -167,6 +170,7 @@ export function ProfilePage() {
     setForm({
       profileName: user.profileName || user.telegramName || user.telegramUsername || "",
       profilePhotoUrl: user.profilePhotoUrl || user.telegramPhotoUrl || "",
+      profileBio: user.profileBio || "",
     });
   }, [user]);
 
@@ -184,6 +188,7 @@ export function ProfilePage() {
     [user]
   );
   const displayPhoto = user ? getDisplayPhoto(user) : null;
+  const displayBio = user?.profileBio || "SERWING foydalanuvchisi";
   const referralCode = user?.telegramId ? `TG${user.telegramId}` : "SERWING";
 
   function handleLogout() {
@@ -215,9 +220,7 @@ export function ProfilePage() {
           <Avatar name={displayName} photoUrl={displayPhoto} />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-bold">{displayName}</h1>
-            <p className="truncate text-sm text-muted-foreground">
-              {user.email || (user.telegramUsername ? `@${user.telegramUsername}` : `ID ${user.telegramId}`)}
-            </p>
+            <p className="line-clamp-1 text-sm text-muted-foreground">{displayBio}</p>
             <div className="mt-1 flex items-center gap-1 text-xs text-warning">
               <Star className="h-3 w-3 fill-warning" /> 4.9 reyting
             </div>
@@ -239,6 +242,7 @@ export function ProfilePage() {
               updateProfile.mutate({
                 profileName: form.profileName,
                 profilePhotoUrl: form.profilePhotoUrl,
+                profileBio: form.profileBio,
               });
             }}
             className="mt-5 space-y-3 border-t border-border pt-4"
@@ -265,6 +269,19 @@ export function ProfilePage() {
               placeholder="Rasm URL"
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
             />
+            <textarea
+              value={form.profileBio}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  profileBio: event.target.value,
+                }))
+              }
+              maxLength={240}
+              rows={3}
+              placeholder="Bio"
+              className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+            />
             <button
               type="submit"
               disabled={updateProfile.isPending}
@@ -279,23 +296,6 @@ export function ProfilePage() {
             </button>
           </form>
         )}
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-border bg-card p-4">
-        <h2 className="text-sm font-semibold">Kirish usullari</h2>
-        <div className="mt-3 flex items-center gap-3 rounded-xl bg-secondary px-3 py-2.5">
-          <Send className="h-4 w-4 text-primary" />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold">Telegram</p>
-            <p className="truncate text-xs text-muted-foreground">
-              {user.telegramId ? `ID ${user.telegramId}` : "Ulanmagan"}
-            </p>
-          </div>
-          <span className="rounded-full bg-success/20 px-2 py-0.5 text-[10px] font-semibold text-success">
-            Tasdiqlangan
-          </span>
-          <Avatar name={user.telegramName || displayName} photoUrl={user.telegramPhotoUrl} size="sm" />
-        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-2">
