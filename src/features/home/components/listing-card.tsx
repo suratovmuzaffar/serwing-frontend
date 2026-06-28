@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BadgeCheck, Heart } from "lucide-react";
 
 import { useFavorites } from "@/features/favorites/services/favorites";
@@ -12,8 +12,9 @@ import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function ListingCard({ item, index = 0 }: { item: Listing; index?: number }) {
   const pathname = usePathname();
+  const router = useRouter();
   const locale = getLocaleFromPath(pathname);
-  const { has, toggle } = useFavorites();
+  const { has, isAuthenticated, toggle } = useFavorites();
   const fav = has(item.id);
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -48,6 +49,12 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
+
+            if (!isAuthenticated) {
+              router.push(withLocale(locale, "/login"));
+              return;
+            }
+
             toggle(item.id, item);
           }}
           className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-foreground transition-colors hover:bg-white"

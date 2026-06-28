@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 
 import { useFavorites } from "@/features/favorites/services/favorites";
@@ -19,6 +19,7 @@ function FavoriteCard({
   onToggle: (item: Listing) => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const locale = getLocaleFromPath(pathname);
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -75,7 +76,29 @@ function FavoriteCard({
 export function FavoritesPage() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
-  const { items, toggle } = useFavorites();
+  const router = useRouter();
+  const { isAuthenticated, isLoading, items, toggle } = useFavorites();
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full border border-border bg-card">
+          <Heart className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h1 className="mt-4 text-xl font-bold">Saqlanganlar</h1>
+        <p className="mt-2 max-w-[260px] text-sm text-muted-foreground">
+          Saqlangan e&apos;lonlarni ko&apos;rish uchun Telegram orqali kiring.
+        </p>
+        <button
+          type="button"
+          onClick={() => router.push(withLocale(locale, "/login"))}
+          className="mt-5 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+        >
+          Kirish
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 pb-20 pt-6">
@@ -84,7 +107,11 @@ export function FavoritesPage() {
         Sevimli akkauntlaringiz bu yerda
       </p>
 
-      {items.length === 0 ? (
+      {isLoading ? (
+        <div className="mt-20 text-center text-sm text-muted-foreground">
+          Yuklanmoqda...
+        </div>
+      ) : items.length === 0 ? (
         <div className="mt-20 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full border border-border bg-card">
             <Heart className="h-8 w-8 text-muted-foreground" />
