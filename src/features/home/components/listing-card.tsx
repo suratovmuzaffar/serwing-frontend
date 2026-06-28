@@ -45,7 +45,7 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-            toggle(item.id);
+            toggle(item.id, item);
           }}
           className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-foreground transition-colors hover:bg-white"
           aria-label="Saqlash"

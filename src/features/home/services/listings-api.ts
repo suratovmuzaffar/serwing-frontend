@@ -2,7 +2,7 @@ import { http } from "@/services/http";
 import { ENV } from "@/config/env";
 import { categories, type Listing } from "@/lib/data";
 
-type BackendListing = {
+export type BackendListing = {
   id: number;
   title: string;
   description: string;
@@ -39,7 +39,7 @@ function getCategoryByGame(game: string) {
   );
 }
 
-function mapBackendListing(item: BackendListing): Listing {
+export function mapBackendListing(item: BackendListing): Listing {
   const category = getCategoryByGame(item.game);
   const sellerName =
     item.seller?.telegramName ||

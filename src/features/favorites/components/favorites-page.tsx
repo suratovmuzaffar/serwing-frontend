@@ -1,41 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Heart } from "lucide-react";
 
 import { useFavorites } from "@/features/favorites/services/favorites";
-import { fetchListings } from "@/features/home/services/listings-api";
-import type { Listing } from "@/lib/data";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function FavoritesPage() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
-  const [listings, setListings] = useState<Listing[]>([]);
-  const { ids: favoriteIds, toggle } = useFavorites();
-  const favoriteIdSet = useMemo(() => new Set(favoriteIds), [favoriteIds]);
-  const items = listings.filter((listing) => favoriteIdSet.has(listing.id));
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadListings() {
-      try {
-        const items = await fetchListings();
-        if (!cancelled) setListings(items);
-      } catch {
-        if (!cancelled) setListings([]);
-      }
-    }
-
-    void loadListings();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { items, toggle } = useFavorites();
 
   return (
     <div className="px-4 pb-20 pt-6">
@@ -88,7 +63,7 @@ export function FavoritesPage() {
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    toggle(item.id);
+                    toggle(item.id, item);
                   }}
                   className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-white/70 bg-white/90 text-foreground transition-colors hover:bg-white"
                   aria-label="Saqlash"

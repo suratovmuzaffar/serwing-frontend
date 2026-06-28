@@ -1,85 +1,91 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useMemo } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const FAVORITES_KEY = "gm-favorites";
-const EMPTY_FAVORITES: readonly string[] = Object.freeze([]);
+import { http } from "@/services/http";
+import { tokenStore } from "@/lib/tokenStore";
+import type { Listing } from "@/lib/data";
+import {
+  mapBackendListing,
+  type BackendListing,
+} from "@/features/home/services/listings-api";
 
-let cachedRaw: string | null = null;
-let cachedFavorites: readonly string[] = EMPTY_FAVORITES;
+type WishlistItem = {
+  id: number;
+  userId: number;
+  listingId: number;
+  createdAt: string;
+  listing: BackendListing;
+};
 
-function normalizeFavorites(value: unknown): readonly string[] {
-  if (!Array.isArray(value)) return EMPTY_FAVORITES;
-
-  const ids = value.filter((id): id is string => typeof id === "string");
-  return ids.length ? ids : EMPTY_FAVORITES;
+async function fetchWishlist() {
+  const { data } = await http.get<{ items: WishlistItem[] }>("/wishlists");
+  return data.items.map((item) => mapBackendListing(item.listing));
 }
 
-function readFavorites(): readonly string[] {
-  if (typeof window === "undefined") return EMPTY_FAVORITES;
-
-  try {
-    const raw = window.localStorage.getItem(FAVORITES_KEY);
-    if (raw === cachedRaw) return cachedFavorites;
-
-    cachedRaw = raw;
-    cachedFavorites = raw
-      ? normalizeFavorites(JSON.parse(raw))
-      : EMPTY_FAVORITES;
-
-    if (raw && cachedFavorites === EMPTY_FAVORITES) {
-      window.localStorage.removeItem(FAVORITES_KEY);
-      cachedRaw = null;
-    }
-
-    return cachedFavorites;
-  } catch {
-    cachedRaw = null;
-    cachedFavorites = EMPTY_FAVORITES;
-    window.localStorage.removeItem(FAVORITES_KEY);
-    return cachedFavorites;
-  }
+async function addToWishlist(id: string) {
+  await http.post(`/wishlists/${id}`);
 }
 
-function writeFavorites(ids: string[]) {
-  const raw = JSON.stringify(ids);
-  cachedRaw = raw;
-  cachedFavorites = ids;
-  window.localStorage.setItem(FAVORITES_KEY, raw);
-  window.dispatchEvent(new Event("serwing:favorites"));
-}
-
-function getServerSnapshot(): readonly string[] {
-  return EMPTY_FAVORITES;
-}
-
-function subscribe(callback: () => void) {
-  window.addEventListener("storage", callback);
-  window.addEventListener("serwing:favorites", callback);
-
-  return () => {
-    window.removeEventListener("storage", callback);
-    window.removeEventListener("serwing:favorites", callback);
-  };
+async function removeFromWishlist(id: string) {
+  await http.delete(`/wishlists/${id}`);
 }
 
 export function useFavorites() {
-  const ids = useSyncExternalStore<readonly string[]>(
-    subscribe,
-    readFavorites,
-    getServerSnapshot
-  );
+  const queryClient = useQueryClient();
+  const hasToken = Boolean(tokenStore.getAccessToken());
+
+  const query = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: fetchWishlist,
+    enabled: hasToken,
+    staleTime: 30_000,
+  });
+
+  const items = query.data ?? [];
+  const ids = useMemo(() => items.map((item) => item.id), [items]);
+  const idSet = useMemo(() => new Set(ids), [ids]);
+
+  const updateCache = (updater: (current: Listing[]) => Listing[]) => {
+    queryClient.setQueryData<Listing[]>(["wishlist"], (current = []) =>
+      updater(current)
+    );
+  };
+
+  const addMutation = useMutation({
+    mutationFn: addToWishlist,
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["wishlist"] }),
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: removeFromWishlist,
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["wishlist"] }),
+  });
 
   return {
     ids,
-    has: (id: string) => ids.includes(id),
-    toggle: (id: string) => {
-      const current = readFavorites();
-      const next = current.includes(id)
-        ? current.filter((favoriteId) => favoriteId !== id)
-        : [...current, id];
+    items,
+    isLoading: query.isLoading,
+    has: (id: string) => idSet.has(id),
+    toggle: (id: string, item?: Listing) => {
+      if (!hasToken) return;
 
-      writeFavorites(next);
+      if (idSet.has(id)) {
+        updateCache((current) => current.filter((listing) => listing.id !== id));
+        removeMutation.mutate(id);
+        return;
+      }
+
+      if (item) {
+        updateCache((current) =>
+          current.some((listing) => listing.id === id)
+            ? current
+            : [item, ...current]
+        );
+      }
+
+      addMutation.mutate(id);
     },
   };
 }
