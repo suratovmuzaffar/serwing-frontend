@@ -227,7 +227,7 @@ export function ProfilePage() {
   );
   const displayPhoto = user ? getDisplayPhoto(user) : null;
   const profilePhoto = form.profilePhotoUrl || displayPhoto;
-  const displayBio = user?.profileBio || "SERWING foydalanuvchisi";
+  const displayBio = user?.profileBio || "";
 
   function handleLogout() {
     logout.mutate(undefined, {
@@ -302,7 +302,11 @@ export function ProfilePage() {
           )}
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-bold">{displayName}</h1>
-            <p className="line-clamp-1 text-sm text-muted-foreground">{displayBio}</p>
+            {displayBio && (
+              <p className="line-clamp-1 text-sm text-muted-foreground">
+                {displayBio}
+              </p>
+            )}
             {editing && (
               <p className="mt-1 text-xs text-muted-foreground">
                 Avatarni almashtirish uchun rasmga bosing

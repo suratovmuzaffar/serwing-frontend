@@ -27,6 +27,20 @@ export function getTelegramInitData() {
   return hashParams.get("tgWebAppData") ?? "";
 }
 
+export function getTelegramInitUserId(initData = getTelegramInitData()) {
+  if (!initData) return "";
+
+  const userJson = new URLSearchParams(initData).get("user");
+  if (!userJson) return "";
+
+  try {
+    const user = JSON.parse(userJson) as { id?: string | number };
+    return user.id ? String(user.id) : "";
+  } catch {
+    return "";
+  }
+}
+
 export function initTelegramWebApp() {
   if (typeof window === "undefined") return;
 

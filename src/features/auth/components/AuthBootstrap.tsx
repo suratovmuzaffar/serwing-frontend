@@ -4,10 +4,15 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { telegramLinkLoginApi, telegramLoginApi } from "@/features/auth/api";
-import { setMe } from "@/features/auth/slice";
+import {
+  fetchMe,
+  telegramLinkLoginApi,
+  telegramLoginApi,
+} from "@/features/auth/api";
+import { clearMe, setMe } from "@/features/auth/slice";
 import {
   getTelegramInitData,
+  getTelegramInitUserId,
   initTelegramWebApp,
 } from "@/features/auth/services/telegram";
 import { tokenStore } from "@/lib/tokenStore";
@@ -26,11 +31,10 @@ export function AuthBootstrap() {
 
     initTelegramWebApp();
 
-    if (tokenStore.getAccessToken()) return;
-
     const searchParams = new URLSearchParams(window.location.search);
     const loginToken = searchParams.get("tgLoginToken");
     const initData = getTelegramInitData();
+    const initTelegramId = getTelegramInitUserId(initData);
     const loginKey = loginToken ? `link:${loginToken}` : initData ? `init:${initData}` : "";
 
     if (!loginKey || attemptedKeyRef.current === loginKey) return;
@@ -41,6 +45,24 @@ export function AuthBootstrap() {
 
     async function login() {
       try {
+        const existingToken = tokenStore.getAccessToken();
+
+        if (existingToken && !loginToken && initTelegramId) {
+          const currentUser = await fetchMe().catch(() => null);
+
+          if (cancelled) return;
+
+          if (currentUser?.telegramId === initTelegramId) {
+            dispatch(setMe(currentUser));
+            queryClient.setQueryData(["auth-me"], currentUser);
+            return;
+          }
+
+          tokenStore.clear();
+          dispatch(clearMe());
+          queryClient.removeQueries({ queryKey: ["auth-me"] });
+        }
+
         const result = loginToken
           ? await telegramLinkLoginApi(loginToken)
           : await telegramLoginApi(initData);
@@ -65,6 +87,8 @@ export function AuthBootstrap() {
         router.refresh();
       } catch {
         tokenStore.clear();
+        dispatch(clearMe());
+        queryClient.removeQueries({ queryKey: ["auth-me"] });
       }
     }
 
