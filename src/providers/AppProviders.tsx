@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Locale } from "@/shared/i18n/config";
 import type { Dictionary } from "@/shared/i18n/types";
 import { I18nProvider } from "@/shared/i18n/client";
+import { AuthBootstrap } from "@/features/auth/components/AuthBootstrap";
 
 export default function AppProviders({
   children,
@@ -35,6 +36,7 @@ export default function AppProviders({
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <I18nProvider locale={locale} dictionary={dictionary}>
+          <AuthBootstrap />
           {children}
         </I18nProvider>
       </QueryClientProvider>

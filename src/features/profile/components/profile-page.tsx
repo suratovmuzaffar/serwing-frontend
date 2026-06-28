@@ -19,14 +19,11 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { telegramLoginApi, updateMeApi } from "@/features/auth/api";
+import { updateMeApi } from "@/features/auth/api";
 import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { setMe } from "@/features/auth/slice";
-import {
-  getTelegramInitData,
-  initTelegramWebApp,
-} from "@/features/auth/services/telegram";
+import { getTelegramInitData } from "@/features/auth/services/telegram";
 import type { AuthUser } from "@/features/auth/types";
 import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
@@ -105,8 +102,7 @@ export function ProfilePage() {
   const queryClient = useQueryClient();
   const logout = useLogout();
   const [hasToken, setHasToken] = useState(false);
-  const [autoLoginLoading, setAutoLoginLoading] = useState(true);
-  const [authError, setAuthError] = useState("");
+  const [authChecked, setAuthChecked] = useState(false);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ profileName: "", profilePhotoUrl: "" });
   const [points] = useState(5);
@@ -114,61 +110,56 @@ export function ProfilePage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    initTelegramWebApp();
-    const existingToken = tokenStore.getAccessToken();
-    if (existingToken) {
-      setHasToken(true);
-      setAutoLoginLoading(false);
-      return;
+    const hasLoginSignal =
+      Boolean(new URLSearchParams(window.location.search).get("tgLoginToken")) ||
+      Boolean(getTelegramInitData());
+
+    function syncToken() {
+      const existingToken = tokenStore.getAccessToken();
+
+      if (existingToken) {
+        setHasToken(true);
+        setAuthChecked(true);
+        return true;
+      }
+
+      return false;
     }
 
-    const initData = getTelegramInitData();
-    if (!initData) {
-      setAutoLoginLoading(false);
+    if (syncToken()) return;
+
+    if (!hasLoginSignal) {
+      setAuthChecked(true);
       router.replace(withLocale(locale, "/login"));
       return;
     }
 
-    let cancelled = false;
-
-    async function loginFromTelegram() {
-      try {
-        const result = await telegramLoginApi(initData);
-        if (cancelled) return;
-
-        tokenStore.setTokens(result.token, result.refreshToken);
-        dispatch(setMe(result.user));
-        queryClient.setQueryData(["auth-me"], result.user);
-        setHasToken(true);
-      } catch (err) {
-        if (cancelled) return;
-        setAuthError(
-          err instanceof Error
-            ? err.message
-            : "Telegram orqali kirishda xatolik yuz berdi"
-        );
-        router.replace(withLocale(locale, "/login"));
-      } finally {
-        if (!cancelled) setAutoLoginLoading(false);
+    const startedAt = Date.now();
+    const interval = window.setInterval(() => {
+      if (syncToken()) {
+        window.clearInterval(interval);
+        return;
       }
-    }
 
-    void loginFromTelegram();
+      if (Date.now() - startedAt > 5000) {
+        window.clearInterval(interval);
+        setAuthChecked(true);
+        router.replace(withLocale(locale, "/login"));
+      }
+    }, 150);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [dispatch, locale, queryClient, router]);
+    return () => window.clearInterval(interval);
+  }, [locale, router]);
 
   const meQuery = useAuthMe(hasToken);
   const user = meQuery.data;
 
   useEffect(() => {
-    if (meQuery.isError && !autoLoginLoading) {
+    if (meQuery.isError && authChecked) {
       tokenStore.clear();
       router.replace(withLocale(locale, "/login"));
     }
-  }, [autoLoginLoading, locale, meQuery.isError, router]);
+  }, [authChecked, locale, meQuery.isError, router]);
 
   useEffect(() => {
     if (!user) return;
@@ -201,7 +192,7 @@ export function ProfilePage() {
     });
   }
 
-  if (autoLoginLoading || (hasToken && meQuery.isLoading)) {
+  if (!authChecked || (hasToken && meQuery.isLoading)) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -212,7 +203,7 @@ export function ProfilePage() {
   if (!user) {
     return (
       <div className="px-4 pt-10 text-center text-sm text-muted-foreground">
-        {authError || "Profil yuklanmoqda..."}
+        Profil yuklanmoqda...
       </div>
     );
   }

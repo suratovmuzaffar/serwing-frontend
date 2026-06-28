@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { telegramLinkLoginApi, telegramLoginApi } from "@/features/auth/api";
+import { telegramLoginApi } from "@/features/auth/api";
 import { setMe } from "@/features/auth/slice";
 import {
   getTelegramInitData,
@@ -28,38 +28,21 @@ export function LoginForm() {
   const [isInsideTelegram, setIsInsideTelegram] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ ref - useEffect dependency'ga kiritmaslik uchun
-  const autoLoginTriggered = useRef(false);
-
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     initTelegramWebApp();
-    const loginToken = new URLSearchParams(window.location.search).get("tgLoginToken");
-    if (loginToken && !autoLoginTriggered.current) {
-      autoLoginTriggered.current = true;
-      void doTokenLogin(loginToken);
-      return;
-    }
-
-    const initData = getTelegramInitData();
-    setIsInsideTelegram(!!initData);
-
-    if (initData && !autoLoginTriggered.current) {
-      autoLoginTriggered.current = true;
-      void doAutoLogin(initData);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setIsInsideTelegram(Boolean(getTelegramInitData()));
   }, []);
 
-  async function doAutoLogin(initData: string) {
+  async function doTelegramWebAppLogin(initData: string) {
     try {
       setLoading(true);
       const result = await telegramLoginApi(initData);
       tokenStore.setTokens(result.token, result.refreshToken);
       dispatch(setMe(result.user));
       queryClient.setQueryData(["auth-me"], result.user);
-      router.push(withLocale(locale, "/profile"));
+      router.replace(withLocale(locale, "/profile"));
     } catch (err) {
       setError(
         err instanceof Error
@@ -76,37 +59,16 @@ export function LoginForm() {
 
     if (typeof window === "undefined") return;
 
-    if (isInsideTelegram) {
-      const initData = getTelegramInitData();
-      if (initData) {
-        await doAutoLogin(initData);
-        return;
-      }
+    const initData = getTelegramInitData();
+    if (initData) {
+      await doTelegramWebAppLogin(initData);
+      return;
     }
 
     const opened = openTelegramBot(ENV.TELEGRAM_BOT_USERNAME, "login");
 
     if (!opened) {
       setError("Telegram bot username sozlanmagan");
-    }
-  }
-
-  async function doTokenLogin(token: string) {
-    try {
-      setLoading(true);
-      const result = await telegramLinkLoginApi(token);
-      tokenStore.setTokens(result.token, result.refreshToken);
-      dispatch(setMe(result.user));
-      queryClient.setQueryData(["auth-me"], result.user);
-      router.replace(withLocale(locale, "/profile"));
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Telegram link orqali kirishda xatolik yuz berdi"
-      );
-    } finally {
-      setLoading(false);
     }
   }
 
