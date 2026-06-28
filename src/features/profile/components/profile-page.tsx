@@ -19,7 +19,10 @@ import { updateMeApi, uploadProfileImageApi } from "@/features/auth/api";
 import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { setMe } from "@/features/auth/slice";
-import { getTelegramInitData } from "@/features/auth/services/telegram";
+import {
+  getTelegramInitData,
+  getTelegramInitUserId,
+} from "@/features/auth/services/telegram";
 import type { AuthUser } from "@/features/auth/types";
 import { getAssetUrl } from "@/lib/assets";
 import { tokenStore } from "@/lib/tokenStore";
@@ -117,6 +120,7 @@ export function ProfilePage() {
   const [hasToken, setHasToken] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [telegramInitId, setTelegramInitId] = useState("");
   const [form, setForm] = useState({
     profileFirstName: "",
     profileLastName: "",
@@ -127,6 +131,8 @@ export function ProfilePage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    setTelegramInitId(getTelegramInitUserId());
 
     const hasLoginSignal =
       Boolean(new URLSearchParams(window.location.search).get("tgLoginToken")) ||
@@ -258,6 +264,14 @@ export function ProfilePage() {
     return (
       <div className="px-4 pt-10 text-center text-sm text-muted-foreground">
         Profil yuklanmoqda...
+      </div>
+    );
+  }
+
+  if (telegramInitId && user.telegramId !== telegramInitId) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }

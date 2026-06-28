@@ -1,29 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
-import { telegramLoginApi } from "@/features/auth/api";
-import { setMe } from "@/features/auth/slice";
 import {
   getTelegramInitData,
   initTelegramWebApp,
   openTelegramBot,
 } from "@/features/auth/services/telegram";
-import { tokenStore } from "@/lib/tokenStore";
-import { useAppDispatch } from "@/store/hooks";
 import { ENV } from "@/config/env";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 export function LoginForm() {
-  const router = useRouter();
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
-  const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
   const [error, setError] = useState("");
   const [isInsideTelegram, setIsInsideTelegram] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,42 +27,21 @@ export function LoginForm() {
     setIsInsideTelegram(Boolean(getTelegramInitData()));
   }, []);
 
-  async function doTelegramWebAppLogin(initData: string) {
-    try {
-      setLoading(true);
-      const result = await telegramLoginApi(initData);
-      tokenStore.setTokens(result.token, result.refreshToken);
-      dispatch(setMe(result.user));
-      queryClient.setQueryData(["auth-me"], result.user);
-      router.replace(withLocale(locale, "/profile"));
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "";
-      setError(
-        message.includes("403")
-          ? "Avval botda /start bosing, keyin qayta urinib ko'ring."
-          : message || "Telegram orqali kirishda xatolik yuz berdi"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleTelegramLogin() {
+  function handleTelegramLogin() {
     setError("");
 
     if (typeof window === "undefined") return;
 
-    const initData = getTelegramInitData();
-    if (initData) {
-      await doTelegramWebAppLogin(initData);
-      return;
-    }
-
+    setLoading(true);
     const opened = openTelegramBot(ENV.TELEGRAM_BOT_USERNAME, "login");
 
     if (!opened) {
       setError("Telegram bot username sozlanmagan");
+      setLoading(false);
+      return;
     }
+
+    window.setTimeout(() => setLoading(false), 1200);
   }
 
   if (isInsideTelegram && loading) {

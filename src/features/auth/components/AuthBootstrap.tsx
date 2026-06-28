@@ -89,6 +89,10 @@ export function AuthBootstrap() {
         tokenStore.clear();
         dispatch(clearMe());
         queryClient.removeQueries({ queryKey: ["auth-me"] });
+
+        if (!pathname.includes("/login")) {
+          router.replace(withLocale(getLocaleFromPath(pathname), "/login"));
+        }
       }
     }
 
