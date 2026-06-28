@@ -44,10 +44,11 @@ export function LoginForm() {
       queryClient.setQueryData(["auth-me"], result.user);
       router.replace(withLocale(locale, "/profile"));
     } catch (err) {
+      const message = err instanceof Error ? err.message : "";
       setError(
-        err instanceof Error
-          ? err.message
-          : "Telegram orqali kirishda xatolik yuz berdi"
+        message.includes("403")
+          ? "Avval botda /start bosing, keyin qayta urinib ko'ring."
+          : message || "Telegram orqali kirishda xatolik yuz berdi"
       );
     } finally {
       setLoading(false);
