@@ -2,9 +2,12 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import {
+  ChevronRight,
   Loader2,
   LogOut,
+  Package,
   Save,
+  Send,
   Settings,
   X,
 } from "lucide-react";
@@ -66,6 +69,24 @@ function getDisplayName(user: AuthUser) {
 
 function getDisplayPhoto(user: AuthUser) {
   return user.profilePhotoUrl || null;
+}
+
+function TelegramAvatar({ photoUrl }: { photoUrl?: string | null }) {
+  if (photoUrl) {
+    return (
+      <div
+        className="h-11 w-11 shrink-0 rounded-full bg-cover bg-center"
+        style={{ backgroundImage: `url("${photoUrl}")` }}
+        aria-label="Telegram rasmi"
+      />
+    );
+  }
+
+  return (
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <Send className="h-5 w-5" />
+    </div>
+  );
 }
 
 function splitProfileName(profileName?: string | null) {
@@ -308,14 +329,50 @@ export function ProfilePage() {
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold text-destructive"
-      >
-        <LogOut className="h-4 w-4" />
-        Chiqish
-      </button>
+      <div className="mt-5 rounded-2xl border border-border bg-card p-4">
+        <p className="mb-3 text-sm font-semibold">Ulanganlar</p>
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Send className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">Telegram</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {user.telegramId ? `ID: ${user.telegramId}` : "Ulanmagan"}
+            </p>
+          </div>
+          <TelegramAvatar photoUrl={user.telegramPhotoUrl} />
+        </div>
+      </div>
+
+      <div className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
+        {[
+          { label: "Sozlamalar", icon: Settings },
+          { label: "Mening sotuvlarim", icon: Package },
+          { label: "Chiqish", icon: LogOut, danger: true },
+        ].map((item, index) => (
+          <button
+            key={item.label}
+            type="button"
+            onClick={() => {
+              if (item.label === "Chiqish") {
+                handleLogout();
+              }
+            }}
+            className={`flex w-full items-center gap-3 px-4 py-3.5 text-sm transition-colors hover:bg-secondary ${
+              index === 0 ? "bg-secondary" : ""
+            } ${index > 0 ? "border-t border-border" : ""} ${
+              item.danger ? "text-destructive" : ""
+            }`}
+          >
+            <item.icon className="h-4 w-4 shrink-0" />
+            <span className="min-w-0 flex-1 text-left font-medium">
+              {item.label}
+            </span>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
