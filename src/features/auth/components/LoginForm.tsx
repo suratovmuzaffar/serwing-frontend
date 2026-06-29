@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import {
   getTelegramInitData,
   initTelegramWebApp,
-  openTelegramMiniApp,
+  openTelegramBot,
 } from "@/features/auth/services/telegram";
 import { ENV } from "@/config/env";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
@@ -51,11 +51,7 @@ export function LoginForm() {
     if (typeof window === "undefined") return;
 
     setLoading(true);
-    const opened = openTelegramMiniApp(
-      ENV.TELEGRAM_BOT_USERNAME,
-      "profile",
-      ENV.TELEGRAM_WEB_APP_SHORT_NAME
-    );
+    const opened = openTelegramBot(ENV.TELEGRAM_BOT_USERNAME, "profile");
 
     if (!opened) {
       setError("Telegram bot username sozlanmagan");
