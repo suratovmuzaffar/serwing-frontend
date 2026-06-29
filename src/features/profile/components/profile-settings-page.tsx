@@ -76,11 +76,11 @@ function ProfileField({
   multiline?: boolean;
 }) {
   const fieldClass =
-    "w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-center text-sm font-medium outline-none transition-colors placeholder:text-muted-foreground focus:border-primary";
+    "mt-1.5 w-full rounded-2xl border border-border bg-card px-4 py-3 text-left text-sm font-semibold outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:bg-white";
 
   return (
     <label className="block">
-      <span className="text-xs font-semibold text-muted-foreground">{label}</span>
+      <span className="px-1 text-xs font-semibold text-muted-foreground">{label}</span>
       {multiline ? (
         <textarea
           value={value}
@@ -88,7 +88,7 @@ function ProfileField({
           maxLength={240}
           rows={3}
           placeholder={placeholder}
-          className={`${fieldClass} min-h-24 resize-none leading-5`}
+          className={`${fieldClass} min-h-28 resize-none leading-5`}
         />
       ) : (
         <input
@@ -226,7 +226,7 @@ export function ProfileSettingsPage() {
             profileBio: form.profileBio,
           });
         }}
-        className="mx-auto mt-8 max-w-sm space-y-5"
+        className="mx-auto mt-8 max-w-sm space-y-4"
       >
         <label
           className="mx-auto flex w-max cursor-pointer flex-col items-center gap-2"
@@ -257,7 +257,7 @@ export function ProfileSettingsPage() {
           />
         </label>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <ProfileField
             label="Ism"
             value={form.profileFirstName}
