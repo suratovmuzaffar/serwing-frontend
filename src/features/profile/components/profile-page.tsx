@@ -246,8 +246,8 @@ export function ProfilePage() {
       <div className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
         {[
           { label: "Profil sozlamalari", icon: CircleUserRound, action: "profile" },
+          { label: "E'lonlarim", icon: Package, action: "listings" },
           { label: "Sozlamalar", icon: Settings },
-          { label: "Mening sotuvlarim", icon: Package },
           { label: "Chiqish", icon: LogOut, danger: true },
         ].map((item, index) => (
           <button
@@ -255,7 +255,11 @@ export function ProfilePage() {
             type="button"
             onClick={() => {
               if (item.action === "profile") {
-                router.push(withLocale(locale, "/profile/settings"));
+                router.push(withLocale(locale, "/profile-settings"));
+              }
+
+              if (item.action === "listings") {
+                router.push(withLocale(locale, "/my-listings"));
               }
 
               if (item.label === "Chiqish") {
