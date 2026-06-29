@@ -120,7 +120,9 @@ export function ProfilePage() {
   const [hasToken, setHasToken] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [telegramInitId, setTelegramInitId] = useState("");
+  const [telegramInitId, setTelegramInitId] = useState(() =>
+    typeof window === "undefined" ? "" : getTelegramInitUserId()
+  );
   const [form, setForm] = useState({
     profileFirstName: "",
     profileLastName: "",
@@ -140,6 +142,19 @@ export function ProfilePage() {
       Boolean(new URLSearchParams(window.location.search).get("tgLoginToken")) ||
       Boolean(getTelegramInitData());
 
+    if (!hasLoginSignal) {
+      const redirectTimeout = window.setTimeout(() => {
+        tokenStore.clear();
+        setAuthChecked(true);
+        router.replace(withLocale(locale, "/login"));
+      }, 0);
+
+      return () => {
+        window.clearTimeout(telegramInitIdTimeout);
+        window.clearTimeout(redirectTimeout);
+      };
+    }
+
     function syncToken() {
       const existingToken = tokenStore.getAccessToken();
 
@@ -154,18 +169,6 @@ export function ProfilePage() {
 
     if (syncToken()) {
       return () => window.clearTimeout(telegramInitIdTimeout);
-    }
-
-    if (!hasLoginSignal) {
-      const redirectTimeout = window.setTimeout(() => {
-        setAuthChecked(true);
-        router.replace(withLocale(locale, "/login"));
-      }, 0);
-
-      return () => {
-        window.clearTimeout(telegramInitIdTimeout);
-        window.clearTimeout(redirectTimeout);
-      };
     }
 
     const startedAt = Date.now();

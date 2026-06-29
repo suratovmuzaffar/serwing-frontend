@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 import {
-  fetchMe,
   telegramLinkLoginApi,
   telegramLoginApi,
 } from "@/features/auth/api";
@@ -54,20 +53,7 @@ export function AuthBootstrap() {
 
     async function login() {
       try {
-        const existingToken = tokenStore.getAccessToken();
-
-        if (existingToken && !loginToken && initTelegramId) {
-          const currentUser = await fetchMe().catch(() => null);
-
-          if (cancelled) return;
-
-          if (currentUser?.telegramId === initTelegramId) {
-            dispatch(setMe(currentUser));
-            queryClient.setQueryData(["auth-me"], currentUser);
-            cleanLoginTokenFromUrl();
-            return;
-          }
-
+        if (initTelegramId) {
           tokenStore.clear();
           dispatch(clearMe());
           queryClient.removeQueries({ queryKey: ["auth-me"] });
