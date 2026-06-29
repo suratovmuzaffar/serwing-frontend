@@ -13,6 +13,9 @@ import {
 import { ENV } from "@/config/env";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
+const TELEGRAM_DETECT_WAIT_MS = 4000;
+const TELEGRAM_DETECT_POLL_MS = 100;
+
 export function LoginForm() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
@@ -24,11 +27,22 @@ export function LoginForm() {
     if (typeof window === "undefined") return;
 
     initTelegramWebApp();
-    const timeout = window.setTimeout(() => {
-      setIsInsideTelegram(Boolean(getTelegramInitData()));
-    }, 0);
+    const startedAt = Date.now();
+    const interval = window.setInterval(() => {
+      initTelegramWebApp();
 
-    return () => window.clearTimeout(timeout);
+      if (getTelegramInitData()) {
+        setIsInsideTelegram(true);
+        window.clearInterval(interval);
+        return;
+      }
+
+      if (Date.now() - startedAt >= TELEGRAM_DETECT_WAIT_MS) {
+        window.clearInterval(interval);
+      }
+    }, TELEGRAM_DETECT_POLL_MS);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   function handleTelegramLogin() {

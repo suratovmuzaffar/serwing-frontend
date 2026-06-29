@@ -18,6 +18,9 @@ import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
+const TELEGRAM_LOGIN_WAIT_MS = 4000;
+const TELEGRAM_LOGIN_POLL_MS = 100;
+
 export function AuthBootstrap() {
   const pathname = usePathname();
   const router = useRouter();
@@ -30,20 +33,9 @@ export function AuthBootstrap() {
 
     initTelegramWebApp();
 
-    const searchParams = new URLSearchParams(window.location.search);
-    const rawLoginToken = searchParams.get("tgLoginToken");
-    const initData = getTelegramInitData();
-    const initTelegramId = getTelegramInitUserId(initData);
-    const loginToken = initData ? "" : rawLoginToken;
-    const loginKey = initData ? `init:${initData}` : loginToken ? `link:${loginToken}` : "";
-
-    if (!loginKey || attemptedKeyRef.current === loginKey) return;
-
-    attemptedKeyRef.current = loginKey;
-
     let cancelled = false;
 
-    function cleanLoginTokenFromUrl() {
+    function cleanLoginTokenFromUrl(rawLoginToken: string | null) {
       if (!rawLoginToken) return;
 
       const cleanUrl = new URL(window.location.href);
@@ -51,7 +43,17 @@ export function AuthBootstrap() {
       window.history.replaceState(null, "", cleanUrl.toString());
     }
 
-    async function login() {
+    async function login({
+      initData,
+      initTelegramId,
+      loginToken,
+      rawLoginToken,
+    }: {
+      initData: string;
+      initTelegramId: string;
+      loginToken: string;
+      rawLoginToken: string | null;
+    }) {
       try {
         if (initTelegramId) {
           tokenStore.clear();
@@ -73,7 +75,7 @@ export function AuthBootstrap() {
         dispatch(setMe(result.user));
         queryClient.setQueryData(["auth-me"], result.user);
 
-        cleanLoginTokenFromUrl();
+        cleanLoginTokenFromUrl(rawLoginToken);
 
         if (pathname.includes("/login")) {
           router.replace(withLocale(getLocaleFromPath(pathname), "/profile"));
@@ -92,10 +94,37 @@ export function AuthBootstrap() {
       }
     }
 
-    void login();
+    const startedAt = Date.now();
+    const interval = window.setInterval(() => {
+      initTelegramWebApp();
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const rawLoginToken = searchParams.get("tgLoginToken");
+      const initData = getTelegramInitData();
+      const initTelegramId = getTelegramInitUserId(initData);
+      const loginToken = initData ? "" : rawLoginToken || "";
+      const loginKey = initData ? `init:${initData}` : loginToken ? `link:${loginToken}` : "";
+
+      if (!loginKey) {
+        if (Date.now() - startedAt >= TELEGRAM_LOGIN_WAIT_MS) {
+          window.clearInterval(interval);
+        }
+        return;
+      }
+
+      if (attemptedKeyRef.current === loginKey) {
+        window.clearInterval(interval);
+        return;
+      }
+
+      attemptedKeyRef.current = loginKey;
+      window.clearInterval(interval);
+      void login({ initData, initTelegramId, loginToken, rawLoginToken });
+    }, TELEGRAM_LOGIN_POLL_MS);
 
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
     };
   }, [dispatch, pathname, queryClient, router]);
 
