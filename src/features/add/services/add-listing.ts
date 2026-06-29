@@ -29,6 +29,6 @@ export async function uploadListingImage(file: File) {
 }
 
 export async function createListing(payload: CreateListingPayload) {
-  const { data } = await http.post("/listings", payload);
+  const { data } = await http.post("/announcements", payload);
   return data;
 }

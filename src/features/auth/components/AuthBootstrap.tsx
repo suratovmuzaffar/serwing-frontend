@@ -12,6 +12,7 @@ import { clearMe, setMe } from "@/features/auth/slice";
 import {
   getTelegramInitData,
   getTelegramInitUserId,
+  getTelegramStartParam,
   initTelegramWebApp,
 } from "@/features/auth/services/telegram";
 import { tokenStore } from "@/lib/tokenStore";
@@ -35,11 +36,12 @@ export function AuthBootstrap() {
 
     let cancelled = false;
 
-    function cleanLoginTokenFromUrl(rawLoginToken: string | null) {
+    function cleanLoginParamsFromUrl(rawLoginToken: string | null) {
       if (!rawLoginToken) return;
 
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete("tgLoginToken");
+      cleanUrl.searchParams.delete("tgOpen");
       window.history.replaceState(null, "", cleanUrl.toString());
     }
 
@@ -48,11 +50,15 @@ export function AuthBootstrap() {
       initTelegramId,
       loginToken,
       rawLoginToken,
+      startParam,
+      openTarget,
     }: {
       initData: string;
       initTelegramId: string;
       loginToken: string;
       rawLoginToken: string | null;
+      startParam: string;
+      openTarget: string;
     }) {
       try {
         if (initTelegramId) {
@@ -75,9 +81,16 @@ export function AuthBootstrap() {
         dispatch(setMe(result.user));
         queryClient.setQueryData(["auth-me"], result.user);
 
-        cleanLoginTokenFromUrl(rawLoginToken);
+        cleanLoginParamsFromUrl(rawLoginToken);
 
-        if (pathname.includes("/login")) {
+        const shouldOpenProfile =
+          pathname.includes("/login") ||
+          openTarget === "profile" ||
+          startParam === "login" ||
+          startParam === "profile" ||
+          startParam.startsWith("ref");
+
+        if (shouldOpenProfile) {
           router.replace(withLocale(getLocaleFromPath(pathname), "/profile"));
           return;
         }
@@ -100,8 +113,10 @@ export function AuthBootstrap() {
 
       const searchParams = new URLSearchParams(window.location.search);
       const rawLoginToken = searchParams.get("tgLoginToken");
+      const openTarget = searchParams.get("tgOpen") || "";
       const initData = getTelegramInitData();
       const initTelegramId = getTelegramInitUserId(initData);
+      const startParam = getTelegramStartParam(initData);
       const loginToken = initData ? "" : rawLoginToken || "";
       const loginKey = initData ? `init:${initData}` : loginToken ? `link:${loginToken}` : "";
 
@@ -119,7 +134,14 @@ export function AuthBootstrap() {
 
       attemptedKeyRef.current = loginKey;
       window.clearInterval(interval);
-      void login({ initData, initTelegramId, loginToken, rawLoginToken });
+      void login({
+        initData,
+        initTelegramId,
+        loginToken,
+        rawLoginToken,
+        startParam,
+        openTarget,
+      });
     }, TELEGRAM_LOGIN_POLL_MS);
 
     return () => {

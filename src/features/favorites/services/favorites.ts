@@ -7,16 +7,16 @@ import { http } from "@/services/http";
 import { tokenStore } from "@/lib/tokenStore";
 import type { Listing } from "@/lib/data";
 import {
-  mapBackendListing,
-  type BackendListing,
-} from "@/features/home/services/listings-api";
+  mapBackendAnnouncement,
+  type BackendAnnouncement,
+} from "@/features/home/services/announcements-api";
 
 type WishlistItem = {
   id: number;
   userId: number;
   listingId: number;
   createdAt: string;
-  listing: BackendListing;
+  listing: BackendAnnouncement;
 };
 
 type WishlistResponse = {
@@ -51,12 +51,12 @@ export function useAccessTokenSnapshot() {
 
 async function fetchWishlist() {
   const { data } = await http.get<WishlistResponse>("/wishlists");
-  return data.items.map((item) => mapBackendListing(item.listing));
+  return data.items.map((item) => mapBackendAnnouncement(item.listing));
 }
 
 async function addToWishlist(id: string) {
   const { data } = await http.post<WishlistAddResponse>(`/wishlists/${id}`);
-  return mapBackendListing(data.item.listing);
+  return mapBackendAnnouncement(data.item.listing);
 }
 
 async function removeFromWishlist(id: string) {

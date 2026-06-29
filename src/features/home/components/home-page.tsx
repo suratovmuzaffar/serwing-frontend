@@ -11,7 +11,7 @@ import {
   sortListings,
   type ListingFilter as ListingFilterValue,
 } from "@/features/home/services/listing-filters";
-import { fetchListings } from "@/features/home/services/listings-api";
+import { fetchAnnouncements } from "@/features/home/services/announcements-api";
 import { categories } from "@/lib/data";
 import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -26,9 +26,9 @@ export function HomePage() {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadListings() {
+    async function loadAnnouncements() {
       try {
-        const items = await fetchListings();
+        const items = await fetchAnnouncements();
         if (!cancelled) setRemoteListings(items);
       } catch {
         if (!cancelled) setRemoteListings([]);
@@ -37,7 +37,7 @@ export function HomePage() {
       }
     }
 
-    void loadListings();
+    void loadAnnouncements();
 
     return () => {
       cancelled = true;

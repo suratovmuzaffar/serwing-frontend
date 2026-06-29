@@ -2,7 +2,7 @@ import { http } from "@/services/http";
 import { getAssetUrl } from "@/lib/assets";
 import { categories, type Listing } from "@/lib/data";
 
-export type BackendListing = {
+export type BackendAnnouncement = {
   id: number;
   title: string;
   description: string;
@@ -28,7 +28,7 @@ function getCategoryByGame(game: string) {
   );
 }
 
-export function mapBackendListing(item: BackendListing): Listing {
+export function mapBackendAnnouncement(item: BackendAnnouncement): Listing {
   const category = getCategoryByGame(item.game);
   const sellerFullName = [
     item.seller?.profileFirstName,
@@ -63,7 +63,9 @@ export function mapBackendListing(item: BackendListing): Listing {
   };
 }
 
-export async function fetchListings() {
-  const { data } = await http.get<{ listings: BackendListing[] }>("/listings");
-  return data.listings.map(mapBackendListing);
+export async function fetchAnnouncements() {
+  const { data } = await http.get<{ announcements: BackendAnnouncement[] }>(
+    "/announcements"
+  );
+  return data.announcements.map(mapBackendAnnouncement);
 }

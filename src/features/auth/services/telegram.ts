@@ -41,6 +41,12 @@ export function getTelegramInitUserId(initData = getTelegramInitData()) {
   }
 }
 
+export function getTelegramStartParam(initData = getTelegramInitData()) {
+  if (!initData) return "";
+
+  return new URLSearchParams(initData).get("start_param") ?? "";
+}
+
 export function initTelegramWebApp() {
   if (typeof window === "undefined") return;
 
@@ -61,11 +67,26 @@ export function getTelegramBotStartUrl(username: string, start = "login") {
   return `https://t.me/${cleanUsername}?start=${cleanStart}`;
 }
 
-export function openTelegramBot(username: string, start = "login") {
-  if (typeof window === "undefined") return false;
+export function getTelegramMiniAppStartUrl(
+  username: string,
+  start = "login",
+  appShortName = ""
+) {
+  const cleanUsername = username.trim().replace(/^@/, "");
+  const cleanAppShortName = appShortName.trim().replace(/^\/+|\/+$/g, "");
+  const cleanStart = encodeURIComponent(start);
 
-  const url = getTelegramBotStartUrl(username, start);
-  if (!url) return false;
+  if (!cleanUsername) return "";
+
+  const baseUrl = cleanAppShortName
+    ? `https://t.me/${cleanUsername}/${cleanAppShortName}`
+    : `https://t.me/${cleanUsername}`;
+
+  return `${baseUrl}?startapp=${cleanStart}`;
+}
+
+export function openTelegramUrl(url: string) {
+  if (typeof window === "undefined" || !url) return false;
 
   if (window.Telegram?.WebApp?.openTelegramLink) {
     window.Telegram.WebApp.openTelegramLink(url);
@@ -74,4 +95,18 @@ export function openTelegramBot(username: string, start = "login") {
   }
 
   return true;
+}
+
+export function openTelegramBot(username: string, start = "login") {
+  const url = getTelegramBotStartUrl(username, start);
+  return openTelegramUrl(url);
+}
+
+export function openTelegramMiniApp(
+  username: string,
+  start = "login",
+  appShortName = ""
+) {
+  const url = getTelegramMiniAppStartUrl(username, start, appShortName);
+  return openTelegramUrl(url);
 }

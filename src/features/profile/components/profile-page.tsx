@@ -259,7 +259,7 @@ export function ProfilePage() {
               }
 
               if (item.action === "listings") {
-                router.push(withLocale(locale, "/my-listings"));
+                router.push(withLocale(locale, "/my-announcements"));
               }
 
               if (item.label === "Chiqish") {

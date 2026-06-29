@@ -18,13 +18,13 @@ import { getAssetUrl } from "@/lib/assets";
 import { tokenStore } from "@/lib/tokenStore";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 import {
-  deleteMyListing,
-  fetchMyListings,
-  type MyListing,
-  updateMyListing,
-} from "@/features/my-listings/services/my-listings";
+  deleteMyAnnouncement,
+  fetchMyAnnouncements,
+  type MyAnnouncement,
+  updateMyAnnouncement,
+} from "@/features/my-announcements/services/my-announcements";
 
-type ListingForm = {
+type AnnouncementForm = {
   title: string;
   description: string;
   price: string;
@@ -32,13 +32,13 @@ type ListingForm = {
   rank: string;
 };
 
-function toForm(listing: MyListing): ListingForm {
+function toForm(announcement: MyAnnouncement): AnnouncementForm {
   return {
-    title: listing.title || "",
-    description: listing.description || "",
-    price: String(listing.price || ""),
-    game: listing.game || categories[0]?.name || "",
-    rank: listing.rank || "",
+    title: announcement.title || "",
+    description: announcement.description || "",
+    price: String(announcement.price || ""),
+    game: announcement.game || categories[0]?.name || "",
+    rank: announcement.rank || "",
   };
 }
 
@@ -60,14 +60,14 @@ function Field({
 const inputClass =
   "mt-1.5 w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold outline-none transition-colors placeholder:text-muted-foreground focus:border-primary";
 
-export function MyListingsPage() {
+export function MyAnnouncementsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [form, setForm] = useState<ListingForm>({
+  const [form, setForm] = useState<AnnouncementForm>({
     title: "",
     description: "",
     price: "",
@@ -81,13 +81,13 @@ export function MyListingsPage() {
     }
   }, [locale, router]);
 
-  const listingsQuery = useQuery({
-    queryKey: ["my-listings"],
-    queryFn: fetchMyListings,
+  const announcementsQuery = useQuery({
+    queryKey: ["my-announcements"],
+    queryFn: fetchMyAnnouncements,
     enabled: Boolean(tokenStore.getAccessToken()),
   });
 
-  const updateListing = useMutation({
+  const updateAnnouncement = useMutation({
     mutationFn: async () => {
       if (!editingId) throw new Error("E'lon tanlanmagan");
 
@@ -96,7 +96,7 @@ export function MyListingsPage() {
         throw new Error("Narx noto'g'ri");
       }
 
-      return updateMyListing(editingId, {
+      return updateMyAnnouncement(editingId, {
         title: form.title.trim(),
         description: form.description.trim(),
         price,
@@ -106,23 +106,23 @@ export function MyListingsPage() {
     },
     onSuccess: () => {
       setEditingId(null);
-      queryClient.invalidateQueries({ queryKey: ["my-listings"] });
-      queryClient.invalidateQueries({ queryKey: ["listings"] });
+      queryClient.invalidateQueries({ queryKey: ["my-announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
     },
   });
 
-  const removeListing = useMutation({
-    mutationFn: deleteMyListing,
+  const removeAnnouncement = useMutation({
+    mutationFn: deleteMyAnnouncement,
     onSuccess: () => {
       setDeleteId(null);
-      queryClient.invalidateQueries({ queryKey: ["my-listings"] });
-      queryClient.invalidateQueries({ queryKey: ["listings"] });
+      queryClient.invalidateQueries({ queryKey: ["my-announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
     },
   });
 
-  function startEdit(listing: MyListing) {
-    setEditingId(listing.id);
-    setForm(toForm(listing));
+  function startEdit(announcement: MyAnnouncement) {
+    setEditingId(announcement.id);
+    setForm(toForm(announcement));
   }
 
   return (
@@ -142,23 +142,23 @@ export function MyListingsPage() {
         </div>
       </div>
 
-      {listingsQuery.isLoading ? (
+      {announcementsQuery.isLoading ? (
         <div className="flex min-h-[55vh] items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      ) : listingsQuery.data?.length ? (
+      ) : announcementsQuery.data?.length ? (
         <div className="mt-6 space-y-3 pb-24">
-          {listingsQuery.data.map((listing) => (
+          {announcementsQuery.data.map((announcement) => (
             <div
-              key={listing.id}
+              key={announcement.id}
               className="overflow-hidden rounded-2xl border border-border bg-card"
             >
               <div className="flex gap-3 p-3">
                 <div className="h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-muted">
-                  {listing.imageUrl ? (
+                  {announcement.imageUrl ? (
                     <img
-                      src={getAssetUrl(listing.imageUrl)}
-                      alt={listing.title}
+                      src={getAssetUrl(announcement.imageUrl)}
+                      alt={announcement.title}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -170,22 +170,22 @@ export function MyListingsPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <h2 className="line-clamp-1 text-sm font-bold">{listing.title}</h2>
-                      <p className="mt-1 text-xs font-medium text-primary">{listing.game}</p>
+                      <h2 className="line-clamp-1 text-sm font-bold">{announcement.title}</h2>
+                      <p className="mt-1 text-xs font-medium text-primary">{announcement.game}</p>
                     </div>
                     <span className="shrink-0 rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold">
-                      {listing.status}
+                      {announcement.status}
                     </span>
                   </div>
                   <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">
-                    {listing.description}
+                    {announcement.description}
                   </p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-base font-bold">${listing.price}</span>
+                    <span className="text-base font-bold">${announcement.price}</span>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => startEdit(listing)}
+                        onClick={() => startEdit(announcement)}
                         className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-foreground"
                         aria-label="Tahrirlash"
                       >
@@ -193,7 +193,7 @@ export function MyListingsPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setDeleteId(listing.id)}
+                        onClick={() => setDeleteId(announcement.id)}
                         className="flex h-9 w-9 items-center justify-center rounded-full bg-destructive/10 text-destructive"
                         aria-label="O'chirish"
                       >
@@ -204,11 +204,11 @@ export function MyListingsPage() {
                 </div>
               </div>
 
-              {editingId === listing.id && (
+              {editingId === announcement.id && (
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
-                    updateListing.mutate();
+                    updateAnnouncement.mutate();
                   }}
                   className="space-y-3 border-t border-border p-3"
                 >
@@ -271,10 +271,10 @@ export function MyListingsPage() {
                       className={`${inputClass} resize-none leading-5`}
                     />
                   </Field>
-                  {updateListing.isError && (
+                  {updateAnnouncement.isError && (
                     <p className="text-xs text-destructive">
-                      {updateListing.error instanceof Error
-                        ? updateListing.error.message
+                      {updateAnnouncement.error instanceof Error
+                        ? updateAnnouncement.error.message
                         : "Saqlashda xatolik"}
                     </p>
                   )}
@@ -289,10 +289,10 @@ export function MyListingsPage() {
                     </button>
                     <button
                       type="submit"
-                      disabled={updateListing.isPending}
+                      disabled={updateAnnouncement.isPending}
                       className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-70"
                     >
-                      {updateListing.isPending ? (
+                      {updateAnnouncement.isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <Save className="h-4 w-4" />
@@ -341,11 +341,11 @@ export function MyListingsPage() {
               </button>
               <button
                 type="button"
-                disabled={removeListing.isPending}
-                onClick={() => removeListing.mutate(deleteId)}
+                disabled={removeAnnouncement.isPending}
+                onClick={() => removeAnnouncement.mutate(deleteId)}
                 className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive text-sm font-semibold text-destructive-foreground disabled:opacity-70"
               >
-                {removeListing.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {removeAnnouncement.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 O&apos;chirish
               </button>
             </div>
@@ -356,4 +356,4 @@ export function MyListingsPage() {
   );
 }
 
-export default MyListingsPage;
+export default MyAnnouncementsPage;
