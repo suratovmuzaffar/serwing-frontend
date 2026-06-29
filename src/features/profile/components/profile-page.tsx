@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Camera,
   ChevronRight,
+  CircleUserRound,
   Loader2,
   LogOut,
   Package,
@@ -344,49 +345,7 @@ export function ProfilePage() {
     <div className="px-4 pt-6">
       <section className="px-2 pb-2 pt-2">
         <div className="relative flex flex-col items-center text-center">
-          <button
-            type="button"
-            onClick={() => setEditing((value) => !value)}
-            className="absolute right-0 top-0 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary/80 text-foreground transition-colors hover:bg-accent"
-            aria-label="Profilni tahrirlash"
-          >
-            {editing ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-          </button>
-
-          {editing ? (
-            <label
-              className="group relative block cursor-pointer"
-              aria-label="Profil rasmini almashtirish"
-            >
-              <Avatar name={displayName} photoUrl={profilePhoto} size="xl" />
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white transition-colors group-hover:bg-black/35">
-                {uploadProfileImage.isPending ? (
-                  <Loader2 className="h-5 w-5 animate-spin opacity-100" />
-                ) : (
-                  <Camera className="h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100" />
-                )}
-              </span>
-              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm">
-                {uploadProfileImage.isPending ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Camera className="h-3.5 w-3.5" />
-                )}
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                disabled={uploadProfileImage.isPending}
-                onChange={(event) => {
-                  handleProfileImageChange(event.target.files?.[0]);
-                  event.target.value = "";
-                }}
-                className="sr-only"
-              />
-            </label>
-          ) : (
-            <Avatar name={displayName} photoUrl={displayPhoto} size="xl" />
-          )}
+          <Avatar name={displayName} photoUrl={displayPhoto} size="xl" />
           <div className="mt-3 w-full min-w-0 px-10">
             <h1 className="truncate text-2xl font-bold leading-tight">{displayName}</h1>
             {displayBio && (
@@ -394,86 +353,8 @@ export function ProfilePage() {
                 {displayBio}
               </p>
             )}
-            {editing && imageUploadError && (
-              <p className="mt-2 text-xs text-destructive">{imageUploadError}</p>
-            )}
           </div>
         </div>
-
-        {editing && (
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (uploadProfileImage.isPending) return;
-
-              const profileName = [
-                form.profileFirstName,
-                form.profileLastName,
-              ]
-                .filter(Boolean)
-                .join(" ")
-                .trim();
-
-              updateProfile.mutate({
-                profileFirstName: form.profileFirstName,
-                profileLastName: form.profileLastName,
-                profileName,
-                profilePhotoUrl: form.profilePhotoUrl,
-                profileBio: form.profileBio,
-              });
-            }}
-            className="mx-auto mt-5 max-w-sm space-y-4 border-t border-border/70 pt-4"
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <ProfileField
-                label="Ism"
-                value={form.profileFirstName}
-                onChange={(value) =>
-                  setForm((current) => ({
-                    ...current,
-                    profileFirstName: value,
-                  }))
-                }
-                placeholder="Ism"
-              />
-              <ProfileField
-                label="Familiya"
-                value={form.profileLastName}
-                onChange={(value) =>
-                  setForm((current) => ({
-                    ...current,
-                    profileLastName: value,
-                  }))
-                }
-                placeholder="Familiya"
-              />
-            </div>
-            <ProfileField
-              label="Bio"
-              value={form.profileBio}
-              onChange={(value) =>
-                setForm((current) => ({
-                  ...current,
-                  profileBio: value,
-                }))
-              }
-              placeholder="Bio"
-              multiline
-            />
-            <button
-              type="submit"
-              disabled={updateProfile.isPending || uploadProfileImage.isPending}
-              className="mx-auto flex h-11 min-w-36 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-70"
-            >
-              {updateProfile.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4" />
-              )}
-              Saqlash
-            </button>
-          </form>
-        )}
       </section>
 
       <div className="mt-5 rounded-2xl border border-border bg-card p-5">
@@ -494,6 +375,7 @@ export function ProfilePage() {
 
       <div className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
         {[
+          { label: "Profil sozlamalari", icon: CircleUserRound, action: "profile" },
           { label: "Sozlamalar", icon: Settings },
           { label: "Mening sotuvlarim", icon: Package },
           { label: "Chiqish", icon: LogOut, danger: true },
@@ -502,6 +384,10 @@ export function ProfilePage() {
             key={item.label}
             type="button"
             onClick={() => {
+              if (item.action === "profile") {
+                setEditing((value) => !value);
+              }
+
               if (item.label === "Chiqish") {
                 handleLogout();
               }
@@ -516,10 +402,118 @@ export function ProfilePage() {
             <span className="min-w-0 flex-1 text-left font-medium">
               {item.label}
             </span>
-            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            {item.action === "profile" && editing ? (
+              <X className="h-4 w-4 shrink-0 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            )}
           </button>
         ))}
       </div>
+
+      {editing && (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (uploadProfileImage.isPending) return;
+
+            const profileName = [
+              form.profileFirstName,
+              form.profileLastName,
+            ]
+              .filter(Boolean)
+              .join(" ")
+              .trim();
+
+            updateProfile.mutate({
+              profileFirstName: form.profileFirstName,
+              profileLastName: form.profileLastName,
+              profileName,
+              profilePhotoUrl: form.profilePhotoUrl,
+              profileBio: form.profileBio,
+            });
+          }}
+          className="mx-auto mt-5 max-w-sm space-y-4 px-2"
+        >
+          <label
+            className="mx-auto flex w-max cursor-pointer flex-col items-center gap-2"
+            aria-label="Profil rasmini almashtirish"
+          >
+            <span className="relative block">
+              <Avatar name={displayName} photoUrl={profilePhoto} />
+              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm">
+                {uploadProfileImage.isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Camera className="h-3.5 w-3.5" />
+                )}
+              </span>
+            </span>
+            {imageUploadError && (
+              <span className="text-xs text-destructive">{imageUploadError}</span>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              disabled={uploadProfileImage.isPending}
+              onChange={(event) => {
+                handleProfileImageChange(event.target.files?.[0]);
+                event.target.value = "";
+              }}
+              className="sr-only"
+            />
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <ProfileField
+              label="Ism"
+              value={form.profileFirstName}
+              onChange={(value) =>
+                setForm((current) => ({
+                  ...current,
+                  profileFirstName: value,
+                }))
+              }
+              placeholder="Ism"
+            />
+            <ProfileField
+              label="Familiya"
+              value={form.profileLastName}
+              onChange={(value) =>
+                setForm((current) => ({
+                  ...current,
+                  profileLastName: value,
+                }))
+              }
+              placeholder="Familiya"
+            />
+          </div>
+          <ProfileField
+            label="Bio"
+            value={form.profileBio}
+            onChange={(value) =>
+              setForm((current) => ({
+                ...current,
+                profileBio: value,
+              }))
+            }
+            placeholder="Bio"
+            multiline
+          />
+          <button
+            type="submit"
+            disabled={updateProfile.isPending || uploadProfileImage.isPending}
+            className="mx-auto flex h-11 min-w-36 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-70"
+          >
+            {updateProfile.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            Saqlash
+          </button>
+        </form>
+      )}
     </div>
   );
 }
