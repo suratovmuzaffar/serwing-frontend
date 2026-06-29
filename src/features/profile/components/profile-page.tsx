@@ -29,6 +29,9 @@ import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
+const AUTH_WAIT_MS = 5000;
+const AUTH_POLL_MS = 150;
+
 function Avatar({
   name,
   photoUrl,
@@ -138,23 +141,6 @@ export function ProfilePage() {
       setTelegramInitId(getTelegramInitUserId());
     }, 0);
 
-    const hasLoginSignal =
-      Boolean(new URLSearchParams(window.location.search).get("tgLoginToken")) ||
-      Boolean(getTelegramInitData());
-
-    if (!hasLoginSignal) {
-      const redirectTimeout = window.setTimeout(() => {
-        tokenStore.clear();
-        setAuthChecked(true);
-        router.replace(withLocale(locale, "/login"));
-      }, 0);
-
-      return () => {
-        window.clearTimeout(telegramInitIdTimeout);
-        window.clearTimeout(redirectTimeout);
-      };
-    }
-
     function syncToken() {
       const existingToken = tokenStore.getAccessToken();
 
@@ -171,6 +157,22 @@ export function ProfilePage() {
       return () => window.clearTimeout(telegramInitIdTimeout);
     }
 
+    const hasLoginSignal =
+      Boolean(new URLSearchParams(window.location.search).get("tgLoginToken")) ||
+      Boolean(getTelegramInitData());
+
+    if (!hasLoginSignal) {
+      const redirectTimeout = window.setTimeout(() => {
+        setAuthChecked(true);
+        router.replace(withLocale(locale, "/login"));
+      }, 0);
+
+      return () => {
+        window.clearTimeout(telegramInitIdTimeout);
+        window.clearTimeout(redirectTimeout);
+      };
+    }
+
     const startedAt = Date.now();
     const interval = window.setInterval(() => {
       if (syncToken()) {
@@ -179,13 +181,13 @@ export function ProfilePage() {
         return;
       }
 
-      if (Date.now() - startedAt > 5000) {
+      if (Date.now() - startedAt > AUTH_WAIT_MS) {
         window.clearInterval(interval);
         window.clearTimeout(telegramInitIdTimeout);
         setAuthChecked(true);
         router.replace(withLocale(locale, "/login"));
       }
-    }, 150);
+    }, AUTH_POLL_MS);
 
     return () => {
       window.clearInterval(interval);
