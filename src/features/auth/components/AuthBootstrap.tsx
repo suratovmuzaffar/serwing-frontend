@@ -32,16 +32,25 @@ export function AuthBootstrap() {
     initTelegramWebApp();
 
     const searchParams = new URLSearchParams(window.location.search);
-    const loginToken = searchParams.get("tgLoginToken");
+    const rawLoginToken = searchParams.get("tgLoginToken");
     const initData = getTelegramInitData();
     const initTelegramId = getTelegramInitUserId(initData);
-    const loginKey = loginToken ? `link:${loginToken}` : initData ? `init:${initData}` : "";
+    const loginToken = initData ? "" : rawLoginToken;
+    const loginKey = initData ? `init:${initData}` : loginToken ? `link:${loginToken}` : "";
 
     if (!loginKey || attemptedKeyRef.current === loginKey) return;
 
     attemptedKeyRef.current = loginKey;
 
     let cancelled = false;
+
+    function cleanLoginTokenFromUrl() {
+      if (!rawLoginToken) return;
+
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete("tgLoginToken");
+      window.history.replaceState(null, "", cleanUrl.toString());
+    }
 
     async function login() {
       try {
@@ -55,6 +64,7 @@ export function AuthBootstrap() {
           if (currentUser?.telegramId === initTelegramId) {
             dispatch(setMe(currentUser));
             queryClient.setQueryData(["auth-me"], currentUser);
+            cleanLoginTokenFromUrl();
             return;
           }
 
@@ -69,15 +79,15 @@ export function AuthBootstrap() {
 
         if (cancelled) return;
 
+        if (initTelegramId && result.user.telegramId !== initTelegramId) {
+          throw new Error("Telegram account mismatch");
+        }
+
         tokenStore.setTokens(result.token, result.refreshToken);
         dispatch(setMe(result.user));
         queryClient.setQueryData(["auth-me"], result.user);
 
-        if (loginToken) {
-          const cleanUrl = new URL(window.location.href);
-          cleanUrl.searchParams.delete("tgLoginToken");
-          window.history.replaceState(null, "", cleanUrl.toString());
-        }
+        cleanLoginTokenFromUrl();
 
         if (pathname.includes("/login")) {
           router.replace(withLocale(getLocaleFromPath(pathname), "/profile"));

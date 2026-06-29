@@ -24,7 +24,11 @@ export function LoginForm() {
     if (typeof window === "undefined") return;
 
     initTelegramWebApp();
-    setIsInsideTelegram(Boolean(getTelegramInitData()));
+    const timeout = window.setTimeout(() => {
+      setIsInsideTelegram(Boolean(getTelegramInitData()));
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
   }, []);
 
   function handleTelegramLogin() {

@@ -132,7 +132,9 @@ export function ProfilePage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    setTelegramInitId(getTelegramInitUserId());
+    const telegramInitIdTimeout = window.setTimeout(() => {
+      setTelegramInitId(getTelegramInitUserId());
+    }, 0);
 
     const hasLoginSignal =
       Boolean(new URLSearchParams(window.location.search).get("tgLoginToken")) ||
@@ -150,29 +152,42 @@ export function ProfilePage() {
       return false;
     }
 
-    if (syncToken()) return;
+    if (syncToken()) {
+      return () => window.clearTimeout(telegramInitIdTimeout);
+    }
 
     if (!hasLoginSignal) {
-      setAuthChecked(true);
-      router.replace(withLocale(locale, "/login"));
-      return;
+      const redirectTimeout = window.setTimeout(() => {
+        setAuthChecked(true);
+        router.replace(withLocale(locale, "/login"));
+      }, 0);
+
+      return () => {
+        window.clearTimeout(telegramInitIdTimeout);
+        window.clearTimeout(redirectTimeout);
+      };
     }
 
     const startedAt = Date.now();
     const interval = window.setInterval(() => {
       if (syncToken()) {
         window.clearInterval(interval);
+        window.clearTimeout(telegramInitIdTimeout);
         return;
       }
 
       if (Date.now() - startedAt > 5000) {
         window.clearInterval(interval);
+        window.clearTimeout(telegramInitIdTimeout);
         setAuthChecked(true);
         router.replace(withLocale(locale, "/login"));
       }
     }, 150);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      window.clearTimeout(telegramInitIdTimeout);
+    };
   }, [locale, router]);
 
   const meQuery = useAuthMe(hasToken);
@@ -188,13 +203,16 @@ export function ProfilePage() {
   useEffect(() => {
     if (!user) return;
     const splitName = splitProfileName(user.profileName);
+    const timeout = window.setTimeout(() => {
+      setForm({
+        profileFirstName: user.profileFirstName ?? splitName.firstName,
+        profileLastName: user.profileLastName ?? splitName.lastName,
+        profilePhotoUrl: user.profilePhotoUrl || "",
+        profileBio: user.profileBio || "",
+      });
+    }, 0);
 
-    setForm({
-      profileFirstName: user.profileFirstName ?? splitName.firstName,
-      profileLastName: user.profileLastName ?? splitName.lastName,
-      profilePhotoUrl: user.profilePhotoUrl || "",
-      profileBio: user.profileBio || "",
-    });
+    return () => window.clearTimeout(timeout);
   }, [user]);
 
   const updateProfile = useMutation({
