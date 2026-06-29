@@ -39,12 +39,13 @@ function Avatar({
 }: {
   name: string;
   photoUrl?: string | null;
-  size?: "sm" | "lg";
+  size?: "sm" | "lg" | "xl";
 }) {
-  const className =
-    size === "lg"
-      ? "h-16 w-16 text-2xl"
-      : "h-11 w-11 text-sm";
+  const className = {
+    sm: "h-11 w-11 text-sm",
+    lg: "h-16 w-16 text-2xl",
+    xl: "h-20 w-20 text-3xl",
+  }[size];
   const initial = (name || "U").charAt(0).toUpperCase();
 
   if (photoUrl) {
@@ -111,6 +112,46 @@ function splitProfileName(profileName?: string | null) {
     firstName: parts[0],
     lastName: parts.slice(1).join(" "),
   };
+}
+
+function ProfileField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  multiline = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  multiline?: boolean;
+}) {
+  const fieldClass =
+    "mt-1.5 w-full rounded-xl border border-border bg-secondary/35 px-3 py-2.5 text-sm font-medium outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:bg-card";
+
+  return (
+    <label className="block">
+      <span className="text-xs font-semibold text-muted-foreground">{label}</span>
+      {multiline ? (
+        <textarea
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          maxLength={240}
+          rows={3}
+          placeholder={placeholder}
+          className={`${fieldClass} min-h-24 resize-none`}
+        />
+      ) : (
+        <input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
+          className={fieldClass}
+        />
+      )}
+    </label>
+  );
 }
 
 export function ProfilePage() {
@@ -301,14 +342,14 @@ export function ProfilePage() {
 
   return (
     <div className="px-4 pt-6">
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <div className="flex items-center gap-4">
+      <div className="rounded-3xl border border-border bg-card p-4">
+        <div className="flex items-center gap-3">
           {editing ? (
             <label
               className="group relative block cursor-pointer"
               aria-label="Profil rasmini almashtirish"
             >
-              <Avatar name={displayName} photoUrl={profilePhoto} />
+              <Avatar name={displayName} photoUrl={profilePhoto} size="xl" />
               <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white transition-colors group-hover:bg-black/35">
                 {uploadProfileImage.isPending ? (
                   <Loader2 className="h-5 w-5 animate-spin opacity-100" />
@@ -337,16 +378,11 @@ export function ProfilePage() {
           ) : (
             <Avatar name={displayName} photoUrl={displayPhoto} />
           )}
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate text-lg font-bold">{displayName}</h1>
+          <div className="min-w-0 flex-1 py-1">
+            <h1 className="truncate text-xl font-bold leading-tight">{displayName}</h1>
             {displayBio && (
-              <p className="line-clamp-1 text-sm text-muted-foreground">
+              <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
                 {displayBio}
-              </p>
-            )}
-            {editing && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                Avatarni almashtirish uchun rasmga bosing
               </p>
             )}
             {editing && imageUploadError && (
@@ -356,7 +392,7 @@ export function ProfilePage() {
           <button
             type="button"
             onClick={() => setEditing((value) => !value)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-colors hover:bg-accent"
             aria-label="Profilni tahrirlash"
           >
             {editing ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
@@ -387,47 +423,46 @@ export function ProfilePage() {
             }}
             className="mt-5 space-y-4 border-t border-border pt-4"
           >
-            <div className="space-y-3">
-              <input
+            <div className="grid grid-cols-2 gap-3">
+              <ProfileField
+                label="Ism"
                 value={form.profileFirstName}
-                onChange={(event) =>
+                onChange={(value) =>
                   setForm((current) => ({
                     ...current,
-                    profileFirstName: event.target.value,
+                    profileFirstName: value,
                   }))
                 }
                 placeholder="Ism"
-                className="w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
               />
-              <input
+              <ProfileField
+                label="Familiya"
                 value={form.profileLastName}
-                onChange={(event) =>
+                onChange={(value) =>
                   setForm((current) => ({
                     ...current,
-                    profileLastName: event.target.value,
+                    profileLastName: value,
                   }))
                 }
                 placeholder="Familiya"
-                className="w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
-              />
-              <textarea
-                value={form.profileBio}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    profileBio: event.target.value,
-                  }))
-                }
-                maxLength={240}
-                rows={3}
-                placeholder="Bio"
-                className="w-full resize-none border-0 border-b border-border bg-transparent px-0 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
               />
             </div>
+            <ProfileField
+              label="Bio"
+                value={form.profileBio}
+              onChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                  profileBio: value,
+                  }))
+                }
+                placeholder="Bio"
+              multiline
+            />
             <button
               type="submit"
               disabled={updateProfile.isPending || uploadProfileImage.isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-70"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-70"
             >
               {updateProfile.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
