@@ -2,24 +2,18 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Camera,
   ChevronRight,
   CircleUserRound,
   Loader2,
   LogOut,
   Package,
-  Save,
   Send,
   Settings,
-  X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updateMeApi, uploadProfileImageApi } from "@/features/auth/api";
 import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
 import { useLogout } from "@/features/auth/hooks/useLogout";
-import { setMe } from "@/features/auth/slice";
 import {
   getTelegramInitData,
   getTelegramInitUserId,
@@ -27,7 +21,6 @@ import {
 import type { AuthUser } from "@/features/auth/types";
 import { getAssetUrl } from "@/lib/assets";
 import { tokenStore } from "@/lib/tokenStore";
-import { useAppDispatch } from "@/store/hooks";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 const AUTH_WAIT_MS = 5000;
@@ -99,82 +92,16 @@ function TelegramAvatar({ photoUrl }: { photoUrl?: string | null }) {
   );
 }
 
-function splitProfileName(profileName?: string | null) {
-  const parts = String(profileName || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (parts.length <= 1) {
-    return { firstName: parts[0] || "", lastName: "" };
-  }
-
-  return {
-    firstName: parts[0],
-    lastName: parts.slice(1).join(" "),
-  };
-}
-
-function ProfileField({
-  label,
-  value,
-  onChange,
-  placeholder,
-  multiline = false,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  multiline?: boolean;
-}) {
-  const fieldClass =
-    "w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-center text-sm font-medium outline-none transition-colors placeholder:text-muted-foreground focus:border-primary";
-
-  return (
-    <label className="block">
-      <span className="text-xs font-semibold text-muted-foreground">{label}</span>
-      {multiline ? (
-        <textarea
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          maxLength={240}
-          rows={3}
-          placeholder={placeholder}
-          className={`${fieldClass} min-h-20 resize-none leading-5`}
-        />
-      ) : (
-        <input
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={placeholder}
-          className={fieldClass}
-        />
-      )}
-    </label>
-  );
-}
-
 export function ProfilePage() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
-  const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
   const logout = useLogout();
   const [hasToken, setHasToken] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
-  const [editing, setEditing] = useState(false);
   const [telegramInitId, setTelegramInitId] = useState(() =>
     typeof window === "undefined" ? "" : getTelegramInitUserId()
   );
-  const [form, setForm] = useState({
-    profileFirstName: "",
-    profileLastName: "",
-    profilePhotoUrl: "",
-    profileBio: "",
-  });
-  const [imageUploadError, setImageUploadError] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -247,74 +174,17 @@ export function ProfilePage() {
     }
   }, [authChecked, locale, meQuery.isError, router]);
 
-  useEffect(() => {
-    if (!user) return;
-    const splitName = splitProfileName(user.profileName);
-    const timeout = window.setTimeout(() => {
-      setForm({
-        profileFirstName: user.profileFirstName ?? splitName.firstName,
-        profileLastName: user.profileLastName ?? splitName.lastName,
-        profilePhotoUrl: user.profilePhotoUrl || "",
-        profileBio: user.profileBio || "",
-      });
-    }, 0);
-
-    return () => window.clearTimeout(timeout);
-  }, [user]);
-
-  const updateProfile = useMutation({
-    mutationFn: updateMeApi,
-    onSuccess: (updatedUser) => {
-      dispatch(setMe(updatedUser));
-      queryClient.setQueryData(["auth-me"], updatedUser);
-      setEditing(false);
-    },
-  });
-
-  const uploadProfileImage = useMutation({
-    mutationFn: async (file: File) => {
-      const fileUrl = await uploadProfileImageApi(file);
-      const updatedUser = await updateMeApi({ profilePhotoUrl: fileUrl });
-
-      return { fileUrl, updatedUser };
-    },
-    onMutate: () => setImageUploadError(""),
-    onSuccess: ({ fileUrl, updatedUser }) => {
-      setForm((current) => ({
-        ...current,
-        profilePhotoUrl: fileUrl,
-      }));
-      dispatch(setMe(updatedUser));
-      queryClient.setQueryData(["auth-me"], updatedUser);
-    },
-    onError: () => {
-      setImageUploadError("Rasm yuklanmadi. Qayta urinib ko'ring.");
-    },
-  });
-
   const displayName = useMemo(
     () => (user ? getDisplayName(user) : "Anonim foydalanuvchi"),
     [user]
   );
   const displayPhoto = user ? getDisplayPhoto(user) : null;
-  const profilePhoto = form.profilePhotoUrl || displayPhoto;
   const displayBio = user?.profileBio || "";
 
   function handleLogout() {
     logout.mutate(undefined, {
       onSettled: () => router.replace(withLocale(locale, "/login")),
     });
-  }
-
-  function handleProfileImageChange(file?: File) {
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setImageUploadError("Faqat rasm faylini tanlang.");
-      return;
-    }
-
-    uploadProfileImage.mutate(file);
   }
 
   if (!authChecked || (hasToken && meQuery.isLoading)) {
@@ -385,7 +255,7 @@ export function ProfilePage() {
             type="button"
             onClick={() => {
               if (item.action === "profile") {
-                setEditing((value) => !value);
+                router.push(withLocale(locale, "/profile/settings"));
               }
 
               if (item.label === "Chiqish") {
@@ -402,118 +272,10 @@ export function ProfilePage() {
             <span className="min-w-0 flex-1 text-left font-medium">
               {item.label}
             </span>
-            {item.action === "profile" && editing ? (
-              <X className="h-4 w-4 shrink-0 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            )}
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
           </button>
         ))}
       </div>
-
-      {editing && (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (uploadProfileImage.isPending) return;
-
-            const profileName = [
-              form.profileFirstName,
-              form.profileLastName,
-            ]
-              .filter(Boolean)
-              .join(" ")
-              .trim();
-
-            updateProfile.mutate({
-              profileFirstName: form.profileFirstName,
-              profileLastName: form.profileLastName,
-              profileName,
-              profilePhotoUrl: form.profilePhotoUrl,
-              profileBio: form.profileBio,
-            });
-          }}
-          className="mx-auto mt-5 max-w-sm space-y-4 px-2"
-        >
-          <label
-            className="mx-auto flex w-max cursor-pointer flex-col items-center gap-2"
-            aria-label="Profil rasmini almashtirish"
-          >
-            <span className="relative block">
-              <Avatar name={displayName} photoUrl={profilePhoto} />
-              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm">
-                {uploadProfileImage.isPending ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Camera className="h-3.5 w-3.5" />
-                )}
-              </span>
-            </span>
-            {imageUploadError && (
-              <span className="text-xs text-destructive">{imageUploadError}</span>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              disabled={uploadProfileImage.isPending}
-              onChange={(event) => {
-                handleProfileImageChange(event.target.files?.[0]);
-                event.target.value = "";
-              }}
-              className="sr-only"
-            />
-          </label>
-
-          <div className="grid grid-cols-2 gap-3">
-            <ProfileField
-              label="Ism"
-              value={form.profileFirstName}
-              onChange={(value) =>
-                setForm((current) => ({
-                  ...current,
-                  profileFirstName: value,
-                }))
-              }
-              placeholder="Ism"
-            />
-            <ProfileField
-              label="Familiya"
-              value={form.profileLastName}
-              onChange={(value) =>
-                setForm((current) => ({
-                  ...current,
-                  profileLastName: value,
-                }))
-              }
-              placeholder="Familiya"
-            />
-          </div>
-          <ProfileField
-            label="Bio"
-            value={form.profileBio}
-            onChange={(value) =>
-              setForm((current) => ({
-                ...current,
-                profileBio: value,
-              }))
-            }
-            placeholder="Bio"
-            multiline
-          />
-          <button
-            type="submit"
-            disabled={updateProfile.isPending || uploadProfileImage.isPending}
-            className="mx-auto flex h-11 min-w-36 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-70"
-          >
-            {updateProfile.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
-            Saqlash
-          </button>
-        </form>
-      )}
     </div>
   );
 }
