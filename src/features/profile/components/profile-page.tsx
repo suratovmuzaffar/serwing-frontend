@@ -128,7 +128,7 @@ function ProfileField({
   multiline?: boolean;
 }) {
   const fieldClass =
-    "mt-1.5 w-full rounded-xl border border-border bg-secondary/35 px-3 py-2.5 text-sm font-medium outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:bg-card";
+    "w-full border-0 border-b border-border bg-transparent px-0 py-2.5 text-center text-sm font-medium outline-none transition-colors placeholder:text-muted-foreground focus:border-primary";
 
   return (
     <label className="block">
@@ -140,7 +140,7 @@ function ProfileField({
           maxLength={240}
           rows={3}
           placeholder={placeholder}
-          className={`${fieldClass} min-h-24 resize-none`}
+          className={`${fieldClass} min-h-20 resize-none leading-5`}
         />
       ) : (
         <input
@@ -342,12 +342,12 @@ export function ProfilePage() {
 
   return (
     <div className="px-4 pt-6">
-      <div className="rounded-3xl border border-border bg-card px-4 pb-5 pt-4">
+      <section className="px-2 pb-2 pt-2">
         <div className="relative flex flex-col items-center text-center">
           <button
             type="button"
             onClick={() => setEditing((value) => !value)}
-            className="absolute right-0 top-0 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-colors hover:bg-accent"
+            className="absolute right-0 top-0 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary/80 text-foreground transition-colors hover:bg-accent"
             aria-label="Profilni tahrirlash"
           >
             {editing ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
@@ -366,7 +366,7 @@ export function ProfilePage() {
                   <Camera className="h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100" />
                 )}
               </span>
-              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-primary text-primary-foreground shadow-sm">
+              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm">
                 {uploadProfileImage.isPending ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (
@@ -422,7 +422,7 @@ export function ProfilePage() {
                 profileBio: form.profileBio,
               });
             }}
-            className="mt-5 space-y-4 border-t border-border pt-4"
+            className="mx-auto mt-5 max-w-sm space-y-4 border-t border-border/70 pt-4"
           >
             <div className="grid grid-cols-2 gap-3">
               <ProfileField
@@ -463,7 +463,7 @@ export function ProfilePage() {
             <button
               type="submit"
               disabled={updateProfile.isPending || uploadProfileImage.isPending}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-70"
+              className="mx-auto flex h-11 min-w-36 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-70"
             >
               {updateProfile.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -474,7 +474,7 @@ export function ProfilePage() {
             </button>
           </form>
         )}
-      </div>
+      </section>
 
       <div className="mt-5 rounded-2xl border border-border bg-card p-5">
         <p className="text-sm font-semibold">Ulanganlar</p>
