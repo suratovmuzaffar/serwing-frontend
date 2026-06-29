@@ -44,7 +44,7 @@ function Avatar({
   const className = {
     sm: "h-11 w-11 text-sm",
     lg: "h-16 w-16 text-2xl",
-    xl: "h-20 w-20 text-3xl",
+    xl: "h-24 w-24 text-4xl",
   }[size];
   const initial = (name || "U").charAt(0).toUpperCase();
 
@@ -342,8 +342,17 @@ export function ProfilePage() {
 
   return (
     <div className="px-4 pt-6">
-      <div className="rounded-3xl border border-border bg-card p-4">
-        <div className="flex items-center gap-3">
+      <div className="rounded-3xl border border-border bg-card px-4 pb-5 pt-4">
+        <div className="relative flex flex-col items-center text-center">
+          <button
+            type="button"
+            onClick={() => setEditing((value) => !value)}
+            className="absolute right-0 top-0 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-colors hover:bg-accent"
+            aria-label="Profilni tahrirlash"
+          >
+            {editing ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
+          </button>
+
           {editing ? (
             <label
               className="group relative block cursor-pointer"
@@ -376,27 +385,19 @@ export function ProfilePage() {
               />
             </label>
           ) : (
-            <Avatar name={displayName} photoUrl={displayPhoto} />
+            <Avatar name={displayName} photoUrl={displayPhoto} size="xl" />
           )}
-          <div className="min-w-0 flex-1 py-1">
-            <h1 className="truncate text-xl font-bold leading-tight">{displayName}</h1>
+          <div className="mt-3 w-full min-w-0 px-10">
+            <h1 className="truncate text-2xl font-bold leading-tight">{displayName}</h1>
             {displayBio && (
-              <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
+              <p className="mx-auto mt-1.5 line-clamp-2 max-w-[280px] text-sm leading-5 text-muted-foreground">
                 {displayBio}
               </p>
             )}
             {editing && imageUploadError && (
-              <p className="mt-1 text-xs text-destructive">{imageUploadError}</p>
+              <p className="mt-2 text-xs text-destructive">{imageUploadError}</p>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => setEditing((value) => !value)}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-colors hover:bg-accent"
-            aria-label="Profilni tahrirlash"
-          >
-            {editing ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-          </button>
         </div>
 
         {editing && (
@@ -449,14 +450,14 @@ export function ProfilePage() {
             </div>
             <ProfileField
               label="Bio"
-                value={form.profileBio}
+              value={form.profileBio}
               onChange={(value) =>
-                  setForm((current) => ({
-                    ...current,
+                setForm((current) => ({
+                  ...current,
                   profileBio: value,
-                  }))
-                }
-                placeholder="Bio"
+                }))
+              }
+              placeholder="Bio"
               multiline
             />
             <button
