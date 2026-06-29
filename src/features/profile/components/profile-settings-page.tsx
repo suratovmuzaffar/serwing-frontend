@@ -153,19 +153,14 @@ export function ProfileSettingsPage() {
 
   const uploadProfileImage = useMutation({
     mutationFn: async (file: File) => {
-      const fileUrl = await uploadProfileImageApi(file);
-      const updatedUser = await updateMeApi({ profilePhotoUrl: fileUrl });
-
-      return { fileUrl, updatedUser };
+      return uploadProfileImageApi(file);
     },
     onMutate: () => setImageUploadError(""),
-    onSuccess: ({ fileUrl, updatedUser }) => {
+    onSuccess: (fileUrl) => {
       setForm((current) => ({
         ...current,
         profilePhotoUrl: fileUrl,
       }));
-      dispatch(setMe(updatedUser));
-      queryClient.setQueryData(["auth-me"], updatedUser);
     },
     onError: () => {
       setImageUploadError("Rasm yuklanmadi. Qayta urinib ko'ring.");
