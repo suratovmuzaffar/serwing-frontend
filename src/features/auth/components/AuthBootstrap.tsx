@@ -60,6 +60,9 @@ export function AuthBootstrap() {
       startParam: string;
       openTarget: string;
     }) {
+      const previousAccessToken = tokenStore.getAccessToken();
+      const previousRefreshToken = tokenStore.getRefreshToken() || undefined;
+
       try {
         if (initTelegramId) {
           tokenStore.clear();
@@ -96,12 +99,22 @@ export function AuthBootstrap() {
         }
 
         router.refresh();
-      } catch {
-        tokenStore.clear();
-        dispatch(clearMe());
-        queryClient.removeQueries({ queryKey: ["auth-me"] });
+      } catch (error) {
+        const isTelegramAccountMismatch =
+          error instanceof Error && error.message === "Telegram account mismatch";
+        const hasTelegramLoginSignal = Boolean(initData || loginToken);
 
-        if (!pathname.includes("/login")) {
+        if (previousAccessToken && !isTelegramAccountMismatch) {
+          tokenStore.setTokens(previousAccessToken, previousRefreshToken);
+          void queryClient.invalidateQueries({ queryKey: ["auth-me"] });
+          router.refresh();
+        } else {
+          tokenStore.clear();
+          dispatch(clearMe());
+          queryClient.removeQueries({ queryKey: ["auth-me"] });
+        }
+
+        if (!hasTelegramLoginSignal && !pathname.includes("/login")) {
           router.replace(withLocale(getLocaleFromPath(pathname), "/login"));
         }
       }
