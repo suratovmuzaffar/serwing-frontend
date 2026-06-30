@@ -58,6 +58,15 @@ export function isTelegramWebApp() {
   return Boolean(getTelegramInitData());
 }
 
+export function hasTelegramLoginSignal() {
+  if (typeof window === "undefined") return false;
+
+  return Boolean(
+    getTelegramInitData() ||
+      new URLSearchParams(window.location.search).get("tgLoginToken")
+  );
+}
+
 export function getTelegramBotStartUrl(username: string, start = "login") {
   const cleanUsername = username.trim().replace(/^@/, "");
   const cleanStart = encodeURIComponent(start);

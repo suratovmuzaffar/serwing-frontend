@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -18,6 +18,7 @@ const TELEGRAM_DETECT_POLL_MS = 100;
 
 export function LoginForm() {
   const pathname = usePathname();
+  const router = useRouter();
   const locale = getLocaleFromPath(pathname);
   const [error, setError] = useState("");
   const [isInsideTelegram, setIsInsideTelegram] = useState(false);
@@ -33,6 +34,7 @@ export function LoginForm() {
 
       if (getTelegramInitData()) {
         setIsInsideTelegram(true);
+        router.replace(withLocale(locale, "/profile"));
         window.clearInterval(interval);
         return;
       }
@@ -43,7 +45,7 @@ export function LoginForm() {
     }, TELEGRAM_DETECT_POLL_MS);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [locale, router]);
 
   function handleTelegramLogin() {
     setError("");

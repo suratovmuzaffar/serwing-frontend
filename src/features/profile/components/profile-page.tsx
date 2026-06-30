@@ -15,8 +15,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import {
-  getTelegramInitData,
   getTelegramInitUserId,
+  hasTelegramLoginSignal,
 } from "@/features/auth/services/telegram";
 import type { AuthUser } from "@/features/auth/types";
 import { getAssetUrl } from "@/lib/assets";
@@ -97,6 +97,7 @@ export function ProfilePage() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
   const logout = useLogout();
+  const [isTelegramContext, setIsTelegramContext] = useState(false);
   const [hasToken, setHasToken] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [telegramInitId, setTelegramInitId] = useState(() =>
@@ -106,6 +107,9 @@ export function ProfilePage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    const telegramContextTimeout = window.setTimeout(() => {
+      setIsTelegramContext(hasTelegramLoginSignal());
+    }, 0);
     const telegramInitIdTimeout = window.setTimeout(() => {
       setTelegramInitId(getTelegramInitUserId());
     }, 0);
@@ -123,12 +127,13 @@ export function ProfilePage() {
     }
 
     if (syncToken()) {
-      return () => window.clearTimeout(telegramInitIdTimeout);
+      return () => {
+        window.clearTimeout(telegramContextTimeout);
+        window.clearTimeout(telegramInitIdTimeout);
+      };
     }
 
-    const hasLoginSignal =
-      Boolean(new URLSearchParams(window.location.search).get("tgLoginToken")) ||
-      Boolean(getTelegramInitData());
+    const hasLoginSignal = hasTelegramLoginSignal();
 
     if (!hasLoginSignal) {
       const redirectTimeout = window.setTimeout(() => {
@@ -137,6 +142,7 @@ export function ProfilePage() {
       }, 0);
 
       return () => {
+        window.clearTimeout(telegramContextTimeout);
         window.clearTimeout(telegramInitIdTimeout);
         window.clearTimeout(redirectTimeout);
       };
@@ -146,6 +152,7 @@ export function ProfilePage() {
     const interval = window.setInterval(() => {
       if (syncToken()) {
         window.clearInterval(interval);
+        window.clearTimeout(telegramContextTimeout);
         window.clearTimeout(telegramInitIdTimeout);
         return;
       }
@@ -154,12 +161,15 @@ export function ProfilePage() {
         window.clearInterval(interval);
         window.clearTimeout(telegramInitIdTimeout);
         setAuthChecked(true);
-        router.replace(withLocale(locale, "/login"));
+        if (!hasTelegramLoginSignal()) {
+          router.replace(withLocale(locale, "/login"));
+        }
       }
     }, AUTH_POLL_MS);
 
     return () => {
       window.clearInterval(interval);
+      window.clearTimeout(telegramContextTimeout);
       window.clearTimeout(telegramInitIdTimeout);
     };
   }, [locale, router]);
@@ -170,7 +180,7 @@ export function ProfilePage() {
   useEffect(() => {
     if (meQuery.isError && authChecked) {
       tokenStore.clear();
-      router.replace(withLocale(locale, "/login"));
+      router.replace(withLocale(locale, hasTelegramLoginSignal() ? "/home" : "/login"));
     }
   }, [authChecked, locale, meQuery.isError, router]);
 
@@ -183,7 +193,10 @@ export function ProfilePage() {
 
   function handleLogout() {
     logout.mutate(undefined, {
-      onSettled: () => router.replace(withLocale(locale, "/login")),
+      onSettled: () =>
+        router.replace(
+          withLocale(locale, hasTelegramLoginSignal() ? "/home" : "/login")
+        ),
     });
   }
 
@@ -248,7 +261,9 @@ export function ProfilePage() {
           { label: "Profil sozlamalari", icon: CircleUserRound, action: "profile" },
           { label: "E'lonlarim", icon: Package, action: "listings" },
           { label: "Sozlamalar", icon: Settings },
-          { label: "Chiqish", icon: LogOut, danger: true },
+          ...(isTelegramContext
+            ? []
+            : [{ label: "Chiqish", icon: LogOut, danger: true }]),
         ].map((item, index) => (
           <button
             key={item.label}

@@ -16,6 +16,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { categories } from "@/lib/data";
 import { getAssetUrl } from "@/lib/assets";
 import { tokenStore } from "@/lib/tokenStore";
+import { hasTelegramLoginSignal } from "@/features/auth/services/telegram";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 import {
   deleteMyAnnouncement,
@@ -76,7 +77,7 @@ export function MyAnnouncementsPage() {
   });
 
   useEffect(() => {
-    if (!tokenStore.getAccessToken()) {
+    if (!tokenStore.getAccessToken() && !hasTelegramLoginSignal()) {
       router.replace(withLocale(locale, "/login"));
     }
   }, [locale, router]);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { BadgeCheck, Heart } from "lucide-react";
 
+import { hasTelegramLoginSignal } from "@/features/auth/services/telegram";
 import { useFavorites } from "@/features/favorites/services/favorites";
 import type { Listing } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -51,7 +52,9 @@ export function ListingCard({ item, index = 0 }: { item: Listing; index?: number
             event.stopPropagation();
 
             if (!isAuthenticated) {
-              router.push(withLocale(locale, "/login"));
+              router.push(
+                withLocale(locale, hasTelegramLoginSignal() ? "/profile" : "/login")
+              );
               return;
             }
 

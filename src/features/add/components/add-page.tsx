@@ -7,6 +7,7 @@ import { Check, ImagePlus, Loader2, Upload, X } from "lucide-react";
 
 import { categories } from "@/lib/data";
 import { tokenStore } from "@/lib/tokenStore";
+import { hasTelegramLoginSignal } from "@/features/auth/services/telegram";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 import {
   createListing,
@@ -96,7 +97,11 @@ export function AddPage() {
           setError("");
 
           if (!tokenStore.getAccessToken()) {
-            router.replace(withLocale(locale, "/login"));
+            if (hasTelegramLoginSignal()) {
+              setError("Telegram orqali kirish yakunlanmoqda. Qayta urinib ko'ring.");
+            } else {
+              router.replace(withLocale(locale, "/login"));
+            }
             return;
           }
 

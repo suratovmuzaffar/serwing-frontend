@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 
+import { hasTelegramLoginSignal } from "@/features/auth/services/telegram";
 import { useFavorites } from "@/features/favorites/services/favorites";
 import type { Listing } from "@/lib/data";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
@@ -91,7 +92,11 @@ export function FavoritesPage() {
         </p>
         <button
           type="button"
-          onClick={() => router.push(withLocale(locale, "/login"))}
+          onClick={() =>
+            router.push(
+              withLocale(locale, hasTelegramLoginSignal() ? "/profile" : "/login")
+            )
+          }
           className="mt-5 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
         >
           Kirish

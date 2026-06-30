@@ -10,6 +10,7 @@ import {
   uploadProfileImageApi,
 } from "@/features/auth/api";
 import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
+import { hasTelegramLoginSignal } from "@/features/auth/services/telegram";
 import { setMe } from "@/features/auth/slice";
 import type { AuthUser } from "@/features/auth/types";
 import { getAssetUrl } from "@/lib/assets";
@@ -122,7 +123,7 @@ export function ProfileSettingsPage() {
   useEffect(() => {
     if (meQuery.isError) {
       tokenStore.clear();
-      router.replace(withLocale(locale, "/login"));
+      router.replace(withLocale(locale, hasTelegramLoginSignal() ? "/home" : "/login"));
     }
   }, [locale, meQuery.isError, router]);
 
