@@ -28,6 +28,7 @@ export function AuthBootstrap() {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const attemptedKeyRef = useRef("");
+  const inFlightKeyRef = useRef("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -52,6 +53,7 @@ export function AuthBootstrap() {
       rawLoginToken,
       startParam,
       openTarget,
+      loginKey,
     }: {
       initData: string;
       initTelegramId: string;
@@ -59,6 +61,7 @@ export function AuthBootstrap() {
       rawLoginToken: string | null;
       startParam: string;
       openTarget: string;
+      loginKey: string;
     }) {
       const previousAccessToken = tokenStore.getAccessToken();
       const previousRefreshToken = tokenStore.getRefreshToken() || undefined;
@@ -83,6 +86,7 @@ export function AuthBootstrap() {
         tokenStore.setTokens(result.token, result.refreshToken);
         dispatch(setMe(result.user));
         queryClient.setQueryData(["auth-me"], result.user);
+        attemptedKeyRef.current = loginKey;
 
         cleanLoginParamsFromUrl(rawLoginToken);
 
@@ -117,6 +121,10 @@ export function AuthBootstrap() {
         if (!hasTelegramLoginSignal && !pathname.includes("/login")) {
           router.replace(withLocale(getLocaleFromPath(pathname), "/login"));
         }
+      } finally {
+        if (inFlightKeyRef.current === loginKey) {
+          inFlightKeyRef.current = "";
+        }
       }
     }
 
@@ -140,12 +148,16 @@ export function AuthBootstrap() {
         return;
       }
 
-      if (attemptedKeyRef.current === loginKey) {
+      if (inFlightKeyRef.current === loginKey) {
+        return;
+      }
+
+      if (attemptedKeyRef.current === loginKey && tokenStore.getAccessToken()) {
         window.clearInterval(interval);
         return;
       }
 
-      attemptedKeyRef.current = loginKey;
+      inFlightKeyRef.current = loginKey;
       window.clearInterval(interval);
       void login({
         initData,
@@ -154,6 +166,7 @@ export function AuthBootstrap() {
         rawLoginToken,
         startParam,
         openTarget,
+        loginKey,
       });
     }, TELEGRAM_LOGIN_POLL_MS);
 
