@@ -35,8 +35,6 @@ export function AuthBootstrap() {
 
     initTelegramWebApp();
 
-    let cancelled = false;
-
     function cleanLoginParamsFromUrl(rawLoginToken: string | null) {
       if (!rawLoginToken) return;
 
@@ -76,8 +74,6 @@ export function AuthBootstrap() {
         const result = loginToken
           ? await telegramLinkLoginApi(loginToken)
           : await telegramLoginApi(initData);
-
-        if (cancelled) return;
 
         if (initTelegramId && result.user.telegramId !== initTelegramId) {
           throw new Error("Telegram account mismatch");
@@ -171,7 +167,6 @@ export function AuthBootstrap() {
     }, TELEGRAM_LOGIN_POLL_MS);
 
     return () => {
-      cancelled = true;
       window.clearInterval(interval);
     };
   }, [dispatch, pathname, queryClient, router]);

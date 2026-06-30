@@ -10,7 +10,7 @@ import {
   Send,
   Settings,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
 import { useLogout } from "@/features/auth/hooks/useLogout";
@@ -20,10 +20,10 @@ import {
 } from "@/features/auth/services/telegram";
 import type { AuthUser } from "@/features/auth/types";
 import { getAssetUrl } from "@/lib/assets";
-import { tokenStore } from "@/lib/tokenStore";
+import { subscribeToTokenChanges, tokenStore } from "@/lib/tokenStore";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
-const AUTH_WAIT_MS = 5000;
+const AUTH_WAIT_MS = 15000;
 const AUTH_POLL_MS = 150;
 
 function Avatar({
@@ -97,9 +97,11 @@ export function ProfilePage() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
   const logout = useLogout();
+  const redirectedToLoginRef = useRef(false);
   const [isTelegramContext, setIsTelegramContext] = useState(false);
   const [hasToken, setHasToken] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [authError, setAuthError] = useState("");
   const [telegramInitId, setTelegramInitId] = useState(() =>
     typeof window === "undefined" ? "" : getTelegramInitUserId()
   );
@@ -107,70 +109,52 @@ export function ProfilePage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const telegramContextTimeout = window.setTimeout(() => {
-      setIsTelegramContext(hasTelegramLoginSignal());
-    }, 0);
-    const telegramInitIdTimeout = window.setTimeout(() => {
-      setTelegramInitId(getTelegramInitUserId());
-    }, 0);
+    const startedAt = Date.now();
 
     function syncToken() {
+      const hasLoginSignal = hasTelegramLoginSignal();
       const existingToken = tokenStore.getAccessToken();
 
+      setIsTelegramContext(hasLoginSignal);
+      setTelegramInitId(getTelegramInitUserId());
+      setHasToken(Boolean(existingToken));
+
       if (existingToken) {
-        setHasToken(true);
+        redirectedToLoginRef.current = false;
         setAuthChecked(true);
+        setAuthError("");
         return true;
+      }
+
+      if (!hasLoginSignal) {
+        setAuthChecked(true);
+        if (!redirectedToLoginRef.current) {
+          redirectedToLoginRef.current = true;
+          router.replace(withLocale(locale, "/login"));
+        }
+        return false;
+      }
+
+      if (Date.now() - startedAt > AUTH_WAIT_MS) {
+        setAuthChecked(true);
+        setAuthError(
+          "Telegram orqali kirish yakunlanmadi. Iltimos, botdan qayta oching."
+        );
+      } else {
+        setAuthChecked(false);
       }
 
       return false;
     }
 
-    if (syncToken()) {
-      return () => {
-        window.clearTimeout(telegramContextTimeout);
-        window.clearTimeout(telegramInitIdTimeout);
-      };
-    }
+    syncToken();
 
-    const hasLoginSignal = hasTelegramLoginSignal();
-
-    if (!hasLoginSignal) {
-      const redirectTimeout = window.setTimeout(() => {
-        setAuthChecked(true);
-        router.replace(withLocale(locale, "/login"));
-      }, 0);
-
-      return () => {
-        window.clearTimeout(telegramContextTimeout);
-        window.clearTimeout(telegramInitIdTimeout);
-        window.clearTimeout(redirectTimeout);
-      };
-    }
-
-    const startedAt = Date.now();
-    const interval = window.setInterval(() => {
-      if (syncToken()) {
-        window.clearInterval(interval);
-        window.clearTimeout(telegramContextTimeout);
-        window.clearTimeout(telegramInitIdTimeout);
-        return;
-      }
-
-      if (Date.now() - startedAt > AUTH_WAIT_MS) {
-        window.clearInterval(interval);
-        window.clearTimeout(telegramInitIdTimeout);
-        setAuthChecked(true);
-        if (!hasTelegramLoginSignal()) {
-          router.replace(withLocale(locale, "/login"));
-        }
-      }
-    }, AUTH_POLL_MS);
+    const interval = window.setInterval(syncToken, AUTH_POLL_MS);
+    const unsubscribe = subscribeToTokenChanges(syncToken);
 
     return () => {
       window.clearInterval(interval);
-      window.clearTimeout(telegramContextTimeout);
-      window.clearTimeout(telegramInitIdTimeout);
+      unsubscribe();
     };
   }, [locale, router]);
 
@@ -180,7 +164,7 @@ export function ProfilePage() {
   useEffect(() => {
     if (meQuery.isError && authChecked) {
       tokenStore.clear();
-      router.replace(withLocale(locale, hasTelegramLoginSignal() ? "/home" : "/login"));
+      router.replace(withLocale(locale, hasTelegramLoginSignal() ? "/profile" : "/login"));
     }
   }, [authChecked, locale, meQuery.isError, router]);
 
@@ -204,6 +188,14 @@ export function ProfilePage() {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="px-4 pt-10 text-center text-sm text-muted-foreground">
+        {authError}
       </div>
     );
   }
