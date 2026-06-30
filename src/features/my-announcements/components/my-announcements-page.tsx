@@ -114,8 +114,14 @@ export function MyAnnouncementsPage() {
 
   const removeAnnouncement = useMutation({
     mutationFn: deleteMyAnnouncement,
-    onSuccess: () => {
+    onSuccess: (_data, deletedId) => {
+      if (editingId === deletedId) {
+        setEditingId(null);
+      }
       setDeleteId(null);
+      queryClient.setQueryData<MyAnnouncement[]>(["my-announcements"], (current) =>
+        current?.filter((announcement) => announcement.id !== deletedId) ?? current
+      );
       queryClient.invalidateQueries({ queryKey: ["my-announcements"] });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
     },
@@ -152,7 +158,23 @@ export function MyAnnouncementsPage() {
           {announcementsQuery.data.map((announcement) => (
             <div
               key={announcement.id}
-              className="overflow-hidden rounded-2xl border border-border bg-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (editingId !== announcement.id) {
+                  router.push(withLocale(locale, `/donations/${announcement.id}`));
+                }
+              }}
+              onKeyDown={(event) => {
+                if (
+                  editingId !== announcement.id &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  event.preventDefault();
+                  router.push(withLocale(locale, `/donations/${announcement.id}`));
+                }
+              }}
+              className="cursor-pointer overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
             >
               <div className="flex gap-3 p-3">
                 <div className="h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-muted">
@@ -186,7 +208,10 @@ export function MyAnnouncementsPage() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => startEdit(announcement)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          startEdit(announcement);
+                        }}
                         className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-foreground"
                         aria-label="Tahrirlash"
                       >
@@ -194,7 +219,10 @@ export function MyAnnouncementsPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setDeleteId(announcement.id)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setDeleteId(announcement.id);
+                        }}
                         className="flex h-9 w-9 items-center justify-center rounded-full bg-destructive/10 text-destructive"
                         aria-label="O'chirish"
                       >
@@ -207,6 +235,7 @@ export function MyAnnouncementsPage() {
 
               {editingId === announcement.id && (
                 <form
+                  onClick={(event) => event.stopPropagation()}
                   onSubmit={(event) => {
                     event.preventDefault();
                     updateAnnouncement.mutate();
