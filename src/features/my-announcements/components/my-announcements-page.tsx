@@ -114,10 +114,10 @@ export function MyAnnouncementsPage() {
 
   const removeAnnouncement = useMutation({
     mutationFn: deleteMyAnnouncement,
+    onMutate: () => {
+      setEditingId((current) => (current === deleteId ? null : current));
+    },
     onSuccess: (_data, deletedId) => {
-      if (editingId === deletedId) {
-        setEditingId(null);
-      }
       setDeleteId(null);
       queryClient.setQueryData<MyAnnouncement[]>(["my-announcements"], (current) =>
         current?.filter((announcement) => announcement.id !== deletedId) ?? current
@@ -361,6 +361,13 @@ export function MyAnnouncementsPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Bu amalni ortga qaytarib bo&apos;lmaydi.
             </p>
+            {removeAnnouncement.isError && (
+              <p className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {removeAnnouncement.error instanceof Error
+                  ? removeAnnouncement.error.message
+                  : "E'lon o'chirilmadi. Qayta urinib ko'ring."}
+              </p>
+            )}
             <div className="mt-4 flex gap-2">
               <button
                 type="button"
