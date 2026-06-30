@@ -24,6 +24,25 @@ export type AdminAnnouncement = {
   };
 };
 
+export type AdminUser = {
+  id: number;
+  email: string | null;
+  emailVerified: boolean;
+  profileFirstName: string | null;
+  profileLastName: string | null;
+  profileName: string | null;
+  profilePhotoUrl: string | null;
+  profileBio: string | null;
+  telegramId: string | null;
+  telegramName: string | null;
+  telegramVerified: boolean;
+  phone: string | null;
+  phoneVerified: boolean;
+  role: string;
+  status: string;
+  createdAt: string;
+};
+
 export async function fetchAdminOverview() {
   const { data } = await http.get<{ stats: AdminOverview }>("/admin/overview");
   return data.stats;
@@ -35,4 +54,9 @@ export async function fetchAdminAnnouncements() {
     { params: { limit: 20 } }
   );
   return data.announcements;
+}
+
+export async function fetchAdminUsers() {
+  const { data } = await http.get<{ users: AdminUser[] }>("/users");
+  return data.users;
 }
