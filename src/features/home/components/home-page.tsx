@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Bell, Search, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { Bell, Search, ShieldCheck, TrendingUp } from "lucide-react";
 
 import { CardSkeleton } from "@/features/home/components/card-skeleton";
 import { ListingCard } from "@/features/home/components/listing-card";
 import { ListingFilter } from "@/features/home/components/listing-filter";
+import { useAuthMe } from "@/features/auth/hooks/useAuthMe";
 import {
   sortListings,
   type ListingFilter as ListingFilterValue,
@@ -14,14 +16,32 @@ import {
 import { fetchAnnouncements } from "@/features/home/services/announcements-api";
 import { categories } from "@/lib/data";
 import type { Listing } from "@/lib/data";
+import { subscribeToTokenChanges, tokenStore } from "@/lib/tokenStore";
 import { cn } from "@/lib/utils";
+import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+import { usePathname } from "next/navigation";
 
 export function HomePage() {
+  const pathname = usePathname();
+  const locale = getLocaleFromPath(pathname);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<ListingFilterValue>("top");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [remoteListings, setRemoteListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasAccessToken, setHasAccessToken] = useState(false);
+
+  useEffect(() => {
+    function syncAccessToken() {
+      setHasAccessToken(Boolean(tokenStore.getAccessToken()));
+    }
+
+    syncAccessToken();
+    return subscribeToTokenChanges(syncAccessToken);
+  }, []);
+
+  const meQuery = useAuthMe(hasAccessToken);
+  const isAdmin = meQuery.data?.role === "admin";
 
   useEffect(() => {
     let cancelled = false;
@@ -87,14 +107,26 @@ export function HomePage() {
     <div className="px-4 pt-6">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-foreground">Serwing</h1>
-        <button
-          type="button"
-          className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
-          aria-label="Bildirishnomalar"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
-        </button>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Link
+              href={withLocale(locale, "/admin")}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-primary"
+              aria-label="Admin panel"
+              title="Admin panel"
+            >
+              <ShieldCheck className="h-5 w-5" />
+            </Link>
+          )}
+          <button
+            type="button"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            aria-label="Bildirishnomalar"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+          </button>
+        </div>
       </header>
 
       <div className="relative mt-5">
