@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import { ShoppingBag } from "lucide-react";
 import { useTranslations } from "@/shared/i18n/client";
+import { BrandLogo } from "@/shared/ui/brand/BrandLogo";
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations("auth.loginLayout");
@@ -25,15 +25,10 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
             <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40" />
 
             <div className="relative flex h-full flex-col justify-end px-6 pb-10 sm:px-10 lg:justify-center lg:px-16">
-              <div className="inline-flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 backdrop-blur">
-                  <ShoppingBag className="text-white" size={22} />
-                </div>
-
-                <h1 className="text-[34px] font-semibold leading-tight text-white sm:text-[42px] lg:text-[48px]">
-                  {t("brand")}
-                </h1>
-              </div>
+              <BrandLogo
+                logoClassName="h-16 w-20 sm:h-20 sm:w-24"
+                textClassName="text-[38px] sm:text-[48px] lg:text-[54px]"
+              />
 
               <p className="mt-4 max-w-[520px] text-[15px] leading-6 text-white/80 sm:text-[18px] sm:leading-7">
                 {t("leftText.line1")}
@@ -54,9 +49,7 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
             <div className="mx-auto w-full max-w-[460px]">
               {/* Header */}
               <div className="mb-8">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#111111] text-white shadow-lg">
-                  <ShoppingBag size={22} />
-                </div>
+                <BrandLogo logoClassName="h-14 w-[72px]" textClassName="text-[30px]" />
 
                 <h2 className="mt-6 text-[28px] font-semibold text-[#1f1f1f] sm:text-[32px]">
                   {t("rightTitle")}

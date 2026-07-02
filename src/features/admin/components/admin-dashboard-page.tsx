@@ -13,7 +13,6 @@ import {
   Loader2,
   Menu,
   Package,
-  ShieldCheck,
   Tags,
   Users,
   X,
@@ -30,6 +29,7 @@ import { categories } from "@/lib/data";
 import { subscribeToTokenChanges, tokenStore } from "@/lib/tokenStore";
 import { cn } from "@/lib/utils";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+import { BrandLogo } from "@/shared/ui/brand/BrandLogo";
 
 const AUTH_WAIT_MS = 10000;
 
@@ -198,10 +198,11 @@ export function AdminDashboardPage() {
             </button>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
-                <h1 className="truncate text-lg font-bold">SERWING Admin</h1>
-              </div>
+              <BrandLogo
+                logoClassName="h-9 w-11"
+                textClassName="text-[19px]"
+                suffix="Admin"
+              />
               <p className="truncate text-xs text-slate-500">
                 {activeNav.label} - {activeNav.description}
               </p>

@@ -36,7 +36,7 @@ export function LanguageSwitcher() {
 
     if (!tokenStore.getAccessToken()) return;
 
-    void updateMeApi({ currentLanguage: nextLocale })
+    void updateMeApi({ language: nextLocale })
       .then((user) => {
         dispatch(setMe(user));
         queryClient.setQueryData(["auth-me"], user);

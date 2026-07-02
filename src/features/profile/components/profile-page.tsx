@@ -23,7 +23,7 @@ import { getAssetUrl } from "@/lib/assets";
 import { subscribeToTokenChanges, tokenStore } from "@/lib/tokenStore";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
-const AUTH_WAIT_MS = 15000;
+const AUTH_WAIT_MS = 25000;
 const AUTH_POLL_MS = 150;
 
 function Avatar({

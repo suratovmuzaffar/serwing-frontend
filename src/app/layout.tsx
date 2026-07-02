@@ -5,6 +5,8 @@ import "@/styles/global.css";
 
 const SITE_URL = "https://sefirmarket.uz";
 const OG_IMAGE = "/og.jpg";
+const SITE_DESCRIPTION =
+  "Your all-in-one platform for digital products and online services.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -15,10 +17,20 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Serwing - Akkauntlar bozori",
+    default: "Serwing - Digital products and online services",
     template: "%s | Serwing",
   },
-  description: "Eng yaxshi narxlarda o'yin akkauntlarini sotib oling",
+  description: SITE_DESCRIPTION,
+  icons: {
+    icon: [
+      {
+        url: "/assets/serwinglogo.png",
+        type: "image/png",
+      },
+    ],
+    shortcut: "/assets/serwinglogo.png",
+    apple: "/assets/serwinglogo.png",
+  },
   alternates: {
     canonical: "/",
     languages: {
@@ -42,8 +54,8 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "Serwing",
-    title: "Serwing - Akkauntlar bozori",
-    description: "O'yin akkauntlarini sotib olish va sotish uchun marketplace.",
+    title: "Serwing - Digital products and online services",
+    description: SITE_DESCRIPTION,
     locale: "en_US",
     images: [
       {
@@ -56,8 +68,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Serwing - Akkauntlar bozori",
-    description: "O'yin akkauntlarini sotib olish va sotish uchun marketplace.",
+    title: "Serwing - Digital products and online services",
+    description: SITE_DESCRIPTION,
     images: [OG_IMAGE],
   },
   applicationName: "Serwing",
@@ -72,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
         {children}

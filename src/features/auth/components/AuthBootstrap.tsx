@@ -5,29 +5,28 @@ import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 import {
+  fetchMe,
   telegramLinkLoginApi,
   telegramLoginApi,
 } from "@/features/auth/api";
 import { clearMe, setMe } from "@/features/auth/slice";
 import {
+  hasTelegramLoginSignal,
   getTelegramInitData,
   getTelegramInitUserId,
-  getTelegramInitUserLanguage,
   getTelegramStartParam,
   initTelegramWebApp,
 } from "@/features/auth/services/telegram";
 import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
+import { defaultLocale } from "@/shared/i18n/config";
 import { getLocaleFromPath, stripLocale, withLocale } from "@/shared/i18n/path";
 import {
-  getStoredLocale,
   getPreferredLocale,
-  normalizeLocale,
-  setStoredDefaultLocale,
   syncStoredUserLocale,
 } from "@/shared/i18n/preference";
 
-const TELEGRAM_LOGIN_WAIT_MS = 4000;
+const TELEGRAM_LOGIN_WAIT_MS = 20000;
 const TELEGRAM_LOGIN_POLL_MS = 100;
 
 export function AuthBootstrap() {
@@ -37,27 +36,38 @@ export function AuthBootstrap() {
   const queryClient = useQueryClient();
   const attemptedKeyRef = useRef("");
   const inFlightKeyRef = useRef("");
-  const localeSyncedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     initTelegramWebApp();
 
-    function syncLocaleFromTelegram(initData: string) {
-      if (localeSyncedRef.current) return;
+    const currentLocale = getLocaleFromPath(pathname);
+    if (!tokenStore.getAccessToken() && !hasTelegramLoginSignal()) {
+      const preferredLocale = getPreferredLocale(defaultLocale);
 
-      const telegramLocale = normalizeLocale(getTelegramInitUserLanguage(initData));
-      if (!telegramLocale) return;
+      if (currentLocale !== preferredLocale) {
+        router.replace(withLocale(preferredLocale, stripLocale(pathname)));
+        return;
+      }
+    }
 
-      localeSyncedRef.current = true;
-      setStoredDefaultLocale(telegramLocale);
+    async function syncExistingSessionLocale() {
+      if (!tokenStore.getAccessToken() || hasTelegramLoginSignal()) return;
 
-      if (getStoredLocale()) return;
+      try {
+        const user = await fetchMe();
+        dispatch(setMe(user));
+        queryClient.setQueryData(["auth-me"], user);
 
-      const currentLocale = getLocaleFromPath(pathname);
-      if (currentLocale !== telegramLocale) {
-        router.replace(withLocale(telegramLocale, stripLocale(pathname)));
+        const userLocale = syncStoredUserLocale(user);
+        if (getLocaleFromPath(pathname) !== userLocale) {
+          router.replace(withLocale(userLocale, stripLocale(pathname)));
+        }
+      } catch {
+        tokenStore.clear();
+        dispatch(clearMe());
+        queryClient.removeQueries({ queryKey: ["auth-me"] });
       }
     }
 
@@ -158,6 +168,8 @@ export function AuthBootstrap() {
     }
 
     const startedAt = Date.now();
+    void syncExistingSessionLocale();
+
     const interval = window.setInterval(() => {
       initTelegramWebApp();
 
@@ -169,10 +181,6 @@ export function AuthBootstrap() {
       const startParam = getTelegramStartParam(initData);
       const loginToken = initData ? "" : rawLoginToken || "";
       const loginKey = initData ? `init:${initData}` : loginToken ? `link:${loginToken}` : "";
-
-      if (initData) {
-        syncLocaleFromTelegram(initData);
-      }
 
       if (!loginKey) {
         if (Date.now() - startedAt >= TELEGRAM_LOGIN_WAIT_MS) {

@@ -19,6 +19,7 @@ import type { Listing } from "@/lib/data";
 import { subscribeToTokenChanges, tokenStore } from "@/lib/tokenStore";
 import { cn } from "@/lib/utils";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+import { BrandLogo } from "@/shared/ui/brand/BrandLogo";
 import { LanguageSwitcher } from "@/shared/ui/layout/LanguageSwitcher";
 import { usePathname } from "next/navigation";
 
@@ -107,7 +108,7 @@ export function HomePage() {
   return (
     <div className="px-4 pt-6">
       <header className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">Serwing</h1>
+        <BrandLogo logoClassName="h-10 w-[54px]" textClassName="text-[20px] mt-3" />
         <div className="flex items-center gap-2">
           {isAdmin && (
             <Link
