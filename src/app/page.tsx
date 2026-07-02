@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 import { initTelegramWebApp } from "@/features/auth/services/telegram";
 import { defaultLocale } from "@/shared/i18n/config";
@@ -24,8 +25,8 @@ export default function RootPage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
-      Yuklanmoqda...
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading" />
     </div>
   );
 }

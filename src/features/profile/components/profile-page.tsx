@@ -202,8 +202,8 @@ export function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="px-4 pt-10 text-center text-sm text-muted-foreground">
-        Profil yuklanmoqda...
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }

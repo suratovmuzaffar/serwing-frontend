@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Heart } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 
 import { hasTelegramLoginSignal } from "@/features/auth/services/telegram";
 import { useFavorites } from "@/features/favorites/services/favorites";
@@ -113,8 +113,8 @@ export function FavoritesPage() {
       </p>
 
       {isLoading ? (
-        <div className="mt-20 text-center text-sm text-muted-foreground">
-          Yuklanmoqda...
+        <div className="mt-20 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : items.length === 0 ? (
         <div className="mt-20 flex flex-col items-center text-center">

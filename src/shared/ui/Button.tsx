@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "@/shared/i18n/client";
+import { Loader2 } from "lucide-react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "blue";
 type ButtonSize = "sm" | "md" | "lg";
@@ -61,7 +61,6 @@ export function Button({
   children,
   ...props
 }: Props) {
-  const t = useTranslations("Common");
   const isDisabled = disabled || loading;
 
   return (
@@ -93,8 +92,8 @@ export function Button({
         </span>
       ) : null}
 
-      <span className="leading-none">
-        {loading ? t("loading") : children}
+      <span className="inline-flex items-center leading-none">
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : children}
       </span>
 
       {rightIcon ? (
