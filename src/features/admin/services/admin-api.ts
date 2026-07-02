@@ -60,3 +60,15 @@ export async function fetchAdminUsers() {
   const { data } = await http.get<{ users: AdminUser[] }>("/users");
   return data.users;
 }
+
+export async function updateAdminUserRole(userId: number, role: string) {
+  const { data } = await http.patch<{ user: AdminUser }>(`/users/${userId}/role`, {
+    role,
+  });
+  return data.user;
+}
+
+export async function deleteAdminUser(userId: number) {
+  const { data } = await http.delete<{ ok: boolean }>(`/users/${userId}`);
+  return data;
+}

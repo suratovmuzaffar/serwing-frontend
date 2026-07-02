@@ -12,7 +12,6 @@ import {
 } from "@/features/auth/services/telegram";
 import { ENV } from "@/config/env";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
-import { BrandLogo } from "@/shared/ui/brand/BrandLogo";
 
 const TELEGRAM_DETECT_WAIT_MS = 4000;
 const TELEGRAM_DETECT_POLL_MS = 100;
@@ -83,12 +82,7 @@ export function LoginForm() {
       </Link>
 
       <div className="mt-10 rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <BrandLogo
-          className="justify-center"
-          logoClassName="h-16 w-20"
-          textClassName="text-[32px]"
-        />
-        <h1 className="mt-5 text-2xl font-bold">Profilga kirish</h1>
+        <h1 className="text-2xl font-bold">Profilga kirish</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Telegram orqali tez va xavfsiz kiring
         </p>

@@ -1,19 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Bell,
   ChevronRight,
-  FolderKanban,
   Heart,
   LayoutDashboard,
   Loader2,
   Menu,
   Package,
   Tags,
+  Trash2,
   Users,
   X,
 } from "lucide-react";
@@ -24,12 +23,13 @@ import {
   fetchAdminAnnouncements,
   fetchAdminOverview,
   fetchAdminUsers,
+  deleteAdminUser,
+  updateAdminUserRole,
 } from "@/features/admin/services/admin-api";
 import { categories } from "@/lib/data";
 import { subscribeToTokenChanges, tokenStore } from "@/lib/tokenStore";
 import { cn } from "@/lib/utils";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
-import { BrandLogo } from "@/shared/ui/brand/BrandLogo";
 
 const AUTH_WAIT_MS = 10000;
 
@@ -88,6 +88,7 @@ function formatDate(value?: string) {
 export function AdminDashboardPage() {
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   const locale = getLocaleFromPath(pathname);
   const [hasAccessToken, setHasAccessToken] = useState(false);
   const [authTimedOut, setAuthTimedOut] = useState(false);
@@ -111,7 +112,8 @@ export function AdminDashboardPage() {
 
   const meQuery = useAuthMe(hasAccessToken);
   const user = meQuery.data;
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin" || user?.role === "superuser";
+  const isSuperuser = user?.role === "superuser";
 
   const overviewQuery = useQuery({
     queryKey: ["admin-overview"],
@@ -129,6 +131,23 @@ export function AdminDashboardPage() {
     queryKey: ["admin-users"],
     queryFn: fetchAdminUsers,
     enabled: isAdmin,
+  });
+
+  const updateRoleMutation = useMutation({
+    mutationFn: ({ userId, role }: { userId: number; role: string }) =>
+      updateAdminUserRole(userId, role),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      void queryClient.invalidateQueries({ queryKey: ["auth-me"] });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteAdminUser,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      void queryClient.invalidateQueries({ queryKey: ["admin-overview"] });
+    },
   });
 
   useEffect(() => {
@@ -164,7 +183,6 @@ export function AdminDashboardPage() {
     [overviewQuery.data]
   );
 
-  const activeNav = navItems.find((item) => item.id === activeSection) ?? navItems[0];
   const isLoadingAuth =
     !authTimedOut && (!hasAccessToken || meQuery.isLoading || !user);
   const isLoadingAdmin =
@@ -196,28 +214,9 @@ export function AdminDashboardPage() {
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-
-            <div className="min-w-0">
-              <BrandLogo
-                logoClassName="h-9 w-11"
-                textClassName="text-[19px]"
-                suffix="Admin"
-              />
-              <p className="truncate text-xs text-slate-500">
-                {activeNav.label} - {activeNav.description}
-              </p>
-            </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700"
-              aria-label="Admin bildirishnomalar"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
-            </button>
             <button
               type="button"
               onClick={() => router.push(withLocale(locale, "/home"))}
@@ -284,36 +283,6 @@ export function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-
-            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-              <div className="flex items-center gap-2">
-                <FolderKanban className="h-5 w-5 text-primary" />
-                <h2 className="text-sm font-bold">Tezkor ko&apos;rinish</h2>
-              </div>
-              <div className="mt-4 grid gap-2 text-sm sm:grid-cols-3">
-                <button
-                  type="button"
-                  onClick={() => setActiveSection("users")}
-                  className="rounded-xl bg-slate-50 px-3 py-3 text-left font-semibold text-slate-700"
-                >
-                  Users boshqaruvi
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveSection("announcements")}
-                  className="rounded-xl bg-slate-50 px-3 py-3 text-left font-semibold text-slate-700"
-                >
-                  E&apos;lonlar nazorati
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveSection("categories")}
-                  className="rounded-xl bg-slate-50 px-3 py-3 text-left font-semibold text-slate-700"
-                >
-                  Categories ro&apos;yxati
-                </button>
-              </div>
-            </div>
           </section>
         )}
 
@@ -349,16 +318,67 @@ export function AdminDashboardPage() {
                       TG: {adminUser.telegramId || "ulanmagan"} · {formatDate(adminUser.createdAt)}
                     </p>
                   </div>
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-1 text-[11px] font-bold",
-                      adminUser.role === "admin"
-                        ? "bg-primary/10 text-primary"
-                        : "bg-slate-100 text-slate-600"
+                  <div className="flex shrink-0 items-center gap-2">
+                    {isSuperuser ? (
+                      <select
+                        value={adminUser.role}
+                        disabled={
+                          updateRoleMutation.isPending ||
+                          adminUser.id === user?.id
+                        }
+                        onChange={(event) =>
+                          updateRoleMutation.mutate({
+                            userId: adminUser.id,
+                            role: event.target.value,
+                          })
+                        }
+                        className="h-9 rounded-full border border-slate-200 bg-white px-2 text-xs font-bold text-slate-700 outline-none disabled:opacity-60"
+                        aria-label="Role"
+                      >
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
+                        <option value="superuser">superuser</option>
+                      </select>
+                    ) : (
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-1 text-[11px] font-bold",
+                          adminUser.role === "superuser"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : adminUser.role === "admin"
+                              ? "bg-primary/10 text-primary"
+                              : "bg-slate-100 text-slate-600"
+                        )}
+                      >
+                        {adminUser.role}
+                      </span>
                     )}
-                  >
-                    {adminUser.role}
-                  </span>
+
+                    {isSuperuser && (
+                      <button
+                        type="button"
+                        disabled={
+                          deleteUserMutation.isPending ||
+                          adminUser.id === user?.id ||
+                          adminUser.role === "superuser"
+                        }
+                        onClick={() => {
+                          const name =
+                            adminUser.profileName ||
+                            adminUser.telegramName ||
+                            `User #${adminUser.id}`;
+
+                          if (window.confirm(`${name} o'chirilsinmi?`)) {
+                            deleteUserMutation.mutate(adminUser.id);
+                          }
+                        }}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-red-100 bg-red-50 text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label="Userni o'chirish"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
