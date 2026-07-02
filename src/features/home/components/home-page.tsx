@@ -43,7 +43,8 @@ export function HomePage() {
   }, []);
 
   const meQuery = useAuthMe(hasAccessToken);
-  const isAdmin = meQuery.data?.role === "admin";
+  const isAdmin =
+    meQuery.data?.role === "admin" || meQuery.data?.role === "superuser";
 
   useEffect(() => {
     let cancelled = false;
