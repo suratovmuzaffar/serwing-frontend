@@ -146,8 +146,9 @@ export function AuthBootstrap() {
         const isTelegramAccountMismatch =
           error instanceof Error && error.message === "Telegram account mismatch";
         const hasTelegramLoginSignal = Boolean(initData || loginToken);
+        attemptedKeyRef.current = loginKey;
 
-        if (previousAccessToken && !isTelegramAccountMismatch) {
+        if (previousAccessToken && !hasTelegramLoginSignal && !isTelegramAccountMismatch) {
           tokenStore.setTokens(previousAccessToken, previousRefreshToken);
           void queryClient.invalidateQueries({ queryKey: ["auth-me"] });
           router.refresh();
@@ -157,8 +158,17 @@ export function AuthBootstrap() {
           queryClient.removeQueries({ queryKey: ["auth-me"] });
         }
 
-        if (!hasTelegramLoginSignal && !pathname.includes("/login")) {
-          router.replace(withLocale(getPreferredLocale(getLocaleFromPath(pathname)), "/login"));
+        if (hasTelegramLoginSignal || !pathname.includes("/login")) {
+          const loginUrl = new URL(
+            withLocale(getPreferredLocale(getLocaleFromPath(pathname)), "/login"),
+            window.location.origin
+          );
+
+          if (hasTelegramLoginSignal) {
+            loginUrl.searchParams.set("tgAuthFailed", "start_required");
+          }
+
+          router.replace(loginUrl.pathname + loginUrl.search);
         }
       } finally {
         if (inFlightKeyRef.current === loginKey) {
@@ -193,7 +203,7 @@ export function AuthBootstrap() {
         return;
       }
 
-      if (attemptedKeyRef.current === loginKey && tokenStore.getAccessToken()) {
+      if (attemptedKeyRef.current === loginKey) {
         window.clearInterval(interval);
         return;
       }

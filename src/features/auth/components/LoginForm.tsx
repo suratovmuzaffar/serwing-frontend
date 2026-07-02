@@ -19,12 +19,24 @@ const TELEGRAM_DETECT_POLL_MS = 100;
 export function LoginForm() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
-  const [error, setError] = useState("");
+  const [authFailed] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : new URLSearchParams(window.location.search).get("tgAuthFailed") ===
+        "start_required"
+  );
+  const [error, setError] = useState(() =>
+    authFailed ? "Avval Telegram botda /start bosing." : ""
+  );
   const [isInsideTelegram, setIsInsideTelegram] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    if (authFailed) {
+      return;
+    }
 
     initTelegramWebApp();
     const startedAt = Date.now();
@@ -44,7 +56,7 @@ export function LoginForm() {
     }, TELEGRAM_DETECT_POLL_MS);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [authFailed]);
 
   function handleTelegramLogin() {
     setError("");
