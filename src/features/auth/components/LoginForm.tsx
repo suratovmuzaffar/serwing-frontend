@@ -81,7 +81,7 @@ export function LoginForm() {
         <ArrowLeft className="h-5 w-5" />
       </Link>
 
-      <div className="mt-10 rounded-2xl border border-border bg-card p-5">
+      <div className="mt-10 rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <Send className="h-6 w-6" />
         </div>

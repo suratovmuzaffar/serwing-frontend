@@ -12,8 +12,8 @@ import { getLocaleFromPath, stripLocale, withLocale } from "@/shared/i18n/path";
 
 const localeLabels: Record<Locale, { short: string; flag: string; name: string }> = {
   en: { short: "EN", flag: "/assets/flag-en.svg", name: "English" },
-  uz: { short: "UZ", flag: "/assets/flag-uz.svg", name: "O'zbekcha" },
-  ru: { short: "RU", flag: "/assets/flag-ru.svg", name: "Русский" },
+  uz: { short: "UZ", flag: "/assets/flag-uz.svg", name: "Uzbek" },
+  ru: { short: "RU", flag: "/assets/flag-ru.svg", name: "Russian" },
 };
 
 export function LanguageSwitcher() {
@@ -86,9 +86,7 @@ export function LanguageSwitcher() {
                   role="menuitem"
                   className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
-                    active
-                      ? "bg-sky-100"
-                      : "hover:bg-muted"
+                    active ? "bg-sky-100" : "hover:bg-muted"
                   )}
                 >
                   <Image

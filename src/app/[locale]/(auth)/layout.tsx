@@ -1,8 +1,9 @@
 "use client";
 
-import LoginLayout from "@/features/auth/components/layouts/LoginLayout";
-
 export default function Layout({ children }: { children: React.ReactNode }) {
-
-  return <>{children}</>;
+  return (
+    <div className="mx-auto min-h-screen w-full max-w-[390px] bg-transparent text-foreground">
+      {children}
+    </div>
+  );
 }

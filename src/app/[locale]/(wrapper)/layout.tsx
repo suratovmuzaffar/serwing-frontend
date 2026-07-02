@@ -9,7 +9,7 @@ export default function Layout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto min-h-screen max-w-[390px] bg-background pb-28 text-foreground">
+    <div className="mx-auto min-h-screen w-full max-w-[390px] bg-transparent pb-28 text-foreground">
       <main>{children}</main>
       <BottomNav />
     </div>

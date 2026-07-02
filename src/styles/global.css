@@ -129,6 +129,7 @@
     color: var(--color-foreground);
     -webkit-font-smoothing: antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
   }
 
   body {
