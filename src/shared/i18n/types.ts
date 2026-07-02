@@ -1,3 +1,1 @@
-import type uz from "./dictionaries/uz.json";
-
-export type Dictionary = typeof uz;
+export type Dictionary = Record<string, unknown>;

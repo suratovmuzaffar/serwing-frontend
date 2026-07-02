@@ -12,12 +12,19 @@ import { clearMe, setMe } from "@/features/auth/slice";
 import {
   getTelegramInitData,
   getTelegramInitUserId,
+  getTelegramInitUserLanguage,
   getTelegramStartParam,
   initTelegramWebApp,
 } from "@/features/auth/services/telegram";
 import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
-import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+import { getLocaleFromPath, stripLocale, withLocale } from "@/shared/i18n/path";
+import {
+  getStoredLocale,
+  getPreferredLocale,
+  normalizeLocale,
+  setStoredLocale,
+} from "@/shared/i18n/preference";
 
 const TELEGRAM_LOGIN_WAIT_MS = 4000;
 const TELEGRAM_LOGIN_POLL_MS = 100;
@@ -29,11 +36,27 @@ export function AuthBootstrap() {
   const queryClient = useQueryClient();
   const attemptedKeyRef = useRef("");
   const inFlightKeyRef = useRef("");
+  const localeSyncedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     initTelegramWebApp();
+
+    function syncLocaleFromTelegram(initData: string) {
+      if (localeSyncedRef.current || getStoredLocale()) return;
+
+      const telegramLocale = normalizeLocale(getTelegramInitUserLanguage(initData));
+      if (!telegramLocale) return;
+
+      localeSyncedRef.current = true;
+      setStoredLocale(telegramLocale);
+
+      const currentLocale = getLocaleFromPath(pathname);
+      if (currentLocale !== telegramLocale) {
+        router.replace(withLocale(telegramLocale, stripLocale(pathname)));
+      }
+    }
 
     function cleanLoginParamsFromUrl(rawLoginToken: string | null) {
       if (!rawLoginToken) return;
@@ -94,7 +117,7 @@ export function AuthBootstrap() {
           startParam.startsWith("ref");
 
         if (shouldOpenProfile) {
-          router.replace(withLocale(getLocaleFromPath(pathname), "/profile"));
+          router.replace(withLocale(getPreferredLocale(getLocaleFromPath(pathname)), "/profile"));
           return;
         }
 
@@ -115,7 +138,7 @@ export function AuthBootstrap() {
         }
 
         if (!hasTelegramLoginSignal && !pathname.includes("/login")) {
-          router.replace(withLocale(getLocaleFromPath(pathname), "/login"));
+          router.replace(withLocale(getPreferredLocale(getLocaleFromPath(pathname)), "/login"));
         }
       } finally {
         if (inFlightKeyRef.current === loginKey) {
@@ -136,6 +159,10 @@ export function AuthBootstrap() {
       const startParam = getTelegramStartParam(initData);
       const loginToken = initData ? "" : rawLoginToken || "";
       const loginKey = initData ? `init:${initData}` : loginToken ? `link:${loginToken}` : "";
+
+      if (initData) {
+        syncLocaleFromTelegram(initData);
+      }
 
       if (!loginKey) {
         if (Date.now() - startedAt >= TELEGRAM_LOGIN_WAIT_MS) {

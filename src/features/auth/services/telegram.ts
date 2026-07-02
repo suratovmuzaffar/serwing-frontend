@@ -41,6 +41,20 @@ export function getTelegramInitUserId(initData = getTelegramInitData()) {
   }
 }
 
+export function getTelegramInitUserLanguage(initData = getTelegramInitData()) {
+  if (!initData) return "";
+
+  const userJson = new URLSearchParams(initData).get("user");
+  if (!userJson) return "";
+
+  try {
+    const user = JSON.parse(userJson) as { language_code?: string };
+    return user.language_code ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export function getTelegramStartParam(initData = getTelegramInitData()) {
   if (!initData) return "";
 

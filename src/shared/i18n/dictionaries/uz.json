@@ -1,4 +1,11 @@
 {
+  "Navigation": {
+    "home": "Asosiy",
+    "donations": "Donatlar",
+    "sell": "Sotish",
+    "favorites": "Saqlangan",
+    "profile": "Profil"
+  },
   "SearchInput": {
     "placeholder": "Mahsulotlarni qidiring...",
     "buttonLabel": "Qidirish",

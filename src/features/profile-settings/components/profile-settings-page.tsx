@@ -17,6 +17,7 @@ import { getAssetUrl } from "@/lib/assets";
 import { tokenStore } from "@/lib/tokenStore";
 import { useAppDispatch } from "@/store/hooks";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+import { LanguageSwitcher } from "@/shared/ui/layout/LanguageSwitcher";
 
 function Avatar({ name, photoUrl }: { name: string; photoUrl?: string | null }) {
   const initial = (name || "U").charAt(0).toUpperCase();
@@ -294,6 +295,17 @@ export function ProfileSettingsPage() {
           placeholder="Bio"
           multiline
         />
+        <div className="rounded-2xl border border-border bg-card px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold">Til</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Ilova tilini tanlang
+              </p>
+            </div>
+            <LanguageSwitcher />
+          </div>
+        </div>
         <button
           type="submit"
           disabled={updateProfile.isPending || uploadProfileImage.isPending}

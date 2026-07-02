@@ -1,4 +1,11 @@
 {
+  "Navigation": {
+    "home": "Главная",
+    "donations": "Донаты",
+    "sell": "Продать",
+    "favorites": "Избранное",
+    "profile": "Профиль"
+  },
   "SearchInput": {
     "placeholder": "Поиск товаров...",
     "buttonLabel": "Поиск",

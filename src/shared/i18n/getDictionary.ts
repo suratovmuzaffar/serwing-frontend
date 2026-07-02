@@ -2,6 +2,7 @@ import { defaultLocale, isLocale, type Locale } from "./config";
 import type { Dictionary } from "./types";
 
 const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
+  en: () => import("./dictionaries/en.json").then((m) => m.default),
   uz: () => import("./dictionaries/uz.json").then((m) => m.default),
   ru: () => import("./dictionaries/ru.json").then((m) => m.default),
 };

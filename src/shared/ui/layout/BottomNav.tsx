@@ -5,26 +5,29 @@ import { usePathname } from "next/navigation";
 import { Grid3x3, Heart, Home, PlusCircle, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/shared/i18n/client";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
 
 const tabs = [
-  { path: "/home", icon: Home, label: "Asosiy" },
-  { path: "/donations", icon: Grid3x3, label: "Donatlar" },
-  { path: "/add", icon: PlusCircle, label: "Sotish" },
-  { path: "/favorites", icon: Heart, label: "Saqlangan" },
-  { path: "/profile", icon: User, label: "Profil" },
+  { path: "/home", icon: Home, labelKey: "home", fallback: "Asosiy" },
+  { path: "/donations", icon: Grid3x3, labelKey: "donations", fallback: "Donatlar" },
+  { path: "/add", icon: PlusCircle, labelKey: "sell", fallback: "Sotish" },
+  { path: "/favorites", icon: Heart, labelKey: "favorites", fallback: "Saqlangan" },
+  { path: "/profile", icon: User, labelKey: "profile", fallback: "Profil" },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
+  const t = useTranslations("Navigation");
 
   return (
     <div className="fixed bottom-4 left-1/2 z-50 w-full max-w-[390px] -translate-x-1/2 px-4 pb-[env(safe-area-inset-bottom)]">
       <nav className="mx-auto w-max rounded-3xl border border-white/10 bg-background/70 shadow-2xl backdrop-blur-2xl">
         <div className="flex items-center gap-1 px-2 py-2">
-          {tabs.map(({ path, icon: Icon, label }) => {
+          {tabs.map(({ path, icon: Icon, labelKey, fallback }) => {
             const href = withLocale(locale, path);
+            const label = t(labelKey, fallback);
             const active =
               path === "/home"
                 ? pathname === `/${locale}` || pathname === href

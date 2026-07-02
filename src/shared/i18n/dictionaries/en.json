@@ -1,0 +1,26 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "donations": "Donations",
+    "sell": "Sell",
+    "favorites": "Saved",
+    "profile": "Profile"
+  },
+  "Common": {
+    "loading": "Loading..."
+  },
+  "BackButton": {
+    "goBack": "Go back"
+  },
+  "ErrorPage": {
+    "retry": "Try again",
+    "title": "Something went wrong",
+    "description": "There was a problem loading the page. Please try again."
+  },
+  "NotFoundPage": {
+    "goBack": "Go back",
+    "goHome": "Home",
+    "title": "Page not found",
+    "description": "The page you are looking for may have been removed, renamed, or is temporarily unavailable."
+  }
+}
