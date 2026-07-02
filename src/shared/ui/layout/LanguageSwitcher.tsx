@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Globe2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { locales, type Locale } from "@/shared/i18n/config";
 import { setStoredLocale } from "@/shared/i18n/preference";
 import { getLocaleFromPath, stripLocale, withLocale } from "@/shared/i18n/path";
 
-const localeNames: Record<Locale, string> = {
-  en: "EN",
-  uz: "UZ",
-  ru: "RU",
+const localeLabels: Record<Locale, { short: string; flag: string; name: string }> = {
+  en: { short: "EN", flag: "/assets/flag-en.svg", name: "English" },
+  uz: { short: "UZ", flag: "/assets/flag-uz.svg", name: "O'zbekcha" },
+  ru: { short: "RU", flag: "/assets/flag-ru.svg", name: "Русский" },
 };
 
 export function LanguageSwitcher() {
@@ -22,14 +22,12 @@ export function LanguageSwitcher() {
 
   return (
     <div
-      className="inline-flex h-9 items-center rounded-full border border-border bg-card p-1 shadow-sm"
+      className="inline-flex h-10 items-center rounded-full border border-border bg-card p-1 shadow-sm"
       aria-label="Tilni tanlash"
     >
-      <span className="flex h-7 w-7 items-center justify-center text-muted-foreground">
-        <Globe2 className="h-4 w-4" />
-      </span>
       {locales.map((item) => {
         const active = item === locale;
+        const label = localeLabels[item];
 
         return (
           <Link
@@ -37,14 +35,23 @@ export function LanguageSwitcher() {
             href={withLocale(item, currentPath)}
             onClick={() => setStoredLocale(item)}
             aria-current={active ? "page" : undefined}
+            aria-label={label.name}
+            title={label.name}
             className={cn(
-              "flex h-7 min-w-8 items-center justify-center rounded-full px-2 text-xs font-semibold transition-colors",
+              "flex h-8 min-w-8 items-center justify-center rounded-full px-1.5 text-sm font-semibold transition-colors",
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
-            {localeNames[item]}
+            <Image
+              src={label.flag}
+              alt=""
+              width={20}
+              height={20}
+              className="h-5 w-5 rounded-full object-cover"
+            />
+            <span className="sr-only">{label.short}</span>
           </Link>
         );
       })}

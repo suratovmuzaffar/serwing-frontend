@@ -19,6 +19,7 @@ import type { Listing } from "@/lib/data";
 import { subscribeToTokenChanges, tokenStore } from "@/lib/tokenStore";
 import { cn } from "@/lib/utils";
 import { getLocaleFromPath, withLocale } from "@/shared/i18n/path";
+import { LanguageSwitcher } from "@/shared/ui/layout/LanguageSwitcher";
 import { usePathname } from "next/navigation";
 
 export function HomePage() {
@@ -118,6 +119,7 @@ export function HomePage() {
               <ShieldCheck className="h-5 w-5" />
             </Link>
           )}
+          <LanguageSwitcher />
           <button
             type="button"
             className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
