@@ -36,6 +36,7 @@ export async function updateMeApi(payload: {
   profileName?: string;
   profilePhotoUrl?: string;
   profileBio?: string;
+  currentLanguage?: string | null;
 }): Promise<AuthUser> {
   const { data } = await http.patch<MeResponse>("/users/me", payload);
   return "user" in data ? data.user : data;

@@ -10,9 +10,9 @@ import {
 } from "@/features/auth/services/telegram";
 import { defaultLocale } from "@/shared/i18n/config";
 import {
-  getStoredLocale,
+  getEffectiveStoredLocale,
   normalizeLocale,
-  setStoredLocale,
+  setStoredDefaultLocale,
 } from "@/shared/i18n/preference";
 import { withLocale } from "@/shared/i18n/path";
 
@@ -25,7 +25,7 @@ export default function RootPage() {
   useEffect(() => {
     initTelegramWebApp();
 
-    const storedLocale = getStoredLocale();
+    const storedLocale = getEffectiveStoredLocale();
     if (storedLocale) {
       router.replace(withLocale(storedLocale, "/profile"));
       return;
@@ -39,7 +39,7 @@ export default function RootPage() {
       const telegramLocale = normalizeLocale(getTelegramInitUserLanguage(initData));
 
       if (telegramLocale) {
-        setStoredLocale(telegramLocale);
+        setStoredDefaultLocale(telegramLocale);
         window.clearInterval(interval);
         router.replace(withLocale(telegramLocale, "/profile"));
         return;

@@ -16,6 +16,8 @@ export type AuthUser = {
   telegramName: string | null;
   telegramPhotoUrl: string | null;
   telegramVerified: boolean;
+  defaultLanguage: string | null;
+  currentLanguage: string | null;
   phone: string | null;
   phoneVerified: boolean;
   role: string;

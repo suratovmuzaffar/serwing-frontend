@@ -23,7 +23,8 @@ import {
   getStoredLocale,
   getPreferredLocale,
   normalizeLocale,
-  setStoredLocale,
+  setStoredDefaultLocale,
+  syncStoredUserLocale,
 } from "@/shared/i18n/preference";
 
 const TELEGRAM_LOGIN_WAIT_MS = 4000;
@@ -44,13 +45,15 @@ export function AuthBootstrap() {
     initTelegramWebApp();
 
     function syncLocaleFromTelegram(initData: string) {
-      if (localeSyncedRef.current || getStoredLocale()) return;
+      if (localeSyncedRef.current) return;
 
       const telegramLocale = normalizeLocale(getTelegramInitUserLanguage(initData));
       if (!telegramLocale) return;
 
       localeSyncedRef.current = true;
-      setStoredLocale(telegramLocale);
+      setStoredDefaultLocale(telegramLocale);
+
+      if (getStoredLocale()) return;
 
       const currentLocale = getLocaleFromPath(pathname);
       if (currentLocale !== telegramLocale) {
@@ -106,6 +109,7 @@ export function AuthBootstrap() {
         dispatch(setMe(result.user));
         queryClient.setQueryData(["auth-me"], result.user);
         attemptedKeyRef.current = loginKey;
+        const userLocale = syncStoredUserLocale(result.user);
 
         cleanLoginParamsFromUrl(rawLoginToken);
 
@@ -115,9 +119,15 @@ export function AuthBootstrap() {
           startParam === "login" ||
           startParam === "profile" ||
           startParam.startsWith("ref");
+        const nextLocale = userLocale ?? getPreferredLocale(getLocaleFromPath(pathname));
 
         if (shouldOpenProfile) {
-          router.replace(withLocale(getPreferredLocale(getLocaleFromPath(pathname)), "/profile"));
+          router.replace(withLocale(nextLocale, "/profile"));
+          return;
+        }
+
+        if (getLocaleFromPath(pathname) !== nextLocale) {
+          router.replace(withLocale(nextLocale, stripLocale(pathname)));
           return;
         }
 

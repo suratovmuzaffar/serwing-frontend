@@ -4,11 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
+import { updateMeApi } from "@/features/auth/api";
+import { setMe } from "@/features/auth/slice";
 import { cn } from "@/lib/utils";
+import { tokenStore } from "@/lib/tokenStore";
 import { locales, type Locale } from "@/shared/i18n/config";
 import { setStoredLocale } from "@/shared/i18n/preference";
 import { getLocaleFromPath, stripLocale, withLocale } from "@/shared/i18n/path";
+import { useAppDispatch } from "@/store/hooks";
 
 const localeLabels: Record<Locale, { short: string; flag: string; name: string }> = {
   en: { short: "EN", flag: "/assets/flag-en.svg", name: "English" },
@@ -18,11 +23,26 @@ const localeLabels: Record<Locale, { short: string; flag: string; name: string }
 
 export function LanguageSwitcher() {
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const locale = getLocaleFromPath(pathname);
   const currentPath = stripLocale(pathname ?? "/");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const current = localeLabels[locale];
+
+  function syncCurrentLanguage(nextLocale: Locale) {
+    setStoredLocale(nextLocale);
+
+    if (!tokenStore.getAccessToken()) return;
+
+    void updateMeApi({ currentLanguage: nextLocale })
+      .then((user) => {
+        dispatch(setMe(user));
+        queryClient.setQueryData(["auth-me"], user);
+      })
+      .catch(() => {});
+  }
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -77,7 +97,7 @@ export function LanguageSwitcher() {
                   key={item}
                   href={withLocale(item, currentPath)}
                   onClick={() => {
-                    setStoredLocale(item);
+                    syncCurrentLanguage(item);
                     setOpen(false);
                   }}
                   aria-current={active ? "page" : undefined}
